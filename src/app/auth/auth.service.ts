@@ -2,50 +2,12 @@ import { Injectable, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   Auth,
-  User,
   authState,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
 } from '@angular/fire/auth';
-
-// --- TYPE DEFINITIONS FOR GOOGLE ADMIN SDK API RESPONSES ---
-
-/** Defines a single permission within a role. */
-interface Privilege {
-  privilegeName: string;
-  serviceId: string;
-}
-
-/** Defines a custom admin role. */
-interface Role {
-  roleId: string;
-  roleName: string;
-  privileges: Privilege[];
-}
-
-/** The response structure for a list of roles. */
-interface RolesListResponse {
-  items: Role[];
-}
-
-/** Defines a user's role assignment. */
-interface RoleAssignment {
-  roleId: string;
-  assignedTo: string;
-}
-
-/** The response structure for a list of role assignments. */
-interface RoleAssignmentsListResponse {
-  items: RoleAssignment[];
-}
-
-/** Defines the user object from the Admin SDK. */
-interface DirectoryUser {
-  isSuperAdmin: boolean;
-}
-
-// --- END OF TYPE DEFINITIONS ---
+import { Functions, httpsCallable } from '@angular/fire/functions';
 
 // This interface defines the roles we care about in our app.
 export interface UserRoles {
@@ -61,6 +23,7 @@ export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 export class AuthService {
   // Inject the AngularFire Auth service
   private auth: Auth = inject(Auth);
+  private functions: Functions = inject(Functions);
 
   // 1. Get user state as an observable from AngularFire's `authState`.
   // 2. Convert that observable to a Signal using `toSignal`.
@@ -81,7 +44,7 @@ export class AuthService {
       const currentUser = this.user();
       if (currentUser) {
         // If a user is logged in, check what roles they are eligible for.
-        await this.updateAvailableRoles(currentUser);
+        await this.updateAvailableRoles();
       } else {
         // If logged out, reset everything.
         this.availableRoles.set({ isSuperAdmin: false, isCepAdmin: false });
@@ -132,66 +95,14 @@ export class AuthService {
    * Checks roles dynamically by finding the CEP Admin role based on its permissions.
    * This method updates the `availableRoles` signal.
    */
-  private async updateAvailableRoles(user: User): Promise<void> {
+  private async updateAvailableRoles(): Promise<void> {
     try {
-      const token = await user.getIdToken();
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const fetchJson = async <T>(url: string): Promise<T> => {
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-          throw new Error(`API call failed with status: ${response.status}`);
-        }
-        return response.json() as Promise<T>;
-      };
-
-      // Perform three API calls in parallel to get all necessary info
-      const [userResult, assignmentsResult, allRolesResult] = await Promise.all(
-        [
-          fetchJson<DirectoryUser>(
-            `https://admin.googleapis.com/admin/directory/v1/users/${user.email}`,
-          ).catch(() => ({ isSuperAdmin: false })),
-          fetchJson<RoleAssignmentsListResponse>(
-            `https://admin.googleapis.com/admin/directory/v1/roleassignments?userKey=${user.email}`,
-          ).catch(() => ({ items: [] })),
-          fetchJson<RolesListResponse>(
-            `https://admin.googleapis.com/admin/directory/v1/customer/my_customer/roles`,
-          ).catch(() => ({ items: [] })),
-        ],
+      const getRoles = httpsCallable<void, UserRoles>(
+        this.functions,
+        'getRoles',
       );
-
-      const isSuperAdmin = userResult.isSuperAdmin || false;
-
-      // --- DYNAMIC ROLE LOOKUP ---
-      // The specific permission bit that grants access to Chrome management.
-      const CHROME_ADMIN_PRIVILEGE = 'chrome.management.admin.access';
-
-      // Find the role that contains the required privilege
-      const cepAdminRole = allRolesResult.items?.find((role: Role) =>
-        role.privileges?.some(
-          (privilege: Privilege) =>
-            privilege.privilegeName === CHROME_ADMIN_PRIVILEGE,
-        ),
-      );
-      const cepAdminRoleId = cepAdminRole ? cepAdminRole.roleId : null;
-
-      // Check if the user is assigned to the role we just found
-      let isCepAdmin = false;
-      if (cepAdminRoleId) {
-        isCepAdmin =
-          assignmentsResult.items?.some(
-            (assignment: RoleAssignment) =>
-              assignment.roleId === cepAdminRoleId,
-          ) || false;
-      }
-
-      console.log('Dynamically determined roles:', {
-        isSuperAdmin,
-        isCepAdmin,
-        foundCepRoleId: cepAdminRoleId,
-      });
-
-      this.availableRoles.set({ isSuperAdmin, isCepAdmin });
+      const roles = await getRoles();
+      this.availableRoles.set(roles.data);
     } catch (error) {
       console.error('API Error checking admin roles:', error);
       this.availableRoles.set({ isSuperAdmin: false, isCepAdmin: false });
