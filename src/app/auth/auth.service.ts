@@ -53,6 +53,8 @@ export interface UserRoles {
   isCepAdmin: boolean;
 }
 
+export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -64,23 +66,26 @@ export class AuthService {
   // 2. Convert that observable to a Signal using `toSignal`.
   public readonly user = toSignal(authState(this.auth), { initialValue: null });
 
-  // This signal will hold the roles, separate from the user signal.
-  public readonly roles = signal<UserRoles>({
+  // This signal holds the roles the user is *allowed* to assume.
+  public readonly availableRoles = signal<UserRoles>({
     isSuperAdmin: false,
     isCepAdmin: false,
   });
 
+  // This signal holds the role the user has *chosen* for the session.
+  public readonly selectedRole = signal<SelectedRole>(null);
+
   constructor() {
-    // An `effect` is the correct Signal-based way to react to changes and
-    // cause side effects, like fetching data. It replaces the constructor logic.
+    // This effect reacts to user login/logout.
     effect(async () => {
-      const currentUser = this.user(); // Get the current value of the user signal
+      const currentUser = this.user();
       if (currentUser) {
-        // If a user is logged in, perform the role check
-        await this.updateAdminRoles(currentUser);
+        // If a user is logged in, check what roles they are eligible for.
+        await this.updateAvailableRoles(currentUser);
       } else {
-        // If logged out, reset roles to default
-        this.roles.set({ isSuperAdmin: false, isCepAdmin: false });
+        // If logged out, reset everything.
+        this.availableRoles.set({ isSuperAdmin: false, isCepAdmin: false });
+        this.selectedRole.set(null);
       }
     });
   }
@@ -100,7 +105,7 @@ export class AuthService {
       // The effect() will automatically trigger the role check after login.
     } catch (error) {
       console.error('Login failed:', error);
-      this.roles.set({ isSuperAdmin: false, isCepAdmin: false });
+      this.availableRoles.set({ isSuperAdmin: false, isCepAdmin: false });
       throw error;
     }
   }
@@ -110,10 +115,24 @@ export class AuthService {
   }
 
   /**
-   * Checks roles dynamically by finding the CEP Admin role based on its permissions.
-   * This method updates the `roles` signal directly and is now strongly typed.
+   * Sets the user's role for the current session.
+   * @param role The role to select.
    */
-  private async updateAdminRoles(user: User): Promise<void> {
+  selectRole(role: SelectedRole): void {
+    if (role === 'superAdmin' && !this.availableRoles().isSuperAdmin) {
+      throw new Error('Cannot select Super Admin role: Not available.');
+    }
+    if (role === 'cepAdmin' && !this.availableRoles().isCepAdmin) {
+      throw new Error('Cannot select CEP Admin role: Not available.');
+    }
+    this.selectedRole.set(role);
+  }
+
+  /**
+   * Checks roles dynamically by finding the CEP Admin role based on its permissions.
+   * This method updates the `availableRoles` signal.
+   */
+  private async updateAvailableRoles(user: User): Promise<void> {
     try {
       const token = await user.getIdToken();
       const headers = { Authorization: `Bearer ${token}` };
@@ -172,10 +191,10 @@ export class AuthService {
         foundCepRoleId: cepAdminRoleId,
       });
 
-      this.roles.set({ isSuperAdmin, isCepAdmin });
+      this.availableRoles.set({ isSuperAdmin, isCepAdmin });
     } catch (error) {
       console.error('API Error checking admin roles:', error);
-      this.roles.set({ isSuperAdmin: false, isCepAdmin: false });
+      this.availableRoles.set({ isSuperAdmin: false, isCepAdmin: false });
     }
   }
 }

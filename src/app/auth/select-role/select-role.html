@@ -1,0 +1,26 @@
+<div class="role-selection-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Select Your Role</mat-card-title>
+      <mat-card-subtitle>Choose a role for this session</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="role-options">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!authService.availableRoles().isSuperAdmin"
+        (click)="selectRole('superAdmin')"
+      >
+        Super Admin
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="!authService.availableRoles().isCepAdmin"
+        (click)="selectRole('cepAdmin')"
+      >
+        CEP Admin
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

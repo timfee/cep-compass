@@ -13,9 +13,9 @@ You MUST adhere to these rules at all times. Failure to do so results in a poorl
 ```ts
 // CORRECT
 @Component({
-  selector: 'app-example',
+  selector: "app-example",
   imports: [CommonModule],
-  template: `...`
+  template: `...`,
 })
 export class ExampleComponent {}
 ```
@@ -23,7 +23,7 @@ export class ExampleComponent {}
 ```ts
 // INCORRECT
 @Component({
-  selector: 'app-example',
+  selector: "app-example",
   imports: [CommonModule],
   template: `...`,
   standalone: true, // <-- DO NOT USE THIS
@@ -35,11 +35,11 @@ export class ExampleComponent {}
 
 ```ts
 // CORRECT
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 
 @Component({
-  selector: 'app-example',
-  templateUrl: '...',
+  selector: "app-example",
+  templateUrl: "...",
   changeDetection: ChangeDetectionStrategy.OnPush, // <-- INCLUDE THIS
 })
 export class ExampleComponent {}
@@ -47,23 +47,20 @@ export class ExampleComponent {}
 
 ```ts
 // INCORRECT
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 
 @Component({
-  selector: 'app-example',
-  templateUrl: '...',
+  selector: "app-example",
+  templateUrl: "...",
   // <-- MISSING ChangeDectionStrategy.OnPush
 })
 export class ExampleComponent {}
 ```
 
 3. **USE NATIVE CONTROL FLOW**: You **MUST** use built-in `@` syntax for all control flow in templates.
-
-   * Use `@if` and `@else` for conditional content.
-   * Use `@for` for loops, including the mandatory `track` expression.
-   * Use `@switch`, `@case`, and `@default` for complex conditional logic.
-
-
+   - Use `@if` and `@else` for conditional content.
+   - Use `@for` for loops, including the mandatory `track` expression.
+   - Use `@switch`, `@case`, and `@default` for complex conditional logic.
 
 4. **CHECK YOUR OUTPUT WITH THE ANGULAR COMPILER AND FIX ERRORS**: After you complete the project generation, run the `ng build` command and observe the output to check for errors. Fix any errors you find.
 
@@ -121,10 +118,10 @@ Under no circumstances should you ever use the following outdated patterns:
 
 ```ts
 // CORRECT
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class DataService {
   private http = inject(HttpClient); // <-- Use inject()
 }
@@ -184,36 +181,36 @@ export class DataService {
 
 Here are some links to the essentials for building Angular applications. Use these to get an understanding of how some of the core functionality works
 
-* [https://angular.dev/essentials/components](https://angular.dev/essentials/components)
-* [https://angular.dev/essentials/signals](https://angular.dev/essentials/signals)
-* [https://angular.dev/essentials/templates](https://angular.dev/essentials/templates)
-* [https://angular.dev/essentials/dependency-injection](https://angular.dev/essentials/dependency-injection)
-* [https://angular.dev/style-guide](https://angular.dev/style-guide)
+- [https://angular.dev/essentials/components](https://angular.dev/essentials/components)
+- [https://angular.dev/essentials/signals](https://angular.dev/essentials/signals)
+- [https://angular.dev/essentials/templates](https://angular.dev/essentials/templates)
+- [https://angular.dev/essentials/dependency-injection](https://angular.dev/essentials/dependency-injection)
+- [https://angular.dev/style-guide](https://angular.dev/style-guide)
 
 ## **Automated Error Detection & Remediation**
 
 A critical function of the AI is to continuously monitor for and automatically resolve errors.
 
-* **Post-Modification Checks:** After every code modification, the AI will:
+- **Post-Modification Checks:** After every code modification, the AI will:
   1. Run `ng build` to catch and fix linting issues.
   2. Monitor the IDE's diagnostics (problem pane).
   3. Check the output of the running dev server for compilation and runtime errors.
-* **Automatic Error Correction:** The AI will attempt to fix common Angular errors.
-* **Problem Reporting:** If an error cannot be resolved, the AI will report the specific error message, its location, and a concise explanation with a suggested fix.
+- **Automatic Error Correction:** The AI will attempt to fix common Angular errors.
+- **Problem Reporting:** If an error cannot be resolved, the AI will report the specific error message, its location, and a concise explanation with a suggested fix.
 
 ## **Iterative Development & User Interaction**
 
 The AI's workflow is iterative, transparent, and responsive to user input.
 
-* **Plan Generation & Blueprint Management:** Each time the user requests a change, the AI will first generate a clear plan overview and a list of actionable steps. This plan will then be used to **create or update a `blueprint.md` file** in the project's root directory.
+- **Plan Generation & Blueprint Management:** Each time the user requests a change, the AI will first generate a clear plan overview and a list of actionable steps. This plan will then be used to **create or update a `blueprint.md` file** in the project's root directory.
   1. The blueprint.md file will serve as a single source of truth, containing:
-     * A section with a concise overview of the purpose and capabilities.
-     * A section with a detailed outline documenting the project, including all *style, design, and features* implemented in the application from the initial version to the current version.
-     * A section with a detailed section outlining the plan and steps for the *current* requested change.
+     - A section with a concise overview of the purpose and capabilities.
+     - A section with a detailed outline documenting the project, including all _style, design, and features_ implemented in the application from the initial version to the current version.
+     - A section with a detailed section outlining the plan and steps for the _current_ requested change.
   2. Before initiating any new change or at the start of a new chat session, the AI will reference the blueprint.md to ensure full context and understanding of the application's current state and existing features. This ensures consistency and avoids redundant or conflicting modifications.
-* **Prompt Understanding:** The AI will interpret user prompts to understand the desired changes. It will ask clarifying questions if the prompt is ambiguous.
-* **Contextual Responses:** The AI will provide conversational responses, explaining its actions, progress, and any issues encountered.
-* **Error Checking Flow:**
+- **Prompt Understanding:** The AI will interpret user prompts to understand the desired changes. It will ask clarifying questions if the prompt is ambiguous.
+- **Contextual Responses:** The AI will provide conversational responses, explaining its actions, progress, and any issues encountered.
+- **Error Checking Flow:**
   1. **Important:** The AI will **not** start the dev server (`ng serve`), as it is already managed by Firebase Studio.
   2. **Code Change:** AI applies a code modification.
   3. **Dependency Check:** If a new package is needed, AI runs `npm install`.
@@ -226,14 +223,14 @@ The AI's workflow is iterative, transparent, and responsive to user input.
 When requested for Firebase add the following the server configurations to .idx/mcp.json. Just add the following and don't add anything else.
 
 {
-    "mcpServers": {
-        "firebase": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "firebase-tools@latest",
-                "experimental:mcp"
-            ]
-        }
-    }
+"mcpServers": {
+"firebase": {
+"command": "npx",
+"args": [
+"-y",
+"firebase-tools@latest",
+"experimental:mcp"
+]
+}
+}
 }
