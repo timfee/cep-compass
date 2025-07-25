@@ -18,12 +18,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideFirebaseApp(() =>
       initializeApp({
-        projectId: 'cep-compass',
-        appId: '1:51334273431:web:6bc40cff90e235e7e5ccd2',
-        storageBucket: 'cep-compass.firebasestorage.app',
-        apiKey: 'AIzaSyAjgllirkW9CZsL3XEnoYWZyj7TGXViX20',
-        authDomain: 'cep-compass.firebaseapp.com',
-        messagingSenderId: '51334273431',
+        projectId: 'timfee-cep-compass',
+        appId: '1:313000633718:web:f9c1b47788fa41fcdac657',
+        storageBucket: 'timfee-cep-compass.firebasestorage.app',
+        apiKey: 'AIzaSyD6KC2xozJ0-psZT_jlwpLLUxpBPgnXiCk',
+        authDomain: 'timfee-cep-compass.firebaseapp.com',
+        messagingSenderId: '313000633718',
       }),
     ),
     provideAuth(() => getAuth()),

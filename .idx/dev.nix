@@ -16,6 +16,7 @@
       "angular.ng-template"
       "dbaeumer.vscode-eslint"
       "esbenp.prettier-vscode"
+      "google.geminicodeassist"
     ];
     workspace = {
       # Runs when a workspace is first created with this `dev.nix` file
