@@ -6,18 +6,21 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     pkgs.nodejs_20
+    pkgs.corepack
   ];
   # Sets environment variables in the workspace
-  env = {};
+  env = { };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
       "angular.ng-template"
+      "dbaeumer.vscode-eslint"
+      "esbenp.prettier-vscode"
     ];
     workspace = {
       # Runs when a workspace is first created with this `dev.nix` file
       onCreate = {
-        npm-install = "npm ci --no-audit --prefer-offline --no-progress --timing || npm i --no-audit --no-progress --timing";
+        npm-install = "pnpm install";
         # Open editors for the following files by default, if they exist:
         default.openFiles = [ "src/app/app.component.ts" ];
       };
@@ -28,7 +31,12 @@
       enable = true;
       previews = {
         web = {
-          command = ["npm" "run" "start" "--" "--port" "$PORT" "--host" "0.0.0.0"];
+          command = [
+            "ng"
+            "serve"
+            "--port"
+            "$PORT"
+          ];
           manager = "web";
         };
       };

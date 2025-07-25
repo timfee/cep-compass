@@ -1,3 +1,5 @@
 {
-  "IDX.agenticWorkspace": true
+  "IDX.agenticWorkspace": true,
+  "geminicodeassist.updateChannel": "Insiders",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
