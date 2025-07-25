@@ -8,7 +8,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 import {
   connectFunctionsEmulator,
   getFunctions,
@@ -32,15 +32,7 @@ export const appConfig: ApplicationConfig = {
         messagingSenderId: '313000633718',
       }),
     ),
-    provideAuth(() => {
-      const auth = getAuth();
-      if (isDevMode()) {
-        connectAuthEmulator(auth, 'http://localhost:9099', {
-          disableWarnings: true,
-        });
-      }
-      return auth;
-    }),
+    provideAuth(() => getAuth()),
     provideFunctions(() => {
       const functions = getFunctions();
       if (isDevMode()) {

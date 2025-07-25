@@ -1,21 +1,46 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" class="main-toolbar">
   <span>CEP Compass</span>
   <span class="spacer"></span>
+
   @if (authService.user(); as user) {
-    <button mat-icon-button (click)="authService.logout()" aria-label="Logout">
-      <mat-icon>logout</mat-icon>
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+      @if (user.photoURL) {
+        <img [src]="user.photoURL" alt="User Photo" class="user-avatar">
+      } @else {
+        <mat-icon>account_circle</mat-icon>
+      }
+      <span>{{ user.displayName }}</span>
+      <mat-icon>arrow_drop_down</mat-icon>
     </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item (click)="authService.selectRole(null)">
+        <mat-icon>swap_horiz</mat-icon>
+        <span>Change Role</span>
+      </button>
+      <button mat-menu-item (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
   }
 </mat-toolbar>
 
 <main class="content">
   @if (authService.user(); as user) {
-    <p>Welcome, {{ user.email }}!</p>
     @if (authService.selectedRole(); as selectedRole) {
-      <p>
-        Your current role is: <strong>{{ selectedRole }}</strong>
-      </p>
+      <div class="welcome-message">
+        <h1>Welcome!</h1>
+        <p>
+          You are currently acting as a
+          <strong>{{ selectedRole === 'superAdmin' ? 'Super Admin' : 'CEP Delegated Admin' }}</strong>.
+        </p>
+        <p>Navigate to a feature module to get started.</p>
+      </div>
+    } @else {
+      <router-outlet></router-outlet>
     }
+  } @else {
+    <router-outlet></router-outlet>
   }
-  <router-outlet></router-outlet>
 </main>

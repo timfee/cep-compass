@@ -90,7 +90,6 @@
     }
   },
   "cli": {
-    "packageManager": "pnpm",
     "analytics": "9a68ea78-afad-4ce5-8dcc-e930e7cd25ca",
     "schematicCollections": ["angular-eslint"]
   }

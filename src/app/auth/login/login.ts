@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -10,14 +10,13 @@ import { MatCardModule } from '@angular/material/card';
   styleUrl: './login.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatButtonModule, MatCardModule],
+  imports: [MatButtonModule, MatCardModule, MatIconModule],
 })
 export class LoginComponent {
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  public authService = inject(AuthService);
 
-  async login(): Promise<void> {
-    await this.authService.loginWithGoogle();
-    this.router.navigate(['/']);
+  login(): void {
+    this.authService.loginWithGoogle();
+    // Navigation is now handled by the auth guards and effects.
   }
 }

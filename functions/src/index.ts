@@ -1,21 +1,71 @@
 import { initializeApp } from 'firebase-admin/app';
 import * as logger from 'firebase-functions/logger';
-import { onCall } from 'firebase-functions/v2/https';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { admin_directory_v1, google } from 'googleapis';
 
 initializeApp();
 
 // --- CONSTANTS ---
-const CHROME_ADMIN_PRIVILEGE = 'chrome.management.admin.access';
+// This list defines the exact set of privileges required for a user to be
+// considered a Chrome Enterprise Plus (CEP) delegated admin. A user must have
+// ALL of these privileges. Each privilege is defined by its unique name and
+// the service it belongs to, as mapped from the user-provided table and JSON.
+const REQUIRED_CEP_ADMIN_PRIVILEGES = [
+  // Table: Google Admin Console Privileges
+  // Privilege Area: Organizational Units -> Permission: Read
+  // API Privilege: Organizational Units -> Read
+  { privilegeName: 'ORGANIZATION_UNITS_RETRIEVE', serviceId: '00haapch16h1ysv' },
+
+  // Privilege Area: Security Center -> Permission: Activity Rules Full administrative rights for Security Center
+  { privilegeName: 'ACTIVITY_RULES', serviceId: '01egqt2p2p8gvae' },
+  { privilegeName: 'APP_ADMIN', serviceId: '01egqt2p2p8gvae' },
+
+  // Privilege Area: Data Security -> Permission: Rule Management
+  // Also covers: DLP -> Manage DLP rule
+  { privilegeName: 'MANAGE_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
+
+  // Privilege Area: DLP -> Permission: View DLP rule
+  { privilegeName: 'VIEW_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
+
+  // Privilege Area: Data Security -> Permission: Access Level Management
+  { privilegeName: 'ACCESS_LEVEL_MANAGEMENT', serviceId: '01rvwp1q4axizdr' },
+
+  // Privilege Area: Chrome Management -> Permission: Settings
+  // Also covers: Mobile Device Management -> Settings
+  { privilegeName: 'MANAGE_DEVICE_SETTINGS', serviceId: '03hv69ve4bjwe54' },
+
+  // Privilege Area: Chrome DLP -> Permission: Manage Chrome DLP application insights settings
+  { privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS', serviceId: '01x0gk371sq486y' },
+
+  // Privilege Area: Chrome DLP -> Permission: View and manage Chrome DLP application OCR setting
+  { privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING', serviceId: '01x0gk371sq486y' },
+
+  // Privilege Area: Chrome DLP -> Permission: View Chrome DLP application insights settings
+  { privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS', serviceId: '01x0gk371sq486y' },
+
+  // Privilege Area: Mobile Device Management -> Permission: Managed Devices
+  { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
+
+  // Privilege Area: Chrome Enterprise Security Services -> Permission: Settings
+  { privilegeName: 'APP_ADMIN', serviceId: '03hv69ve4bjwe54' },
+
+  // Privilege Area: Alert Center -> Permission: Full access
+  { privilegeName: 'APPS_INCIDENTS_FULL_ACCESS', serviceId: '02pta16n3efhw69' },
+
+  // Privilege Area: Reports -> Permission: (Select the main checkbox to grant access)
+  { privilegeName: 'REPORTS_ACCESS', serviceId: '01fob9te2rj6rw9' },
+];
 
 // --- TYPE DEFINITIONS ---
+interface Privilege {
+  privilegeName: string;
+  serviceId: string;
+}
+
 interface UserRoles {
   isSuperAdmin: boolean;
   isCepAdmin: boolean;
-}
-
-interface CustomSchema$User extends admin_directory_v1.Schema$User {
-  isSuperAdmin?: boolean;
+  missingPrivileges?: Privilege[];
 }
 
 interface CustomSchema$Role extends admin_directory_v1.Schema$Role {
@@ -29,8 +79,7 @@ export const getRoles = onCall(async (request): Promise<UserRoles> => {
   const userEmail = request.auth?.token.email;
 
   if (!userEmail) {
-    logger.error('User is not authenticated');
-    return { isSuperAdmin: false, isCepAdmin: false };
+    throw new HttpsError('unauthenticated', 'User is not authenticated.');
   }
 
   try {
@@ -41,49 +90,71 @@ export const getRoles = onCall(async (request): Promise<UserRoles> => {
       ],
     });
 
-    const admin: admin_directory_v1.Admin = google.admin({
+    const admin = google.admin({
       version: 'directory_v1',
       auth,
     });
 
-    // Perform three API calls in parallel to get all necessary info
-    const [userResult, assignmentsResult, allRolesResult] = await Promise.all([
-      admin.users.get({ userKey: userEmail }).catch(() => null),
-      admin.roleAssignments.list({ userKey: userEmail }).catch(() => null),
-      admin.roles.list({ customer: 'my_customer' }).catch(() => null),
-    ]);
+    const userRes = await admin.users.get({ userKey: userEmail });
+    const isSuperAdmin = userRes.data.isAdmin ?? false;
 
-    const isSuperAdmin =
-      (userResult?.data as CustomSchema$User)?.isSuperAdmin ?? false;
-
-    // Find the role that contains the required privilege
-    const cepAdminRole = (
-      allRolesResult?.data.items as CustomSchema$Role[]
-    )?.find((role) =>
-      role.privileges?.some(
-        (privilege) => privilege.privilegeName === CHROME_ADMIN_PRIVILEGE,
-      ),
-    );
-    const cepAdminRoleId = cepAdminRole?.roleId ?? null;
-
-    // Check if the user is assigned to the role we just found
-    let isCepAdmin = false;
-    if (cepAdminRoleId && assignmentsResult?.data.items) {
-      isCepAdmin =
-        assignmentsResult.data.items.some(
-          (assignment) => assignment.roleId === cepAdminRoleId,
-        ) ?? false;
+    if (isSuperAdmin) {
+      logger.info(`User ${userEmail} is a super admin.`);
+      return { isSuperAdmin: true, isCepAdmin: true };
     }
 
-    logger.info('Dynamically determined roles:', {
-      isSuperAdmin,
-      isCepAdmin,
-      foundCepRoleId: cepAdminRoleId,
+    const assignmentsRes = await admin.roleAssignments.list({
+      userKey: userEmail,
+      customer: 'my_customer',
+    });
+    const roleAssignments = assignmentsRes.data.items;
+
+    if (!roleAssignments || roleAssignments.length === 0) {
+      logger.info(`User ${userEmail} has no assigned roles.`);
+      return {
+        isSuperAdmin: false,
+        isCepAdmin: false,
+        missingPrivileges: REQUIRED_CEP_ADMIN_PRIVILEGES,
+      };
+    }
+
+    const rolePromises = roleAssignments
+      .map((assignment) => assignment.roleId)
+      .filter((roleId): roleId is string => !!roleId)
+      .map((roleId) =>
+        admin.roles.get({ customer: 'my_customer', roleId })
+      );
+
+    const roles = await Promise.all(rolePromises);
+
+    const userPrivileges = new Set<string>();
+    for (const role of roles) {
+      const customRole = role.data as CustomSchema$Role;
+      if (customRole.privileges) {
+        for (const p of customRole.privileges) {
+          if (p.privilegeName && p.serviceId) {
+            userPrivileges.add(`${p.privilegeName}:${p.serviceId}`);
+          }
+        }
+      }
+    }
+
+    const missingPrivileges = REQUIRED_CEP_ADMIN_PRIVILEGES.filter((req) => {
+      const requiredKey = `${req.privilegeName}:${req.serviceId}`;
+      return !userPrivileges.has(requiredKey);
     });
 
-    return { isSuperAdmin, isCepAdmin };
+    const isCepAdmin = missingPrivileges.length === 0;
+
+    logger.info(`Roles for ${userEmail}`, { isSuperAdmin, isCepAdmin });
+
+    if (isCepAdmin) {
+      return { isSuperAdmin, isCepAdmin };
+    } else {
+      return { isSuperAdmin, isCepAdmin, missingPrivileges };
+    }
   } catch (error) {
     logger.error('API Error checking admin roles:', error);
-    return { isSuperAdmin: false, isCepAdmin: false };
+    throw new HttpsError('internal', 'Error checking admin roles.', error);
   }
 });

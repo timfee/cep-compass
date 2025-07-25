@@ -1,8 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService, SelectedRole } from '../auth.service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuthService, SelectedRole } from '../auth.service';
 
 @Component({
   selector: 'app-select-role',
@@ -10,15 +17,22 @@ import { MatCardModule } from '@angular/material/card';
   styleUrl: './select-role.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatButtonModule, MatCardModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+  ],
 })
 export class SelectRoleComponent {
   public authService = inject(AuthService);
-  private router = inject(Router);
+
+  // A signal to track the loading state, derived from the user signal.
+  public isLoading = computed(() => this.authService.user() === undefined);
 
   selectRole(role: SelectedRole): void {
     if (!role) return;
     this.authService.selectRole(role);
-    this.router.navigate(['/']);
+    // No need to navigate, the app component will react to the role change.
   }
 }

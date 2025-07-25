@@ -24,6 +24,10 @@
     }
   ],
   "emulators": {
+    "hosting": {
+      "port": 5009,
+      "public": "public"
+    },
     "functions": {
       "port": 5001
     },

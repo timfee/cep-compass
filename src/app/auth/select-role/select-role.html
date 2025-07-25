@@ -1,26 +1,45 @@
 <div class="role-selection-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Select Your Role</mat-card-title>
-      <mat-card-subtitle>Choose a role for this session</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content class="role-options">
-      <button
-        mat-raised-button
-        color="primary"
-        [disabled]="!authService.availableRoles().isSuperAdmin"
-        (click)="selectRole('superAdmin')"
-      >
-        Super Admin
-      </button>
-      <button
-        mat-raised-button
-        color="accent"
-        [disabled]="!authService.availableRoles().isCepAdmin"
-        (click)="selectRole('cepAdmin')"
-      >
-        CEP Admin
-      </button>
-    </mat-card-content>
-  </mat-card>
+  @if (isLoading()) {
+    <mat-spinner diameter="50"></mat-spinner>
+  } @else {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Select a Role</mat-card-title>
+        <mat-card-subtitle>Choose a role to assume for this session.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="role-options">
+          <button
+            mat-flat-button
+            color="primary"
+            [disabled]="!authService.availableRoles().isSuperAdmin"
+            (click)="selectRole('superAdmin')">
+            Super Admin
+          </button>
+          <button
+            mat-flat-button
+            color="accent"
+            [disabled]="!authService.availableRoles().isCepAdmin"
+            (click)="selectRole('cepAdmin')">
+            CEP Delegated Admin
+          </button>
+        </div>
+
+        @if (!authService.availableRoles().isCepAdmin && authService.availableRoles().missingPrivileges?.length) {
+          <div class="error-message">
+            <h4>CEP Delegated Admin Role Unavailable</h4>
+            <p>The CEP Delegated Admin role is not available because your assigned roles are missing the following required privileges:</p>
+            <ul>
+              @for (priv of authService.availableRoles().missingPrivileges; track priv.privilegeName) {
+                <li>
+                  <strong>{{ priv.privilegeName }}</strong>
+                  <span>(Service ID: {{ priv.serviceId }})</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
 </div>
