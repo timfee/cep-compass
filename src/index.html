@@ -2,9 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Myapp</title>
+    <title>CEP Compass - Chrome Enterprise Policy Management</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Chrome Enterprise Policy Compass - A comprehensive tool for managing Chrome Enterprise policies, enrollment, and security configurations." />
+    <meta name="author" content="CEP Compass Team" />
+    <meta name="robots" content="noindex, nofollow" />
+    
+    <!-- Security headers via meta tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Content Security Policy - restrictive for production -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://www.googleapis.com https://www.gstatic.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebase.com;
+      img-src 'self' data: https:;
+      frame-src 'none';
+      object-src 'none';
+      media-src 'none';
+    " />
+    
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
