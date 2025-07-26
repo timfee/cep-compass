@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login';
 import { SelectRoleComponent } from './auth/select-role/select-role';
+import { OrgUnitsDemoComponent } from './org-units-demo/org-units-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -32,7 +33,8 @@ export const routes: Routes = [
     // This is the main, protected application view.
     // Add your dashboard/main component here for child routes.
     children: [
-      // { path: 'dashboard', component: DashboardComponent },
+      { path: 'org-units-demo', component: OrgUnitsDemoComponent },
+      { path: '', redirectTo: 'org-units-demo', pathMatch: 'full' },
     ],
   },
   {
