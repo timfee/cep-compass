@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
+import { CEP_ADMIN_PRIVILEGES, GoogleApiUtils } from '../shared/constants/google-api.constants';
 
 export interface RolePrivilege {
   privilegeName: string;
@@ -36,39 +37,12 @@ export interface RoleListResponse {
   nextPageToken?: string;
 }
 
-// CEP Admin role configuration as specified in the requirements
+// CEP Admin role configuration using shared privilege definitions
 export const CEP_ADMIN_ROLE: Omit<AdminRole, 'kind'> = {
   roleName: 'CEP Admin',
   roleDescription:
     'Chrome Enterprise Plus Administrator - Manages Chrome browsers, profiles, and policies',
-  rolePrivileges: [
-    { privilegeName: 'MANAGE_CHROME_BROWSERS', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'MANAGE_CHROME_PROFILES', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'MANAGE_CHROME_POLICIES', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'MANAGE_CHROME_PRINTERS', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'MANAGE_CHROME_APP_DETAILS', serviceId: '04f0gzxo3qx17h' },
-    { privilegeName: 'READ_CHROME_BROWSERS', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'READ_CHROME_PROFILES', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'READ_CHROME_POLICIES', serviceId: '02a0gzzo1mc6iq8' },
-    {
-      privilegeName: 'MANAGE_CHROME_OS_DEVICE_SETTINGS',
-      serviceId: '02a0gzzo1mc6iq8',
-    },
-    {
-      privilegeName: 'READ_CHROME_OS_DEVICE_SETTINGS',
-      serviceId: '02a0gzzo1mc6iq8',
-    },
-    {
-      privilegeName: 'MANAGE_CHROME_ENROLLMENT_TOKENS',
-      serviceId: '02a0gzzo1mc6iq8',
-    },
-    { privilegeName: 'MANAGE_CHROME_TELEMETRY', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'READ_CHROME_TELEMETRY', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'MANAGE_CHROME_EXTENSIONS', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'READ_CHROME_EXTENSIONS', serviceId: '02a0gzzo1mc6iq8' },
-    { privilegeName: 'MANAGE_DLP_RULES', serviceId: '01tuee744r4kt8' },
-    { privilegeName: 'READ_DLP_EVENTS', serviceId: '01tuee744r4kt8' },
-  ],
+  rolePrivileges: CEP_ADMIN_PRIVILEGES,
 };
 
 @Injectable({
@@ -78,8 +52,7 @@ export class AdminRoleService {
   private readonly httpClient = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
-  private readonly BASE_URL =
-    'https://www.googleapis.com/admin/directory/v1/customer/my_customer/roles';
+  private readonly BASE_URL = GoogleApiUtils.buildCustomerUrl('roles');
 
   /**
    * Check if the CEP Admin role already exists

@@ -1,8 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { OrgUnitsService } from './org-units.service';
+import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
+import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
 
 /**
  * Represents a Chrome browser enrollment token from Chrome Enterprise API
@@ -81,8 +83,7 @@ export class EnrollmentTokenService {
   private readonly authService = inject(AuthService);
   private readonly orgUnitsService = inject(OrgUnitsService);
 
-  private readonly API_BASE_URL =
-    'https://www.googleapis.com/admin/directory/v1.1beta1';
+  private readonly API_BASE_URL = GOOGLE_API_CONFIG.BASE_URLS.DIRECTORY_V1_1_BETA;
 
   // Private state signals
   private readonly _tokens = signal<EnrollmentToken[]>([]);
@@ -233,7 +234,7 @@ export class EnrollmentTokenService {
         expireTime,
       };
 
-      const url = `${this.API_BASE_URL}/customer/my_customer/chrome/enrollmentTokens`;
+      const url = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens`;
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
@@ -293,7 +294,7 @@ export class EnrollmentTokenService {
         throw new Error('Failed to get access token');
       }
 
-      const url = `${this.API_BASE_URL}/customer/my_customer/chrome/enrollmentTokens/${tokenId}:revoke`;
+      const url = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens/${tokenId}:revoke`;
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
@@ -479,7 +480,7 @@ Linux:
    * @returns Complete API URL
    */
   private buildApiUrl(pageToken?: string, orgUnitPath?: string): string {
-    const baseUrl = `${this.API_BASE_URL}/customer/my_customer/chrome/enrollmentTokens`;
+    const baseUrl = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens`;
     const params = new URLSearchParams();
 
     if (pageToken) {
@@ -551,33 +552,7 @@ Linux:
    * @returns User-friendly error message
    */
   private handleApiError(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      switch (error.status) {
-        case 401:
-          return 'Authentication required. Please log in again.';
-        case 403:
-          return 'Insufficient permissions to access Chrome enrollment tokens. Please ensure you have the required admin privileges.';
-        case 404:
-          return 'Chrome enrollment service not found. Please check your Google Workspace configuration.';
-        case 409:
-          return 'Quota limit reached. Please try again later or contact your administrator.';
-        case 429:
-          return 'Too many requests. Please try again later.';
-        case 500:
-        case 502:
-        case 503:
-        case 504:
-          return 'Google service temporarily unavailable. Please try again later.';
-        default:
-          return `Failed to manage enrollment tokens: ${error.message || 'Unknown error'}`;
-      }
-    }
-
-    if (error && typeof error === 'object' && 'message' in error) {
-      return `Error: ${(error as Error).message}`;
-    }
-
-    return 'Failed to manage enrollment tokens. Please try again.';
+    return GoogleApiErrorHandler.handleEnrollmentTokenError(error);
   }
 
   /**

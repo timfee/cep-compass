@@ -1,6 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
+import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
+import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
 
 /**
  * Represents an Organizational Unit from Google Workspace Admin SDK
@@ -56,8 +58,7 @@ export class OrgUnitsService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
-  private readonly API_BASE_URL =
-    'https://www.googleapis.com/admin/directory/v1';
+  private readonly API_BASE_URL = GOOGLE_API_CONFIG.BASE_URLS.DIRECTORY_V1;
 
   // Private state signals
   private readonly _orgUnits = signal<OrgUnit[]>([]);
@@ -193,7 +194,7 @@ export class OrgUnitsService {
    * @returns Complete API URL
    */
   private buildApiUrl(pageToken?: string): string {
-    const baseUrl = `${this.API_BASE_URL}/customer/my_customer/orgunits`;
+    const baseUrl = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/orgunits`;
     const params = new URLSearchParams();
 
     if (pageToken) {
@@ -313,31 +314,7 @@ export class OrgUnitsService {
    * @returns User-friendly error message
    */
   private handleApiError(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      switch (error.status) {
-        case 401:
-          return 'Authentication required. Please log in again.';
-        case 403:
-          return 'Insufficient permissions to access organizational units. Please ensure you have the required admin privileges.';
-        case 404:
-          return 'Organizational units service not found. Please check your Google Workspace configuration.';
-        case 429:
-          return 'Too many requests. Please try again later.';
-        case 500:
-        case 502:
-        case 503:
-        case 504:
-          return 'Google service temporarily unavailable. Please try again later.';
-        default:
-          return `Failed to fetch organizational units: ${error.message || 'Unknown error'}`;
-      }
-    }
-
-    if (error && typeof error === 'object' && 'message' in error) {
-      return `Error: ${(error as Error).message}`;
-    }
-
-    return 'Failed to fetch organizational units. Please try again.';
+    return GoogleApiErrorHandler.handleOrgUnitsError(error);
   }
 
   /**
