@@ -162,12 +162,7 @@ export class EnrollmentTokenService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
-      const tokens = await this.fetchAllTokens(accessToken, orgUnitPath);
+      const tokens = await this.fetchAllTokens(orgUnitPath);
 
       if (!orgUnitPath) {
         // Only cache if we're fetching all tokens
@@ -212,11 +207,6 @@ export class EnrollmentTokenService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
       // Set default expiration if not provided
       let expireTime = request.expireTime;
       if (!expireTime) {
@@ -236,13 +226,9 @@ export class EnrollmentTokenService {
       };
 
       const url = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens`;
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      };
 
       const response = await firstValueFrom(
-        this.http.post<CreateTokenApiResponse>(url, createPayload, { headers }),
+        this.http.post<CreateTokenApiResponse>(url, createPayload),
       );
 
       if (!response) {
@@ -290,18 +276,9 @@ export class EnrollmentTokenService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
       const url = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens/${tokenId}:revoke`;
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      };
 
-      await firstValueFrom(this.http.post(url, {}, { headers }));
+      await firstValueFrom(this.http.post(url, {}));
 
       // Update cached token state
       const currentTokens = this._tokens();
@@ -443,7 +420,6 @@ Linux:
    * @returns Promise resolving to array of enrollment tokens
    */
   private async fetchAllTokens(
-    accessToken: string,
     orgUnitPath?: string,
   ): Promise<EnrollmentToken[]> {
     const allTokens: EnrollmentToken[] = [];
@@ -451,13 +427,9 @@ Linux:
 
     do {
       const url = this.buildApiUrl(pageToken, orgUnitPath);
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      };
 
       const response = await firstValueFrom(
-        this.http.get<EnrollmentTokensApiResponse>(url, { headers }),
+        this.http.get<EnrollmentTokensApiResponse>(url),
       );
 
       if (response?.enrollmentTokens) {
