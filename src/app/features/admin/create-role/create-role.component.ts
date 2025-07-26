@@ -168,10 +168,6 @@ export class CreateRoleComponent {
     this.checkForExistingRole();
   }
 
-  formatPrivilege(privilege: RolePrivilege): string {
-    return this.adminRoleService.formatPrivilegeName(privilege);
-  }
-
   private updateState(updates: Partial<RoleCreationState>): void {
     this.componentState.update(current => ({ ...current, ...updates }));
   }
