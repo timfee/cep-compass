@@ -13,7 +13,7 @@ import { EmailComposerComponent } from '../components/email-composer/email-compo
         Rich Text Email Composer Demo
       </h1>
       <p style="text-align: center; margin-bottom: 30px; color: #666;">
-        Powered by ngx-quill for professional rich text editing
+        Simple email composition interface for demonstration purposes
       </p>
       <app-email-composer></app-email-composer>
     </div>
