@@ -16,37 +16,37 @@ const REQUIRED_CEP_ADMIN_PRIVILEGES = [
   },
 
   // Security Center -> Activity Rules Full administrative rights
-  { 
-    privilegeName: 'ACTIVITY_RULES', 
-    serviceId: '01egqt2p2p8gvae' // Security Center
+  {
+    privilegeName: 'ACTIVITY_RULES',
+    serviceId: '01egqt2p2p8gvae', // Security Center
   },
-  { 
-    privilegeName: 'APP_ADMIN', 
-    serviceId: '01egqt2p2p8gvae' // Security Center
+  {
+    privilegeName: 'APP_ADMIN',
+    serviceId: '01egqt2p2p8gvae', // Security Center
   },
 
   // Data Security -> Rule Management (DLP -> Manage DLP rule)
-  { 
-    privilegeName: 'MANAGE_GSC_RULE', 
-    serviceId: '01egqt2p2p8gvae' // Security Center
+  {
+    privilegeName: 'MANAGE_GSC_RULE',
+    serviceId: '01egqt2p2p8gvae', // Security Center
   },
 
   // DLP -> View DLP rule
-  { 
-    privilegeName: 'VIEW_GSC_RULE', 
-    serviceId: '01egqt2p2p8gvae' // Security Center
+  {
+    privilegeName: 'VIEW_GSC_RULE',
+    serviceId: '01egqt2p2p8gvae', // Security Center
   },
 
   // Data Security -> Access Level Management
-  { 
-    privilegeName: 'ACCESS_LEVEL_MANAGEMENT', 
-    serviceId: '01rvwp1q4axizdr' // Access Level Management
+  {
+    privilegeName: 'ACCESS_LEVEL_MANAGEMENT',
+    serviceId: '01rvwp1q4axizdr', // Access Level Management
   },
 
   // Chrome Management -> Settings (Mobile Device Management -> Settings)
-  { 
-    privilegeName: 'MANAGE_DEVICE_SETTINGS', 
-    serviceId: '03hv69ve4bjwe54' // Device Management
+  {
+    privilegeName: 'MANAGE_DEVICE_SETTINGS',
+    serviceId: '03hv69ve4bjwe54', // Device Management
   },
 
   // Chrome DLP -> Manage Chrome DLP application insights settings
@@ -68,27 +68,27 @@ const REQUIRED_CEP_ADMIN_PRIVILEGES = [
   },
 
   // Mobile Device Management -> Managed Devices
-  { 
-    privilegeName: 'MANAGE_DEVICES', 
-    serviceId: '03hv69ve4bjwe54' // Device Management
+  {
+    privilegeName: 'MANAGE_DEVICES',
+    serviceId: '03hv69ve4bjwe54', // Device Management
   },
 
   // Chrome Enterprise Security Services -> Settings
-  { 
-    privilegeName: 'APP_ADMIN', 
-    serviceId: '03hv69ve4bjwe54' // Device Management
+  {
+    privilegeName: 'APP_ADMIN',
+    serviceId: '03hv69ve4bjwe54', // Device Management
   },
 
   // Alert Center -> Full access
-  { 
-    privilegeName: 'APPS_INCIDENTS_FULL_ACCESS', 
-    serviceId: '02pta16n3efhw69' // Alert Center
+  {
+    privilegeName: 'APPS_INCIDENTS_FULL_ACCESS',
+    serviceId: '02pta16n3efhw69', // Alert Center
   },
 
   // Reports -> Main access
-  { 
-    privilegeName: 'REPORTS_ACCESS', 
-    serviceId: '01fob9te2rj6rw9' // Reports
+  {
+    privilegeName: 'REPORTS_ACCESS',
+    serviceId: '01fob9te2rj6rw9', // Reports
   },
 ];
 
@@ -109,6 +109,43 @@ interface CustomSchema$Role extends admin_directory_v1.Schema$Role {
     privilegeName?: string;
     serviceId?: string;
   }[];
+}
+
+// Type guard to safely validate role data structure
+function isValidCustomRole(data: unknown): data is CustomSchema$Role {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const role = data as any;
+
+  // Check if privileges exists and is an array (can be undefined)
+  if (role.privileges !== undefined) {
+    if (!Array.isArray(role.privileges)) {
+      return false;
+    }
+
+    // Validate each privilege has the expected structure
+    for (const privilege of role.privileges) {
+      if (privilege && typeof privilege === 'object') {
+        // privilegeName and serviceId can be undefined, but if present must be strings
+        if (
+          privilege.privilegeName !== undefined &&
+          typeof privilege.privilegeName !== 'string'
+        ) {
+          return false;
+        }
+        if (
+          privilege.serviceId !== undefined &&
+          typeof privilege.serviceId !== 'string'
+        ) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
 }
 
 export const getRoles = onCall(async (request): Promise<UserRoles> => {
@@ -163,7 +200,15 @@ export const getRoles = onCall(async (request): Promise<UserRoles> => {
 
     const userPrivileges = new Set<string>();
     for (const role of roles) {
-      const customRole = role.data as CustomSchema$Role;
+      if (!isValidCustomRole(role.data)) {
+        logger.warn(
+          'Invalid role data structure received from Google API:',
+          role.data,
+        );
+        continue;
+      }
+
+      const customRole = role.data;
       if (customRole.privileges) {
         for (const p of customRole.privileges) {
           if (p.privilegeName && p.serviceId) {

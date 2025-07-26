@@ -182,44 +182,67 @@
   }
 }
 
-/* NgxEditor Overrides */
-:host ::ng-deep .NgxEditor {
-  border: none;
+/* Quill Editor Overrides */
+:host ::ng-deep .quill-editor {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  background-color: white;
 }
 
-:host ::ng-deep .NgxEditor__Content {
-  min-height: 300px;
-  max-height: 500px;
-  overflow-y: auto;
-  padding: 16px;
+:host ::ng-deep .ql-toolbar {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: #f5f5f5;
+  padding: 8px 16px;
+}
+
+:host ::ng-deep .ql-container {
+  border: none;
   font-family: Arial, sans-serif;
   font-size: 14px;
   line-height: 1.6;
 }
 
-:host ::ng-deep .NgxEditor__Wrapper {
-  border: 1px solid rgba(0, 0, 0, 0.12);
+:host ::ng-deep .ql-editor {
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+:host ::ng-deep .ql-editor.ql-blank::before {
+  color: rgba(0, 0, 0, 0.54);
+  font-style: normal;
+}
+
+:host ::ng-deep .ql-snow .ql-picker {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+:host ::ng-deep .ql-snow .ql-stroke {
+  stroke: rgba(0, 0, 0, 0.54);
+}
+
+:host ::ng-deep .ql-snow .ql-fill {
+  fill: rgba(0, 0, 0, 0.54);
+}
+
+:host ::ng-deep .ql-snow .ql-toolbar button:hover,
+:host ::ng-deep .ql-snow .ql-toolbar button.ql-active {
+  background-color: rgba(25, 118, 210, 0.1);
   border-radius: 4px;
 }
 
-:host ::ng-deep .NgxEditor__MenuBar {
-  background-color: #f5f5f5;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  padding: 8px 16px;
+:host ::ng-deep .ql-snow .ql-toolbar button:hover .ql-stroke,
+:host ::ng-deep .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+  stroke: #1976d2;
 }
 
-:host ::ng-deep .NgxEditor__MenuItem {
-  margin: 0 2px;
-  border-radius: 4px;
-}
-
-:host ::ng-deep .NgxEditor__MenuItem:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-:host ::ng-deep .NgxEditor__MenuItem--Active {
-  background-color: #e3f2fd;
-  color: #1976d2;
+:host ::ng-deep .ql-snow .ql-toolbar button:hover .ql-fill,
+:host ::ng-deep .ql-snow .ql-toolbar button.ql-active .ql-fill {
+  fill: #1976d2;
 }
 
 /* Preview Mode Styles */

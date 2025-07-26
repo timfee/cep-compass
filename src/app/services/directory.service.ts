@@ -96,6 +96,117 @@ interface GroupMembersApiResponse {
   etag?: string;
 }
 
+// Type guards for safe API response validation
+function isValidUserApiResponse(
+  data: unknown,
+): data is NonNullable<UsersApiResponse['users']>[0] {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const user = data as Record<string, unknown>;
+
+  // Check required fields
+  if (
+    typeof user['id'] !== 'string' ||
+    typeof user['primaryEmail'] !== 'string'
+  ) {
+    return false;
+  }
+
+  // Validate name object structure if present
+  if (user['name'] !== undefined) {
+    if (typeof user['name'] !== 'object' || user['name'] === null) {
+      return false;
+    }
+    const name = user['name'] as Record<string, unknown>;
+    if (
+      name['givenName'] !== undefined &&
+      typeof name['givenName'] !== 'string'
+    )
+      return false;
+    if (
+      name['familyName'] !== undefined &&
+      typeof name['familyName'] !== 'string'
+    )
+      return false;
+    if (name['fullName'] !== undefined && typeof name['fullName'] !== 'string')
+      return false;
+  }
+
+  // Validate emails array if present
+  if (user['emails'] !== undefined) {
+    if (!Array.isArray(user['emails'])) {
+      return false;
+    }
+    for (const email of user['emails']) {
+      if (email && typeof email === 'object') {
+        const emailObj = email as Record<string, unknown>;
+        if (
+          emailObj['address'] !== undefined &&
+          typeof emailObj['address'] !== 'string'
+        )
+          return false;
+        if (
+          emailObj['primary'] !== undefined &&
+          typeof emailObj['primary'] !== 'boolean'
+        )
+          return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function isValidGroupApiResponse(
+  data: unknown,
+): data is NonNullable<GroupsApiResponse['groups']>[0] {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const group = data as Record<string, unknown>;
+
+  // Check required fields
+  if (
+    typeof group['id'] !== 'string' ||
+    typeof group['email'] !== 'string' ||
+    typeof group['name'] !== 'string'
+  ) {
+    return false;
+  }
+
+  // Validate optional fields
+  if (
+    group['description'] !== undefined &&
+    typeof group['description'] !== 'string'
+  )
+    return false;
+  if (
+    group['directMembersCount'] !== undefined &&
+    typeof group['directMembersCount'] !== 'string'
+  )
+    return false;
+  if (
+    group['adminCreated'] !== undefined &&
+    typeof group['adminCreated'] !== 'boolean'
+  )
+    return false;
+
+  // Validate aliases array if present
+  if (group['aliases'] !== undefined) {
+    if (!Array.isArray(group['aliases'])) {
+      return false;
+    }
+    for (const alias of group['aliases']) {
+      if (typeof alias !== 'string') return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * Service for managing Google Workspace Directory Users and Groups
  * Provides efficient pagination, search, and caching capabilities
@@ -637,39 +748,19 @@ export class DirectoryService {
   }
 
   private mapApiResponseToUser(apiUser: unknown): DirectoryUser {
-    const user = apiUser as {
-      id?: string;
-      primaryEmail?: string;
-      name?: {
-        givenName?: string;
-        familyName?: string;
-        fullName?: string;
-      };
-      suspended?: boolean;
-      orgUnitPath?: string;
-      isAdmin?: boolean;
-      isDelegatedAdmin?: boolean;
-      lastLoginTime?: string;
-      creationTime?: string;
-      thumbnailPhotoUrl?: string;
-      emails?: {
-        address?: string;
-        primary?: boolean;
-      }[];
-    };
-
-    // Validate required fields
-    if (!user.id || !user.primaryEmail) {
-      throw new Error('API response is missing required user fields');
+    if (!isValidUserApiResponse(apiUser)) {
+      throw new Error('Invalid user API response structure');
     }
 
+    const user = apiUser;
+
     return {
-      id: user.id,
-      primaryEmail: user.primaryEmail,
+      id: user.id!, // Type guard ensures this exists
+      primaryEmail: user.primaryEmail!, // Type guard ensures this exists
       name: {
         givenName: user.name?.givenName || '',
         familyName: user.name?.familyName || '',
-        fullName: user.name?.fullName || user.primaryEmail,
+        fullName: user.name?.fullName || user.primaryEmail!,
       },
       suspended: user.suspended || false,
       orgUnitPath: user.orgUnitPath || '/',
@@ -681,30 +772,21 @@ export class DirectoryService {
       emails: user.emails?.map((email) => ({
         address: email.address || '',
         primary: email.primary || false,
-      })) || [{ address: user.primaryEmail, primary: true }],
+      })) || [{ address: user.primaryEmail!, primary: true }],
     };
   }
 
   private mapApiResponseToGroup(apiGroup: unknown): DirectoryGroup {
-    const group = apiGroup as {
-      id?: string;
-      email?: string;
-      name?: string;
-      description?: string;
-      directMembersCount?: string;
-      adminCreated?: boolean;
-      aliases?: string[];
-    };
-
-    // Validate required fields
-    if (!group.id || !group.email || !group.name) {
-      throw new Error('API response is missing required group fields');
+    if (!isValidGroupApiResponse(apiGroup)) {
+      throw new Error('Invalid group API response structure');
     }
 
+    const group = apiGroup;
+
     return {
-      id: group.id,
-      email: group.email,
-      name: group.name,
+      id: group.id!, // Type guard ensures this exists
+      email: group.email!, // Type guard ensures this exists
+      name: group.name!, // Type guard ensures this exists
       description: group.description,
       directMembersCount: group.directMembersCount || '0',
       adminCreated: group.adminCreated || false,

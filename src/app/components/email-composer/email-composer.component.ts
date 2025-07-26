@@ -28,6 +28,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { QuillModule } from 'ngx-quill';
 
 import {
   EmailTemplateService,
@@ -37,7 +38,7 @@ import {
 } from '../../services/email-template.service';
 
 /**
- * Email composer component with ngx-editor integration
+ * Email composer component with ngx-quill rich text editor integration
  * Provides rich text editing with template selection and variable substitution
  */
 @Component({
@@ -60,6 +61,7 @@ import {
     MatSnackBarModule,
     MatTooltipModule,
     MatSlideToggleModule,
+    QuillModule,
   ],
 })
 export class EmailComposerComponent implements OnInit {
@@ -93,13 +95,28 @@ export class EmailComposerComponent implements OnInit {
   public readonly previewSubject = this.emailService.previewSubject;
   public readonly isPreviewMode = this._isPreviewMode.asReadonly();
 
-  // Editor configuration for basic rich text editing
+  // Editor configuration for Quill rich text editing
   public readonly editorConfig = {
-    editable: computed(() => !this._isPreviewMode()),
-    placeholder: 'Enter email content...',
-    minHeight: '200px',
-    maxHeight: '600px',
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ header: 1 }, { header: 2 }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ script: 'sub' }, { script: 'super' }],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ size: ['small', false, 'large', 'huge'] }],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
+      ['clean'],
+      ['link'],
+    ],
   };
+
+  public readonly editorStyle = {
+    height: '300px',
+  };
+
+  public readonly editorReadOnly = computed(() => this._isPreviewMode());
 
   constructor() {
     // Initialize form
@@ -139,10 +156,13 @@ export class EmailComposerComponent implements OnInit {
     const template = this.selectedTemplate();
 
     if (template) {
-      this.emailForm.patchValue({
-        templateId: template.id,
-        subject: template.subject,
-      });
+      this.emailForm.patchValue(
+        {
+          templateId: template.id,
+          subject: template.subject,
+        },
+        { emitEvent: false },
+      );
 
       // Update editor content
       this.editorContent.set(template.body);
@@ -157,7 +177,7 @@ export class EmailComposerComponent implements OnInit {
 
     // Update subject if it contains this variable
     const updatedSubject = this.previewSubject();
-    this.emailForm.patchValue({ subject: updatedSubject });
+    this.emailForm.patchValue({ subject: updatedSubject }, { emitEvent: false });
   }
 
   /**
@@ -240,17 +260,15 @@ export class EmailComposerComponent implements OnInit {
   }
 
   /**
-   * Handles textarea input events in a type-safe way
+   * Handles Quill editor content changes
    */
-  onTextareaInput(event: Event): void {
-    const target = event.target as HTMLTextAreaElement | null;
-    if (target) {
-      this.onEditorContentChange(target.value);
-    }
+  onQuillContentChange(event: any): void {
+    const content = event.html || event.text || '';
+    this.editorContent.set(content);
   }
 
   /**
-   * Updates editor content
+   * Updates editor content (for Quill integration)
    */
   onEditorContentChange(content: string): void {
     this.editorContent.set(content);
@@ -345,15 +363,13 @@ export class EmailComposerComponent implements OnInit {
   insertVariable(variable: EmailVariable): void {
     const placeholder = `{{${variable.key}}}`;
     const currentContent = this.editorContent();
-    this.editorContent.set(currentContent + ' ' + placeholder);
-  }
 
-  /**
-   * Inserts formatting tags around text
-   */
-  insertFormatting(startTag: string, endTag: string): void {
-    const currentContent = this.editorContent();
-    this.editorContent.set(currentContent + startTag + 'text' + endTag);
+    // For Quill, we append to the content (cursor position would require more complex implementation)
+    const updatedContent = currentContent
+      ? `${currentContent} ${placeholder}`
+      : placeholder;
+
+    this.editorContent.set(updatedContent);
   }
 
   /**
