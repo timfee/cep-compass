@@ -8,7 +8,7 @@ import {
   DirectoryUser,
   DirectoryGroup,
 } from './directory.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from './auth.service';
 import { signal } from '@angular/core';
 
 // Mock data

@@ -3,7 +3,7 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from './auth.service';
 import { AdminRoleService, CEP_ADMIN_ROLE } from './admin-role.service';
 
 describe('AdminRoleService', () => {

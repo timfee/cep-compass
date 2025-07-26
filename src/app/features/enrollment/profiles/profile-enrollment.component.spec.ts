@@ -8,7 +8,7 @@ import {
   DirectoryStats,
 } from '../../../services/directory.service';
 import { EmailTemplateService } from '../../../services/email-template.service';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../services/auth.service';
 
 describe('ProfileEnrollmentComponent', () => {
   let component: ProfileEnrollmentComponent;

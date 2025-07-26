@@ -22,7 +22,7 @@ import {
   EmailTemplateService,
   ComposedEmail,
 } from '../../../services/email-template.service';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { EmailComposerComponent } from '../../../components/email-composer/email-composer.component';
 
 /**

@@ -10,7 +10,7 @@ import {
   AdminRole,
   RoleCreationResponse,
 } from '../../../services/admin-role.service';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../services/auth.service';
 
 describe('CreateRoleComponent', () => {
   let component: CreateRoleComponent;

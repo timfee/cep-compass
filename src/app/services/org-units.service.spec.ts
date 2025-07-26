@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { OrgUnitsService } from './org-units.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from './auth.service';
 
 describe('OrgUnitsService', () => {
   let service: OrgUnitsService;
