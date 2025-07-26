@@ -120,8 +120,15 @@ export class AuthService {
       return null;
     }
     try {
-      const token = await currentUser.getIdToken();
-      return token;
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(this.auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (credential && credential.accessToken) {
+        return credential.accessToken;
+      } else {
+        console.error('Failed to retrieve OAuth access token.');
+        return null;
+      }
     } catch (error) {
       console.error('Failed to get access token:', error);
       return null;
