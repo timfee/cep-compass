@@ -105,7 +105,11 @@
   font-size: 32px;
   height: 40px;
   width: 40px;
-  background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+  background: linear-gradient(
+    45deg,
+    var(--primary-color),
+    var(--primary-light)
+  );
   color: white;
   border-radius: 50%;
   display: flex;

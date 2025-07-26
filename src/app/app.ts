@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
 export class App {
   public authService = inject(AuthService);
   private router = inject(Router);
-  
+
   changeRole(): void {
     this.authService.selectRole(null);
     this.router.navigate(['/select-role']);

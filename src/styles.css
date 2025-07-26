@@ -29,7 +29,7 @@ body {
 
 body {
   margin: 0;
-  font-family: "Google Sans Text", sans-serif;
+  font-family: "Google Sans Text", "Roboto", sans-serif;
 }
 
 h1,
@@ -38,10 +38,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Google Sans Flex", sans-serif;
+  font-family: "Google Sans Flex", "Roboto", sans-serif;
 }
 
 code,
 pre {
-  font-family: "Google Sans Code", monospace;
+  font-family: "Google Sans Code", "Roboto Mono", monospace;
 }

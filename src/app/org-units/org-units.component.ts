@@ -18,7 +18,8 @@ import { OrgUnitsService } from '../services/org-units.service';
       <mat-card-header>
         <mat-card-title>Organizational Units</mat-card-title>
         <mat-card-subtitle
-          >View and manage Google Workspace organizational units</mat-card-subtitle
+          >View and manage Google Workspace organizational
+          units</mat-card-subtitle
         >
       </mat-card-header>
 

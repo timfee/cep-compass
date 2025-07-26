@@ -5,8 +5,14 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 
 import { OneClickActivationComponent } from './one-click-activation.component';
-import { EnrollmentTokenService, EnrollmentToken } from '../../../services/enrollment-token.service';
-import { DirectoryService, DirectoryUser } from '../../../services/directory.service';
+import {
+  EnrollmentTokenService,
+  EnrollmentToken,
+} from '../../../services/enrollment-token.service';
+import {
+  DirectoryService,
+  DirectoryUser,
+} from '../../../services/directory.service';
 
 describe('OneClickActivationComponent', () => {
   let component: OneClickActivationComponent;
@@ -35,29 +41,33 @@ describe('OneClickActivationComponent', () => {
       suspended: false,
       lastLoginTime: new Date().toISOString(),
       primaryEmail: 'user1@example.com',
-      name: { 
-        givenName: 'John', 
+      name: {
+        givenName: 'John',
         familyName: 'Doe',
-        fullName: 'John Doe'
+        fullName: 'John Doe',
       },
       orgUnitPath: '/',
       isAdmin: false,
       isDelegatedAdmin: false,
       creationTime: new Date().toISOString(),
-      emails: [{
-        address: 'user1@example.com',
-        primary: true
-      }]
+      emails: [
+        {
+          address: 'user1@example.com',
+          primary: true,
+        },
+      ],
     },
   ];
 
   beforeEach(async () => {
-    const enrollmentServiceSpy = jasmine.createSpyObj('EnrollmentTokenService', [
-      'listTokens',
-      'isTokenActive',
-    ]);
+    const enrollmentServiceSpy = jasmine.createSpyObj(
+      'EnrollmentTokenService',
+      ['listTokens', 'isTokenActive'],
+    );
     const mockDirectoryService = {
-      fetchInitialData: jasmine.createSpy('fetchInitialData').and.returnValue(Promise.resolve()),
+      fetchInitialData: jasmine
+        .createSpy('fetchInitialData')
+        .and.returnValue(Promise.resolve()),
       users: signal(mockUsers),
     };
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -76,8 +86,12 @@ describe('OneClickActivationComponent', () => {
       ],
     }).compileComponents();
 
-    enrollmentService = TestBed.inject(EnrollmentTokenService) as jasmine.SpyObj<EnrollmentTokenService>;
-    directoryService = TestBed.inject(DirectoryService) as jasmine.SpyObj<DirectoryService>;
+    enrollmentService = TestBed.inject(
+      EnrollmentTokenService,
+    ) as jasmine.SpyObj<EnrollmentTokenService>;
+    directoryService = TestBed.inject(
+      DirectoryService,
+    ) as jasmine.SpyObj<DirectoryService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
 
@@ -99,9 +113,9 @@ describe('OneClickActivationComponent', () => {
   it('should initialize with default state', async () => {
     fixture = TestBed.createComponent(OneClickActivationComponent);
     component = fixture.componentInstance;
-    
+
     await fixture.whenStable();
-    
+
     expect(component.isActivated()).toBeFalse();
     expect(component.isCheckingPrerequisites()).toBeFalse();
     expect(component.error()).toBeNull();
@@ -110,7 +124,7 @@ describe('OneClickActivationComponent', () => {
   it('should have features and resources defined', () => {
     fixture = TestBed.createComponent(OneClickActivationComponent);
     component = fixture.componentInstance;
-    
+
     expect(component.features).toBeDefined();
     expect(component.features.length).toBe(4);
     expect(component.resources).toBeDefined();
@@ -161,7 +175,9 @@ describe('OneClickActivationComponent', () => {
       ];
 
       const suspendedUserService = {
-        fetchInitialData: jasmine.createSpy('fetchInitialData').and.returnValue(Promise.resolve()),
+        fetchInitialData: jasmine
+          .createSpy('fetchInitialData')
+          .and.returnValue(Promise.resolve()),
         users: signal(suspendedUsers),
       };
 
@@ -175,7 +191,7 @@ describe('OneClickActivationComponent', () => {
           { provide: MatSnackBar, useValue: snackBar },
         ],
       });
-      
+
       fixture = TestBed.createComponent(OneClickActivationComponent);
       component = fixture.componentInstance;
 
@@ -194,7 +210,9 @@ describe('OneClickActivationComponent', () => {
       ];
 
       const noLoginService = {
-        fetchInitialData: jasmine.createSpy('fetchInitialData').and.returnValue(Promise.resolve()),
+        fetchInitialData: jasmine
+          .createSpy('fetchInitialData')
+          .and.returnValue(Promise.resolve()),
         users: signal(usersWithoutLogin),
       };
 
@@ -208,7 +226,7 @@ describe('OneClickActivationComponent', () => {
           { provide: MatSnackBar, useValue: snackBar },
         ],
       });
-      
+
       fixture = TestBed.createComponent(OneClickActivationComponent);
       component = fixture.componentInstance;
 
@@ -220,12 +238,14 @@ describe('OneClickActivationComponent', () => {
 
     it('should handle prerequisite check errors', async () => {
       enrollmentService.listTokens.and.returnValue(
-        Promise.reject(new Error('Service error'))
+        Promise.reject(new Error('Service error')),
       );
 
       await component.checkPrerequisites();
 
-      expect(component.error()).toBe('Failed to check prerequisites. Please try again.');
+      expect(component.error()).toBe(
+        'Failed to check prerequisites. Please try again.',
+      );
       expect(component.isCheckingPrerequisites()).toBeFalse();
     });
   });
@@ -246,12 +266,12 @@ describe('OneClickActivationComponent', () => {
       expect(window.open).toHaveBeenCalledWith(
         'https://admin.google.com/ac/chrome/reports/securityinsights',
         '_blank',
-        'noopener,noreferrer'
+        'noopener,noreferrer',
       );
       expect(snackBar.open).toHaveBeenCalledWith(
         'Security Insights page opened in new tab',
         'Close',
-        { duration: 3000 }
+        { duration: 3000 },
       );
     });
 
@@ -262,7 +282,7 @@ describe('OneClickActivationComponent', () => {
       expect(snackBar.open).toHaveBeenCalledWith(
         'One-Click Protection marked as activated!',
         'Close',
-        { duration: 5000, panelClass: ['success-snackbar'] }
+        { duration: 5000, panelClass: ['success-snackbar'] },
       );
     });
 
@@ -284,7 +304,11 @@ describe('OneClickActivationComponent', () => {
 
       component.openExternalLink(testUrl);
 
-      expect(window.open).toHaveBeenCalledWith(testUrl, '_blank', 'noopener,noreferrer');
+      expect(window.open).toHaveBeenCalledWith(
+        testUrl,
+        '_blank',
+        'noopener,noreferrer',
+      );
     });
   });
 
@@ -298,7 +322,7 @@ describe('OneClickActivationComponent', () => {
 
       fixture = TestBed.createComponent(OneClickActivationComponent);
       component = fixture.componentInstance;
-      
+
       // ngOnInit is called during component creation, wait for it to complete
       await component.checkPrerequisites();
       fixture.detectChanges();
@@ -312,7 +336,7 @@ describe('OneClickActivationComponent', () => {
 
       fixture = TestBed.createComponent(OneClickActivationComponent);
       component = fixture.componentInstance;
-      
+
       // ngOnInit is called during component creation, wait for it to complete
       await component.checkPrerequisites();
       fixture.detectChanges();
@@ -330,7 +354,7 @@ describe('OneClickActivationComponent', () => {
 
       const storedState = localStorage.getItem('cep-compass-one-click');
       expect(storedState).toBeTruthy();
-      
+
       const parsedState = JSON.parse(storedState!);
       expect(parsedState.activated).toBeTrue();
       expect(parsedState.activatedDate).toBeTruthy();
@@ -357,7 +381,7 @@ describe('OneClickActivationComponent', () => {
 
       const storedState = localStorage.getItem('cep-compass-one-click');
       expect(storedState).toBeTruthy();
-      
+
       const parsedState = JSON.parse(storedState!);
       expect(parsedState.lastPrerequisiteCheck).toBeTruthy();
     });
