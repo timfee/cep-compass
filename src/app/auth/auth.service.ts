@@ -31,6 +31,7 @@ const ROLE_STORAGE_KEY = 'cep_selected_role';
 export class AuthService {
   private auth: Auth = inject(Auth);
   private functions: Functions = inject(Functions);
+  private accessToken: string | null = null;
 
   public readonly user = toSignal(authState(this.auth), { initialValue: null });
 
@@ -54,6 +55,7 @@ export class AuthService {
         await this.updateAvailableRoles();
       } else {
         // If logged out, reset everything and clear storage.
+        this.accessToken = null;
         this.availableRoles.set({
           isSuperAdmin: false,
           isCepAdmin: false,
@@ -88,7 +90,11 @@ export class AuthService {
     );
 
     try {
-      await signInWithPopup(this.auth, provider);
+      const result = await signInWithPopup(this.auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (credential && credential.accessToken) {
+        this.accessToken = credential.accessToken;
+      }
     } catch (error) {
       console.error('Login failed:', error);
       this.availableRoles.set({
@@ -101,6 +107,7 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
+    this.accessToken = null;
     await signOut(this.auth);
   }
 
@@ -119,9 +126,38 @@ export class AuthService {
     if (!currentUser) {
       return null;
     }
+
+    // Return stored access token if available
+    if (this.accessToken) {
+      return this.accessToken;
+    }
+
+    // If no stored token, re-authenticate to get a fresh one
     try {
-      const token = await currentUser.getIdToken();
-      return token;
+      const provider = new GoogleAuthProvider();
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.user.readonly',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
+      );
+
+      const result = await signInWithPopup(this.auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (credential && credential.accessToken) {
+        this.accessToken = credential.accessToken;
+        return credential.accessToken;
+      } else {
+        if (!credential) {
+          console.error('Failed to retrieve OAuth access token: No credential returned from sign-in result.');
+        } else if (!credential.accessToken) {
+          console.error('Failed to retrieve OAuth access token: No access token in credential response.');
+        }
+        return null;
+      }
     } catch (error) {
       console.error('Failed to get access token:', error);
       return null;
