@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login';
 import { SelectRoleComponent } from './auth/select-role/select-role';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { OrgUnitsDemoComponent } from './org-units-demo/org-units-demo.component';
 import { EmailDemoComponent } from './email-demo/email-demo.component';
 import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
@@ -12,13 +13,6 @@ import {
 } from '@angular/fire/auth-guard';
 import { inject } from '@angular/core';
 import { AuthService } from './auth/auth.service';
-import { pipe } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-// A pipe to redirect to role selection if a user is logged in but hasn't
-// selected a role for the session yet.
-const redirectLoggedInToRoleSelection = () =>
-  pipe(map((user) => (user ? ['/select-role'] : true)));
 
 // A pipe to allow access only if a user is logged in AND has selected a role.
 const canActivate = () => {
@@ -32,12 +26,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard, canActivate],
     data: { authGuardPipe: () => redirectUnauthorizedTo(['/login']) },
     // This is the main, protected application view.
-    // Add your dashboard/main component here for child routes.
     children: [
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'org-units-demo', component: OrgUnitsDemoComponent },
       { path: 'email-demo', component: EmailDemoComponent },
       { path: 'directory-stats', component: DirectoryStatsComponent },
-      { path: '', redirectTo: 'org-units-demo', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
   {
