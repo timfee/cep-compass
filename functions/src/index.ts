@@ -16,37 +16,37 @@ const REQUIRED_CEP_ADMIN_PRIVILEGES = [
   },
 
   // Security Center -> Activity Rules Full administrative rights
-  {
-    privilegeName: 'ACTIVITY_RULES',
-    serviceId: '01egqt2p2p8gvae', // Security Center
+  { 
+    privilegeName: 'ACTIVITY_RULES', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
   },
-  {
-    privilegeName: 'APP_ADMIN',
-    serviceId: '01egqt2p2p8gvae', // Security Center
+  { 
+    privilegeName: 'APP_ADMIN', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
   },
 
   // Data Security -> Rule Management (DLP -> Manage DLP rule)
-  {
-    privilegeName: 'MANAGE_GSC_RULE',
-    serviceId: '01egqt2p2p8gvae', // Security Center
+  { 
+    privilegeName: 'MANAGE_GSC_RULE', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
   },
 
   // DLP -> View DLP rule
-  {
-    privilegeName: 'VIEW_GSC_RULE',
-    serviceId: '01egqt2p2p8gvae', // Security Center
+  { 
+    privilegeName: 'VIEW_GSC_RULE', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
   },
 
   // Data Security -> Access Level Management
-  {
-    privilegeName: 'ACCESS_LEVEL_MANAGEMENT',
-    serviceId: '01rvwp1q4axizdr', // Access Level Management
+  { 
+    privilegeName: 'ACCESS_LEVEL_MANAGEMENT', 
+    serviceId: '01rvwp1q4axizdr' // Access Level Management
   },
 
   // Chrome Management -> Settings (Mobile Device Management -> Settings)
-  {
-    privilegeName: 'MANAGE_DEVICE_SETTINGS',
-    serviceId: '03hv69ve4bjwe54', // Device Management
+  { 
+    privilegeName: 'MANAGE_DEVICE_SETTINGS', 
+    serviceId: '03hv69ve4bjwe54' // Device Management
   },
 
   // Chrome DLP -> Manage Chrome DLP application insights settings
@@ -68,27 +68,27 @@ const REQUIRED_CEP_ADMIN_PRIVILEGES = [
   },
 
   // Mobile Device Management -> Managed Devices
-  {
-    privilegeName: 'MANAGE_DEVICES',
-    serviceId: '03hv69ve4bjwe54', // Device Management
+  { 
+    privilegeName: 'MANAGE_DEVICES', 
+    serviceId: '03hv69ve4bjwe54' // Device Management
   },
 
   // Chrome Enterprise Security Services -> Settings
-  {
-    privilegeName: 'APP_ADMIN',
-    serviceId: '03hv69ve4bjwe54', // Device Management
+  { 
+    privilegeName: 'APP_ADMIN', 
+    serviceId: '03hv69ve4bjwe54' // Device Management
   },
 
   // Alert Center -> Full access
-  {
-    privilegeName: 'APPS_INCIDENTS_FULL_ACCESS',
-    serviceId: '02pta16n3efhw69', // Alert Center
+  { 
+    privilegeName: 'APPS_INCIDENTS_FULL_ACCESS', 
+    serviceId: '02pta16n3efhw69' // Alert Center
   },
 
   // Reports -> Main access
-  {
-    privilegeName: 'REPORTS_ACCESS',
-    serviceId: '01fob9te2rj6rw9', // Reports
+  { 
+    privilegeName: 'REPORTS_ACCESS', 
+    serviceId: '01fob9te2rj6rw9' // Reports
   },
 ];
 

@@ -7,16 +7,16 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class GoogleApiErrorHandler {
   /**
    * Handle API errors and return user-friendly error messages
-   *
+   * 
    * @param error - The error from the API call
    * @param serviceName - Name of the service for context in error messages
    * @param defaultAction - Default action description for generic error messages
    * @returns User-friendly error message
    */
   static handleApiError(
-    error: unknown,
+    error: unknown, 
     serviceName = 'Google service',
-    defaultAction = 'complete the operation',
+    defaultAction = 'complete the operation'
   ): string {
     if (error instanceof HttpErrorResponse) {
       switch (error.status) {
@@ -58,22 +58,14 @@ export class GoogleApiErrorHandler {
    * Handle enrollment token service specific errors
    */
   static handleEnrollmentTokenError(error: unknown): string {
-    return this.handleApiError(
-      error,
-      'Chrome enrollment tokens',
-      'manage enrollment tokens',
-    );
+    return this.handleApiError(error, 'Chrome enrollment tokens', 'manage enrollment tokens');
   }
 
   /**
    * Handle organizational units service specific errors
    */
   static handleOrgUnitsError(error: unknown): string {
-    return this.handleApiError(
-      error,
-      'organizational units',
-      'fetch organizational units',
-    );
+    return this.handleApiError(error, 'organizational units', 'fetch organizational units');
   }
 
   /**
