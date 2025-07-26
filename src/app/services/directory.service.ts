@@ -308,11 +308,6 @@ export class DirectoryService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
       // Reset pagination tokens and data
       this.userPageToken = null;
       this.groupPageToken = null;
@@ -323,8 +318,8 @@ export class DirectoryService {
 
       // Fetch initial users and groups concurrently
       await Promise.all([
-        this.loadUsersPage(accessToken, 100),
-        this.loadGroupsPage(accessToken, 50),
+        this.loadUsersPage(100),
+        this.loadGroupsPage(50),
       ]);
 
       this._lastFetchTime.set(now);
@@ -356,12 +351,7 @@ export class DirectoryService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
-      await this.loadUsersPage(accessToken, 100);
+      await this.loadUsersPage(100);
       this._error.set(null);
     } catch (error) {
       const errorMessage = this.handleApiError(error);
@@ -390,12 +380,7 @@ export class DirectoryService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
-      await this.loadGroupsPage(accessToken, 100);
+      await this.loadGroupsPage(100);
       this._error.set(null);
     } catch (error) {
       const errorMessage = this.handleApiError(error);
@@ -419,19 +404,10 @@ export class DirectoryService {
       throw new Error('User not authenticated');
     }
 
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('Failed to get access token');
-    }
-
     const url = this.buildUsersApiUrl(undefined, 200, query);
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
 
     const response = await this.http
-      .get<UsersApiResponse>(url, { headers })
+      .get<UsersApiResponse>(url)
       .toPromise();
 
     if (response?.users) {
@@ -456,19 +432,10 @@ export class DirectoryService {
       throw new Error('User not authenticated');
     }
 
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('Failed to get access token');
-    }
-
     const url = this.buildGroupsApiUrl(undefined, 200, undefined, query);
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
 
     const response = await this.http
-      .get<GroupsApiResponse>(url, { headers })
+      .get<GroupsApiResponse>(url)
       .toPromise();
 
     if (response?.groups) {
@@ -487,19 +454,10 @@ export class DirectoryService {
       throw new Error('User not authenticated');
     }
 
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('Failed to get access token');
-    }
-
     const url = this.buildGroupsApiUrl(undefined, 200, userEmail);
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
 
     const response = await this.http
-      .get<GroupsApiResponse>(url, { headers })
+      .get<GroupsApiResponse>(url)
       .toPromise();
 
     if (response?.groups) {
@@ -518,23 +476,14 @@ export class DirectoryService {
       throw new Error('User not authenticated');
     }
 
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('Failed to get access token');
-    }
-
     const allMembers: DirectoryUser[] = [];
     let pageToken: string | undefined;
 
     do {
       const url = this.buildGroupMembersApiUrl(groupEmail, pageToken, 200);
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      };
 
       const response = await this.http
-        .get<GroupMembersApiResponse>(url, { headers })
+        .get<GroupMembersApiResponse>(url)
         .toPromise();
 
       if (response?.members) {
@@ -545,7 +494,7 @@ export class DirectoryService {
 
         for (const email of memberEmails) {
           try {
-            const user = await this.getUserByEmail(email, accessToken);
+            const user = await this.getUserByEmail(email);
             if (user) {
               allMembers.push(user);
             }
@@ -586,17 +535,12 @@ export class DirectoryService {
   // --- PRIVATE METHODS ---
 
   private async loadUsersPage(
-    accessToken: string,
     maxResults: number,
   ): Promise<void> {
     const url = this.buildUsersApiUrl(this.userPageToken, maxResults);
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
 
     const response = await this.http
-      .get<UsersApiResponse>(url, { headers })
+      .get<UsersApiResponse>(url)
       .toPromise();
 
     if (response?.users) {
@@ -610,17 +554,12 @@ export class DirectoryService {
   }
 
   private async loadGroupsPage(
-    accessToken: string,
     maxResults: number,
   ): Promise<void> {
     const url = this.buildGroupsApiUrl(this.groupPageToken, maxResults);
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
 
     const response = await this.http
-      .get<GroupsApiResponse>(url, { headers })
+      .get<GroupsApiResponse>(url)
       .toPromise();
 
     if (response?.groups) {
@@ -635,17 +574,12 @@ export class DirectoryService {
 
   private async getUserByEmail(
     email: string,
-    accessToken: string,
   ): Promise<DirectoryUser | null> {
     const url = `${this.API_BASE_URL}/users/${encodeURIComponent(email)}`;
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
 
     try {
       const response = await this.http
-        .get<unknown>(url, { headers })
+        .get<unknown>(url)
         .toPromise();
 
       if (response) {
