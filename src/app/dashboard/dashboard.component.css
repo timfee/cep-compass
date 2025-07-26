@@ -4,7 +4,7 @@
 }
 
 .dashboard-container {
-  padding: 24px;
+  padding: 24px; /* 3 * 8px grid */
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
@@ -15,16 +15,16 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
+  margin-bottom: 32px; /* 4 * 8px grid */
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 16px; /* 2 * 8px grid */
 }
 
 .welcome-section h1 {
   margin: 0 0 8px 0;
   font-size: 2rem;
   font-weight: 500;
-  color: #1976d2;
+  color: var(--primary-color);
 }
 
 .welcome-message {
@@ -75,13 +75,11 @@
   min-height: 200px;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Material Design standard */
 }
 
 .dashboard-card:hover:not(.disabled) {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px); /* Reduced transform for subtlety */
 }
 
 .dashboard-card.elevated {
@@ -96,7 +94,6 @@
 
 .dashboard-card.disabled:hover {
   transform: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Card Header */
@@ -108,7 +105,7 @@
   font-size: 32px;
   height: 40px;
   width: 40px;
-  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
   color: white;
   border-radius: 50%;
   display: flex;
@@ -220,7 +217,7 @@
   }
 
   .dashboard-card:hover:not(.disabled) {
-    border-color: #1976d2;
+    border-color: var(--primary-color);
   }
 
   .dashboard-card.disabled {
@@ -241,7 +238,7 @@
 
 /* Focus Styles for Accessibility */
 .dashboard-card:focus {
-  outline: 2px solid #1976d2;
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
@@ -250,6 +247,6 @@
 }
 
 .dashboard-card:focus-visible {
-  outline: 2px solid #1976d2;
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }

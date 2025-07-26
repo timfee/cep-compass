@@ -1,4 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Global box-sizing for consistent layout behavior */
+* {
+  box-sizing: border-box;
+}
+
+/* CSS Custom Properties for consistent theming */
+:root {
+  --primary-color: #1976d2;
+  --primary-light: #42a5f5;
+  --primary-dark: #0d47a1;
+  --accent-color: #e91e63;
+  --warn-color: #f44336;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-disabled: rgba(0, 0, 0, 0.38);
+  --divider-color: #e0e0e0;
+  --background-color: #fafafa;
+  --surface-color: #ffffff;
+}
+
 html,
 body {
   height: 100%;
