@@ -91,6 +91,9 @@ export class AuthService {
     provider.addScope(
       'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
     );
+    provider.addScope(
+      'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
+    );
 
     try {
       const result = await signInWithPopup(this.auth, provider);
@@ -149,6 +152,9 @@ export class AuthService {
       );
       provider.addScope(
         'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
       );
 
       const result = await signInWithPopup(this.auth, provider);
