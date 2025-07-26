@@ -49,9 +49,10 @@
                   </mat-select>
                 } @else {
                   <input matInput 
+                         #inputRef
                          [type]="variable.type === 'number' ? 'number' : 'text'"
                          [value]="variableValues()[variable.key] || variable.defaultValue || ''"
-                         (input)="setVariable(variable.key, $event.target.value)"
+                         (input)="setVariable(variable.key, inputRef.value)"
                          [required]="variable.required">
                 }
                 
