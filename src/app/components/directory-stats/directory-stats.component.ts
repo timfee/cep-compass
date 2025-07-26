@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   signal,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -31,7 +32,7 @@ import { DirectoryService, DirectoryUser, DirectoryGroup } from '../../services/
     FormsModule,
   ],
 })
-export class DirectoryStatsComponent {
+export class DirectoryStatsComponent implements OnInit {
   private readonly directoryService = inject(DirectoryService);
 
   // Search state

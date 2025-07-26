@@ -19,10 +19,10 @@ export interface DirectoryUser {
   lastLoginTime: string;
   creationTime: string;
   thumbnailPhotoUrl?: string;
-  emails: Array<{
+  emails: {
     address: string;
     primary: boolean;
-  }>;
+  }[];
 }
 
 export interface DirectoryGroup {
@@ -60,10 +60,10 @@ interface UsersApiResponse {
     lastLoginTime?: string;
     creationTime?: string;
     thumbnailPhotoUrl?: string;
-    emails?: Array<{
+    emails?: {
       address?: string;
       primary?: boolean;
-    }>;
+    }[];
   }[];
   nextPageToken?: string;
   etag?: string;
@@ -535,7 +535,7 @@ export class DirectoryService {
 
     try {
       const response = await this.http
-        .get<any>(url, { headers })
+        .get<unknown>(url, { headers })
         .toPromise();
 
       if (response) {
@@ -637,47 +637,81 @@ export class DirectoryService {
     return `${baseUrl}?${params.toString()}`;
   }
 
-  private mapApiResponseToUser(apiUser: any): DirectoryUser {
+  private mapApiResponseToUser(apiUser: unknown): DirectoryUser {
+    const user = apiUser as {
+      id?: string;
+      primaryEmail?: string;
+      name?: {
+        givenName?: string;
+        familyName?: string;
+        fullName?: string;
+      };
+      suspended?: boolean;
+      orgUnitPath?: string;
+      isAdmin?: boolean;
+      isDelegatedAdmin?: boolean;
+      lastLoginTime?: string;
+      creationTime?: string;
+      thumbnailPhotoUrl?: string;
+      emails?: {
+        address?: string;
+        primary?: boolean;
+      }[];
+    };
+    
     // Validate required fields
-    if (!apiUser.id || !apiUser.primaryEmail) {
+    if (!user.id || !user.primaryEmail) {
       throw new Error('API response is missing required user fields');
     }
 
     return {
-      id: apiUser.id,
-      primaryEmail: apiUser.primaryEmail,
+      id: user.id,
+      primaryEmail: user.primaryEmail,
       name: {
-        givenName: apiUser.name?.givenName || '',
-        familyName: apiUser.name?.familyName || '',
-        fullName: apiUser.name?.fullName || apiUser.primaryEmail,
+        givenName: user.name?.givenName || '',
+        familyName: user.name?.familyName || '',
+        fullName: user.name?.fullName || user.primaryEmail,
       },
-      suspended: apiUser.suspended || false,
-      orgUnitPath: apiUser.orgUnitPath || '/',
-      isAdmin: apiUser.isAdmin || false,
-      isDelegatedAdmin: apiUser.isDelegatedAdmin || false,
-      lastLoginTime: apiUser.lastLoginTime || '',
-      creationTime: apiUser.creationTime || '',
-      thumbnailPhotoUrl: apiUser.thumbnailPhotoUrl,
-      emails: apiUser.emails || [
-        { address: apiUser.primaryEmail, primary: true },
+      suspended: user.suspended || false,
+      orgUnitPath: user.orgUnitPath || '/',
+      isAdmin: user.isAdmin || false,
+      isDelegatedAdmin: user.isDelegatedAdmin || false,
+      lastLoginTime: user.lastLoginTime || '',
+      creationTime: user.creationTime || '',
+      thumbnailPhotoUrl: user.thumbnailPhotoUrl,
+      emails: user.emails?.map(email => ({
+        address: email.address || '',
+        primary: email.primary || false,
+      })) || [
+        { address: user.primaryEmail, primary: true },
       ],
     };
   }
 
-  private mapApiResponseToGroup(apiGroup: any): DirectoryGroup {
+  private mapApiResponseToGroup(apiGroup: unknown): DirectoryGroup {
+    const group = apiGroup as {
+      id?: string;
+      email?: string;
+      name?: string;
+      description?: string;
+      directMembersCount?: string;
+      adminCreated?: boolean;
+      aliases?: string[];
+    };
+    
     // Validate required fields
-    if (!apiGroup.id || !apiGroup.email || !apiGroup.name) {
+    if (!group.id || !group.email || !group.name) {
       throw new Error('API response is missing required group fields');
     }
 
     return {
-      id: apiGroup.id,
-      email: apiGroup.email,
-      name: apiGroup.name,
-      description: apiGroup.description,
-      directMembersCount: apiGroup.directMembersCount || '0',
-      adminCreated: apiGroup.adminCreated || false,
-      aliases: apiGroup.aliases || [],
+      id: group.id,
+      email: group.email,
+      name: group.name,
+      description: group.description,
+      directMembersCount: group.directMembersCount || '0',
+      adminCreated: group.adminCreated || false,
+      aliases: group.aliases || [],
     };
   }
 
