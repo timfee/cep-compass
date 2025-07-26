@@ -172,6 +172,10 @@ export class CreateRoleComponent {
     this.componentState.update(current => ({ ...current, ...updates }));
   }
 
+  formatPrivilege(privilege: RolePrivilege): string {
+    return privilege.privilegeName;
+  }
+
   private setError(errorMessage: string): void {
     this.updateState({
       checking: false,
