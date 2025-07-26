@@ -189,7 +189,7 @@
                   <mat-label>Email Content</mat-label>
                   <textarea matInput 
                            [value]="editorContent()"
-                           (input)="onEditorContentChange($any($event.target).value)"
+                           (input)="onEditorContentChange(($event.target as HTMLTextAreaElement).value)"
                            [placeholder]="editorConfig.placeholder"
                            [style.min-height]="editorConfig.minHeight"
                            [style.max-height]="editorConfig.maxHeight"
