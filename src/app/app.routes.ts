@@ -4,6 +4,7 @@ import { SelectRoleComponent } from './auth/select-role/select-role';
 import { OrgUnitsDemoComponent } from './org-units-demo/org-units-demo.component';
 import { EmailDemoComponent } from './email-demo/email-demo.component';
 import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
+import { DirectoryStatsComponent } from './components/directory-stats/directory-stats.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -35,6 +36,7 @@ export const routes: Routes = [
     children: [
       { path: 'org-units-demo', component: OrgUnitsDemoComponent },
       { path: 'email-demo', component: EmailDemoComponent },
+      { path: 'directory-stats', component: DirectoryStatsComponent },
       { path: '', redirectTo: 'org-units-demo', pathMatch: 'full' },
     ],
   },

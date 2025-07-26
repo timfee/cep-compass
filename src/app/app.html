@@ -44,8 +44,10 @@
         <div class="demo-links">
           <a mat-raised-button color="primary" routerLink="/org-units-demo">Org Units Demo</a>
           <a mat-raised-button color="accent" routerLink="/email-demo">Email Template Demo</a>
+          <a mat-raised-button color="warn" routerLink="/directory-stats">Directory & Users</a>
         </div>
       </div>
+      <router-outlet></router-outlet>
     } @else {
       <router-outlet></router-outlet>
     }

@@ -1,0 +1,217 @@
+<div class="directory-stats-container">
+  <!-- Error Display -->
+  @if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ error() }}</span>
+          <button mat-button color="primary" (click)="onRefresh()">
+            Retry
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <!-- Total Users Card -->
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <div mat-card-avatar class="user-avatar">
+          <mat-icon>people</mat-icon>
+        </div>
+        <mat-card-title>Total Users</mat-card-title>
+        <mat-card-subtitle>All directory users</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ stats().totalUsers }}</div>
+        <div class="stat-breakdown">
+          <div class="breakdown-item active">
+            <span class="indicator"></span>
+            {{ stats().activeUsers }} active ({{ activePercentage() }}%)
+          </div>
+          <div class="breakdown-item suspended">
+            <span class="indicator"></span>
+            {{ stats().suspendedUsers }} suspended ({{ suspendedPercentage() }}%)
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Total Groups Card -->
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <div mat-card-avatar class="group-avatar">
+          <mat-icon>groups</mat-icon>
+        </div>
+        <mat-card-title>Total Groups</mat-card-title>
+        <mat-card-subtitle>All directory groups</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ stats().totalGroups }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Last Sync Card -->
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <div mat-card-avatar class="sync-avatar">
+          <mat-icon>sync</mat-icon>
+        </div>
+        <mat-card-title>Last Sync</mat-card-title>
+        <mat-card-subtitle>Directory data freshness</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-time">
+          {{ stats().lastSyncTime | date:'short' }}
+        </div>
+        <button 
+          mat-button 
+          color="primary" 
+          (click)="onRefresh()" 
+          [disabled]="isLoading()">
+          @if (isLoading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <mat-icon>refresh</mat-icon>
+          }
+          Refresh
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Search Interface -->
+  <mat-card class="search-card">
+    <mat-card-header>
+      <mat-card-title>Quick Search</mat-card-title>
+      <mat-card-subtitle>Search users and groups</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="search-controls">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search users and groups</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+            placeholder="Enter name, email, or org unit..."
+            autocomplete="off">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        
+        @if (searchQuery()) {
+          <button 
+            mat-icon-button 
+            (click)="onClearSearch()" 
+            matTooltip="Clear search">
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
+      </div>
+
+      <!-- Search Results -->
+      @if (isSearching()) {
+        <div class="search-loading">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span>Searching...</span>
+        </div>
+      } @else if (hasResults()) {
+        <div class="search-results">
+          <!-- Users Results -->
+          @if (searchResults().users.length > 0) {
+            <div class="results-section">
+              <h4>Users ({{ searchResults().users.length }})</h4>
+              <div class="results-list">
+                @for (user of searchResults().users; track user.id) {
+                  <div class="result-item user-item">
+                    <div class="result-avatar">
+                      @if (user.thumbnailPhotoUrl) {
+                        <img [src]="user.thumbnailPhotoUrl" [alt]="user.name.fullName">
+                      } @else {
+                        <mat-icon>person</mat-icon>
+                      }
+                    </div>
+                    <div class="result-info">
+                      <div class="result-name">{{ user.name.fullName }}</div>
+                      <div class="result-email">{{ user.primaryEmail }}</div>
+                      <div class="result-org">{{ user.orgUnitPath }}</div>
+                    </div>
+                    <div class="result-status">
+                      @if (user.suspended) {
+                        <mat-icon color="warn" matTooltip="Suspended">pause_circle</mat-icon>
+                      } @else {
+                        <mat-icon color="accent" matTooltip="Active">check_circle</mat-icon>
+                      }
+                      @if (user.isAdmin) {
+                        <mat-icon color="primary" matTooltip="Admin">admin_panel_settings</mat-icon>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Groups Results -->
+          @if (searchResults().groups.length > 0) {
+            <div class="results-section">
+              <h4>Groups ({{ searchResults().groups.length }})</h4>
+              <div class="results-list">
+                @for (group of searchResults().groups; track group.id) {
+                  <div class="result-item group-item">
+                    <div class="result-avatar">
+                      <mat-icon>group</mat-icon>
+                    </div>
+                    <div class="result-info">
+                      <div class="result-name">{{ group.name }}</div>
+                      <div class="result-email">{{ group.email }}</div>
+                      @if (group.description) {
+                        <div class="result-description">{{ group.description }}</div>
+                      }
+                    </div>
+                    <div class="result-count">
+                      {{ group.directMembersCount }} members
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (searchQuery() && !hasResults()) {
+        <div class="no-results">
+          <mat-icon>search_off</mat-icon>
+          <span>No results found for "{{ searchQuery() }}"</span>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Load More Actions -->
+  <div class="load-more-actions">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onLoadMoreUsers()" 
+      [disabled]="!hasMoreUsers() || isLoading()">
+      @if (isLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+      Load More Users
+    </button>
+    
+    <button 
+      mat-raised-button 
+      color="accent" 
+      (click)="onLoadMoreGroups()" 
+      [disabled]="!hasMoreGroups() || isLoading()">
+      @if (isLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+      Load More Groups
+    </button>
+  </div>
+</div>
