@@ -10,6 +10,8 @@ import { CreateRoleComponent } from './features/admin/create-role/create-role.co
 import { BrowserEnrollmentComponent } from './features/enrollment/browsers/browser-enrollment.component';
 import { ProfileEnrollmentComponent } from './features/enrollment/profiles/profile-enrollment.component';
 import { ProfileEnrollmentDemoComponent } from './features/enrollment/profiles/profile-enrollment-demo.component';
+import { OneClickActivationComponent } from './features/security/one-click/one-click-activation.component';
+import { OneClickActivationDemoComponent } from './features/security/one-click/one-click-activation-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -59,6 +61,7 @@ export const routes: Routes = [
       { path: 'directory-stats', component: DirectoryStatsComponent },
       { path: 'enrollment/browsers', component: BrowserEnrollmentComponent },
       { path: 'enrollment/profiles', component: ProfileEnrollmentComponent },
+      { path: 'security/one-click', component: OneClickActivationComponent },
       { 
         path: 'admin/create-role', 
         component: CreateRoleComponent,
@@ -87,6 +90,11 @@ export const routes: Routes = [
   {
     path: 'profile-enrollment-demo',
     component: ProfileEnrollmentDemoComponent,
+    // No auth guard - public demo
+  },
+  {
+    path: 'one-click-demo',
+    component: OneClickActivationDemoComponent,
     // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },
