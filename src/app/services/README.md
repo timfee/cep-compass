@@ -28,7 +28,7 @@ import { OrgUnitsService } from './services/org-units.service';
 @Component({...})
 export class MyComponent {
   private readonly orgUnitsService = inject(OrgUnitsService);
-  
+
   async loadOrgUnits() {
     await this.orgUnitsService.fetchOrgUnits();
   }
@@ -55,19 +55,15 @@ const error = this.orgUnitsService.error();
 
 ```html
 @if (orgUnitsService.isLoading()) {
-  <mat-spinner></mat-spinner>
-}
-
-@if (orgUnitsService.error()) {
-  <div class="error">{{ orgUnitsService.error() }}</div>
-}
-
-@if (orgUnitsService.orgUnits().length > 0) {
-  <ul>
-    @for (unit of orgUnitsService.orgUnits(); track unit.orgUnitId) {
-      <li>{{ unit.name }} - {{ unit.orgUnitPath }}</li>
-    }
-  </ul>
+<mat-spinner></mat-spinner>
+} @if (orgUnitsService.error()) {
+<div class="error">{{ orgUnitsService.error() }}</div>
+} @if (orgUnitsService.orgUnits().length > 0) {
+<ul>
+  @for (unit of orgUnitsService.orgUnits(); track unit.orgUnitId) {
+  <li>{{ unit.name }} - {{ unit.orgUnitPath }}</li>
+  }
+</ul>
 }
 ```
 
@@ -75,10 +71,10 @@ const error = this.orgUnitsService.error();
 
 ```typescript
 // Search by name (case-insensitive)
-const salesUnits = this.orgUnitsService.getOrgUnitsByName('sales');
+const salesUnits = this.orgUnitsService.getOrgUnitsByName("sales");
 
 // Get specific unit by path
-const engineering = this.orgUnitsService.getOrgUnitByPath('/Engineering');
+const engineering = this.orgUnitsService.getOrgUnitByPath("/Engineering");
 ```
 
 ### Cache Management
@@ -152,6 +148,7 @@ npm test -- --include="**/org-units.service.spec.ts"
 ```
 
 The test suite includes:
+
 - ✅ Basic service initialization
 - ✅ Successful API calls and data parsing
 - ✅ Error handling for various HTTP status codes

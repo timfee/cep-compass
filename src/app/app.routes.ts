@@ -17,9 +17,7 @@ import { map } from 'rxjs/operators';
 // A pipe to redirect to role selection if a user is logged in but hasn't
 // selected a role for the session yet.
 const redirectLoggedInToRoleSelection = () =>
-  pipe(
-    map(user => (user ? ['/select-role'] : true)),
-  );
+  pipe(map((user) => (user ? ['/select-role'] : true)));
 
 // A pipe to allow access only if a user is logged in AND has selected a role.
 const canActivate = () => {

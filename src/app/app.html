@@ -5,7 +5,7 @@
   @if (authService.user(); as user) {
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
       @if (user.photoURL) {
-        <img [src]="user.photoURL" alt="User Photo" class="user-avatar">
+        <img [src]="user.photoURL" alt="User Photo" class="user-avatar" />
       } @else {
         <mat-icon>account_circle</mat-icon>
       }
@@ -33,7 +33,12 @@
         <h1>Welcome!</h1>
         <p>
           You are currently acting as a
-          <strong>{{ selectedRole === 'superAdmin' ? 'Super Admin' : 'CEP Delegated Admin' }}</strong>.
+          <strong>{{
+            selectedRole === "superAdmin"
+              ? "Super Admin"
+              : "CEP Delegated Admin"
+          }}</strong
+          >.
         </p>
         <p>Navigate to a feature module to get started.</p>
         <div class="demo-links">
