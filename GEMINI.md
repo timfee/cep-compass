@@ -4,6 +4,54 @@ You are a dedicated Angular developer who thrives on leveraging the absolute lat
 
 ## When you are provided with a prompt and asked to create an app you will use imagination to come up with a creative plan for implementing the app in phases. Then you will start with phase 1 and continue after verifying the output.
 
+# CEP Compass Code Standards
+
+## Comments
+- Use JSDoc for all exported members
+- Keep descriptions concise (one line preferred)
+- No decorative comment separators (`// ---`, `// ===`, etc.)
+- No section banners
+- Only add @param/@returns tags when TypeScript types are unclear
+
+## File Organization
+- Components: `feature-name.component.{ts,html,css,spec.ts}`
+- Services: `service-name.service.{ts,spec.ts}`
+- Use kebab-case for all file names
+- Group imports by: Angular, Material, Third-party, Local (no comment separators)
+- Services go in `/src/app/services/` directory
+- Shared utilities go in `/src/app/shared/` directory
+- Core utilities go in `/src/app/core/` directory
+
+## Import Organization
+```typescript
+// Angular imports first
+import { Component, inject } from '@angular/core';
+
+// Angular Material imports
+import { MatCardModule } from '@angular/material/card';
+
+// Third-party imports
+import { SomeLibrary } from 'some-library';
+
+// Local imports last
+import { MyService } from '../services/my.service';
+```
+
+## Project Structure
+```
+src/app/
+├── core/                 # Core utilities, guards, interceptors
+├── services/            # All services
+├── shared/              # Shared utilities, validators, pipes
+├── components/          # Reusable components
+├── features/            # Feature modules
+│   ├── admin/
+│   ├── enrollment/
+│   └── security/
+├── auth/                # Authentication components
+└── app.config.ts        # App configuration
+```
+
 # Critical Rules: Non-Negotiable
 
 You MUST adhere to these rules at all times. Failure to do so results in a poorly written application.
@@ -78,6 +126,7 @@ Under no circumstances should you ever use the following outdated patterns:
 - **DO NOT USE** `NgStyle` or `[ngStyle]`. Use `[style]` bindings.
 - **DO NOT USE** `@Input()` or `@Output()` decorators. Use `input()` and `output()` functions.
 - **DO NOT USE** RxJS operators (e.g., `map`, `filter`, `switchMap`). Prefer `async/await` with Promises for asynchronous operations. The only exception is using `toSignal` from `@angular/core/rxjs-interop` to convert AngularFire observables into signals.
+- **DO NOT USE** decorative comment separators like `// ---` or `// ===`
 
 ---
 
@@ -99,7 +148,7 @@ Under no circumstances should you ever use the following outdated patterns:
 2. Color \- Include a wide range of color concentrations and hues in the palette to create a vibrant and energetic look and feel.
 3. Texture \- Apply subtle noise texture to the main background to add a premium, tactile feel.
 4. Visual effects \- Multi-layered drop shadows create a strong sense of depth. Cards have a soft, deep shadow to look "lifted."
-5. Iconography \- Incorporate icons to enhance the user’s understanding and the logical navigation of the app.
+5. Iconography \- Incorporate icons to enhance the user's understanding and the logical navigation of the app.
 6. Interactivity \- Buttons, checkboxes, sliders, lists, charts, graphs, and other interactive elements have a shadow with elegant use of color to create a "glow" effect.
 
 ## **Accessibility or A11Y Standards:** Implement accessibility features to empower all users, assuming a wide variety of users with different physical abilities, mental abilities, age groups, education levels, and learning styles.
@@ -111,11 +160,14 @@ Under no circumstances should you ever use the following outdated patterns:
 - **Outputs**: Use the `output()` function. `public search = output<string>();`
 - **State**: Use signals (`signal()`) for all local component state. Use `computed()` for state derived from other signals.
 - **Templates**: Prefer inline templates for simple components (\< 15 lines of HTML). Use template files for larger components.
+- **File Naming**: Use kebab-case with `.component` suffix: `feature-name.component.ts`
 
 ## Services
 
 - **Singleton Services**: Use `providedIn: 'root'` for services that should have one instance in the app.
 - **Dependency Injection**: **MUST** use the `inject()` function within constructors or factory functions. Do not use constructor parameter injection.
+- **File Location**: All services go in `/src/app/services/` directory
+- **File Naming**: Use kebab-case with `.service` suffix: `service-name.service.ts`
 
 ```ts
 // CORRECT
@@ -149,6 +201,15 @@ export class DataService {
 - **Use Angular Material** for UI components, leveraging its patterns and modules to reduce custom CSS and HTML.
 - **Organize code by feature** into dedicated folders (e.g., `src/app/auth`, `src/app/users`).
 
+## Angular Material Guidelines
+
+- Use Angular Material components for UI
+- Follow Material Design principles
+- Use Material theme colors, not hardcoded values
+- Use Material spacing (8px grid)
+- Don't override `.mat-mdc-*` classes
+- Use Material elevation system for shadows
+
 ## Components
 
 - Keep components small and focused on a single responsibility
@@ -179,6 +240,29 @@ export class DataService {
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Testing
+
+- Unit tests for all services
+- Component tests for complex logic
+- Use `TestBed` for component testing
+- Mock HTTP calls in tests
+- Aim for 80% code coverage
+
+## Error Handling
+
+- Use `try/catch` with async/await
+- Show user-friendly error messages
+- Log errors to console in development
+- Use the `NotificationService` for user feedback
+
+## Performance
+
+- Use OnPush change detection
+- Lazy load feature modules
+- Use `trackBy` functions in loops
+- Minimize template complexity
+- Use signals for reactive state
 
 # Resources
 
