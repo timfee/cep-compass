@@ -6,66 +6,90 @@ import { admin_directory_v1, google } from 'googleapis';
 initializeApp();
 
 // --- CONSTANTS ---
-// This list defines the exact set of privileges required for a user to be
-// considered a Chrome Enterprise Plus (CEP) delegated admin. A user must have
-// ALL of these privileges. Each privilege is defined by its unique name and
-// the service it belongs to, as mapped from the user-provided table and JSON.
+// Chrome Enterprise Plus (CEP) Admin required privileges
+// This is the authoritative list shared between frontend and backend
 const REQUIRED_CEP_ADMIN_PRIVILEGES = [
-  // Table: Google Admin Console Privileges
-  // Privilege Area: Organizational Units -> Permission: Read
-  // API Privilege: Organizational Units -> Read
+  // Organizational Units -> Read
   {
     privilegeName: 'ORGANIZATION_UNITS_RETRIEVE',
-    serviceId: '00haapch16h1ysv',
+    serviceId: '00haapch16h1ysv', // Organizational Units
   },
 
-  // Privilege Area: Security Center -> Permission: Activity Rules Full administrative rights for Security Center
-  { privilegeName: 'ACTIVITY_RULES', serviceId: '01egqt2p2p8gvae' },
-  { privilegeName: 'APP_ADMIN', serviceId: '01egqt2p2p8gvae' },
+  // Security Center -> Activity Rules Full administrative rights
+  { 
+    privilegeName: 'ACTIVITY_RULES', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
+  },
+  { 
+    privilegeName: 'APP_ADMIN', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
+  },
 
-  // Privilege Area: Data Security -> Permission: Rule Management
-  // Also covers: DLP -> Manage DLP rule
-  { privilegeName: 'MANAGE_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
+  // Data Security -> Rule Management (DLP -> Manage DLP rule)
+  { 
+    privilegeName: 'MANAGE_GSC_RULE', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
+  },
 
-  // Privilege Area: DLP -> Permission: View DLP rule
-  { privilegeName: 'VIEW_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
+  // DLP -> View DLP rule
+  { 
+    privilegeName: 'VIEW_GSC_RULE', 
+    serviceId: '01egqt2p2p8gvae' // Security Center
+  },
 
-  // Privilege Area: Data Security -> Permission: Access Level Management
-  { privilegeName: 'ACCESS_LEVEL_MANAGEMENT', serviceId: '01rvwp1q4axizdr' },
+  // Data Security -> Access Level Management
+  { 
+    privilegeName: 'ACCESS_LEVEL_MANAGEMENT', 
+    serviceId: '01rvwp1q4axizdr' // Access Level Management
+  },
 
-  // Privilege Area: Chrome Management -> Permission: Settings
-  // Also covers: Mobile Device Management -> Settings
-  { privilegeName: 'MANAGE_DEVICE_SETTINGS', serviceId: '03hv69ve4bjwe54' },
+  // Chrome Management -> Settings (Mobile Device Management -> Settings)
+  { 
+    privilegeName: 'MANAGE_DEVICE_SETTINGS', 
+    serviceId: '03hv69ve4bjwe54' // Device Management
+  },
 
-  // Privilege Area: Chrome DLP -> Permission: Manage Chrome DLP application insights settings
+  // Chrome DLP -> Manage Chrome DLP application insights settings
   {
     privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS',
-    serviceId: '01x0gk371sq486y',
+    serviceId: '01x0gk371sq486y', // Chrome DLP
   },
 
-  // Privilege Area: Chrome DLP -> Permission: View and manage Chrome DLP application OCR setting
+  // Chrome DLP -> View and manage Chrome DLP application OCR setting
   {
     privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING',
-    serviceId: '01x0gk371sq486y',
+    serviceId: '01x0gk371sq486y', // Chrome DLP
   },
 
-  // Privilege Area: Chrome DLP -> Permission: View Chrome DLP application insights settings
+  // Chrome DLP -> View Chrome DLP application insights settings
   {
     privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS',
-    serviceId: '01x0gk371sq486y',
+    serviceId: '01x0gk371sq486y', // Chrome DLP
   },
 
-  // Privilege Area: Mobile Device Management -> Permission: Managed Devices
-  { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
+  // Mobile Device Management -> Managed Devices
+  { 
+    privilegeName: 'MANAGE_DEVICES', 
+    serviceId: '03hv69ve4bjwe54' // Device Management
+  },
 
-  // Privilege Area: Chrome Enterprise Security Services -> Permission: Settings
-  { privilegeName: 'APP_ADMIN', serviceId: '03hv69ve4bjwe54' },
+  // Chrome Enterprise Security Services -> Settings
+  { 
+    privilegeName: 'APP_ADMIN', 
+    serviceId: '03hv69ve4bjwe54' // Device Management
+  },
 
-  // Privilege Area: Alert Center -> Permission: Full access
-  { privilegeName: 'APPS_INCIDENTS_FULL_ACCESS', serviceId: '02pta16n3efhw69' },
+  // Alert Center -> Full access
+  { 
+    privilegeName: 'APPS_INCIDENTS_FULL_ACCESS', 
+    serviceId: '02pta16n3efhw69' // Alert Center
+  },
 
-  // Privilege Area: Reports -> Permission: (Select the main checkbox to grant access)
-  { privilegeName: 'REPORTS_ACCESS', serviceId: '01fob9te2rj6rw9' },
+  // Reports -> Main access
+  { 
+    privilegeName: 'REPORTS_ACCESS', 
+    serviceId: '01fob9te2rj6rw9' // Reports
+  },
 ];
 
 // --- TYPE DEFINITIONS ---

@@ -1,6 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
+import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
+import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
 
 // --- TYPE DEFINITIONS ---
 
@@ -105,8 +107,7 @@ export class DirectoryService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
-  private readonly API_BASE_URL =
-    'https://www.googleapis.com/admin/directory/v1';
+  private readonly API_BASE_URL = GOOGLE_API_CONFIG.BASE_URLS.DIRECTORY_V1;
 
   // Cache duration in milliseconds (5 minutes)
   private readonly CACHE_DURATION = 5 * 60 * 1000;
@@ -554,7 +555,7 @@ export class DirectoryService {
     const baseUrl = `${this.API_BASE_URL}/users`;
     const params = new URLSearchParams();
 
-    params.set('customer', 'my_customer');
+    params.set('customer', GOOGLE_API_CONFIG.CUSTOMER_ID);
 
     if (maxResults) {
       params.set('maxResults', Math.min(maxResults, 500).toString());
@@ -586,7 +587,7 @@ export class DirectoryService {
     const baseUrl = `${this.API_BASE_URL}/groups`;
     const params = new URLSearchParams();
 
-    params.set('customer', 'my_customer');
+    params.set('customer', GOOGLE_API_CONFIG.CUSTOMER_ID);
 
     if (maxResults) {
       params.set('maxResults', Math.min(maxResults, 200).toString());
@@ -734,30 +735,6 @@ export class DirectoryService {
   }
 
   private handleApiError(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      switch (error.status) {
-        case 401:
-          return 'Authentication required. Please log in again.';
-        case 403:
-          return 'Insufficient permissions to access directory. Please ensure you have the required admin privileges.';
-        case 404:
-          return 'Directory service not found. Please check your Google Workspace configuration.';
-        case 429:
-          return 'Too many requests. Please try again later.';
-        case 500:
-        case 502:
-        case 503:
-        case 504:
-          return 'Google service temporarily unavailable. Please try again later.';
-        default:
-          return `Failed to fetch directory data: ${error.message || 'Unknown error'}`;
-      }
-    }
-
-    if (error && typeof error === 'object' && 'message' in error) {
-      return `Error: ${(error as Error).message}`;
-    }
-
-    return 'Failed to fetch directory data. Please try again.';
+    return GoogleApiErrorHandler.handleDirectoryError(error);
   }
 }
