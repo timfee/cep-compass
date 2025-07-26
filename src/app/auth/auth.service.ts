@@ -83,6 +83,9 @@ export class AuthService {
     provider.addScope(
       'https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
     );
+    provider.addScope(
+      'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
+    );
 
     try {
       await signInWithPopup(this.auth, provider);
@@ -109,6 +112,20 @@ export class AuthService {
       throw new Error('Cannot select CEP Admin role: Not available.');
     }
     this.selectedRole.set(role);
+  }
+
+  async getAccessToken(): Promise<string | null> {
+    const currentUser = this.user();
+    if (!currentUser) {
+      return null;
+    }
+    try {
+      const token = await currentUser.getIdToken();
+      return token;
+    } catch (error) {
+      console.error('Failed to get access token:', error);
+      return null;
+    }
   }
 
   private async updateAvailableRoles(): Promise<void> {
