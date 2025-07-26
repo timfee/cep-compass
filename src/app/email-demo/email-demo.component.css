@@ -1,0 +1,15 @@
+.email-demo-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.demo-card {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .email-demo-container {
+    padding: 16px;
+  }
+}

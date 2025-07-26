@@ -1,0 +1,251 @@
+<mat-card class="email-composer-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>email</mat-icon>
+      Email Composer
+    </mat-card-title>
+    <mat-card-subtitle>
+      Create and customize email templates with rich text editing
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="emailForm" class="email-composer-form">
+      <!-- Template Selection -->
+      <div class="template-selection-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Email Template</mat-label>
+          <mat-select formControlName="templateId" (selectionChange)="loadTemplate($event.value)">
+            @for (template of templates(); track template.id) {
+              <mat-option [value]="template.id">
+                <div class="template-option">
+                  <span class="template-name">{{ template.name }}</span>
+                  <mat-chip [color]="getCategoryColor(template.category)" class="category-chip">
+                    {{ getCategoryDisplayName(template.category) }}
+                  </mat-chip>
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+          <mat-hint>Choose from pre-built templates or custom templates</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!-- Variable Configuration -->
+      @if (selectedTemplate(); as template) {
+        <div class="variables-section">
+          <h3>Template Variables</h3>
+          <div class="variables-grid">
+            @for (variable of template.variables; track variable.key) {
+              <mat-form-field appearance="outline" class="variable-field">
+                <mat-label>{{ variable.label }} @if (variable.required) { * }</mat-label>
+                
+                @if (variable.type === 'select') {
+                  <mat-select [value]="variableValues()[variable.key] || ''" 
+                             (selectionChange)="setVariable(variable.key, $event.value)">
+                    @for (option of variable.options; track option) {
+                      <mat-option [value]="option">{{ option }}</mat-option>
+                    }
+                  </mat-select>
+                } @else {
+                  <input matInput 
+                         #inputRef
+                         [type]="variable.type === 'number' ? 'number' : 'text'"
+                         [value]="variableValues()[variable.key] || variable.defaultValue || ''"
+                         (input)="setVariable(variable.key, inputRef.value)"
+                         [required]="variable.required">
+                }
+                
+                <mat-hint>{{ variable.key }}</mat-hint>
+                <button mat-icon-button 
+                        matSuffix 
+                        type="button"
+                        (click)="insertVariable(variable)"
+                        matTooltip="Insert variable into email body">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Recipients Section -->
+      <div class="recipients-section">
+        <h3>Recipients</h3>
+        
+        <!-- To Field -->
+        <div class="recipient-field">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>To (Recipients)</mat-label>
+            <input matInput 
+                   formControlName="recipientInput"
+                   placeholder="Enter email address and press Enter"
+                   (keydown)="onEmailInputKeydown($event, 'recipient')">
+            <button mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="addRecipient(emailForm.get('recipientInput')?.value || '')">
+              <mat-icon>add</mat-icon>
+            </button>
+          </mat-form-field>
+          
+          <div class="email-chips">
+            @for (email of recipientChips(); track email) {
+              <mat-chip (removed)="removeRecipient(email)">
+                {{ email }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            }
+          </div>
+        </div>
+
+        <!-- CC Field -->
+        <div class="recipient-field">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>CC (Optional)</mat-label>
+            <input matInput 
+                   formControlName="ccInput"
+                   placeholder="Enter email address and press Enter"
+                   (keydown)="onEmailInputKeydown($event, 'cc')">
+            <button mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="addCc(emailForm.get('ccInput')?.value || '')">
+              <mat-icon>add</mat-icon>
+            </button>
+          </mat-form-field>
+          
+          <div class="email-chips">
+            @for (email of ccChips(); track email) {
+              <mat-chip (removed)="removeCc(email)">
+                {{ email }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Line -->
+      <div class="subject-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Subject Line</mat-label>
+          <input matInput 
+                 formControlName="subject"
+                 [value]="previewSubject()"
+                 placeholder="Email subject">
+          <mat-hint>Variables will be automatically substituted</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!-- Editor Tabs -->
+      <div class="editor-section">
+        <mat-tab-group>
+          <!-- Compose Tab -->
+          <mat-tab label="Compose">
+            <div class="editor-toolbar">
+              <mat-slide-toggle 
+                [checked]="isPreviewMode()"
+                (change)="togglePreview()"
+                class="preview-toggle">
+                Preview Mode
+              </mat-slide-toggle>
+              
+              @if (!isPreviewMode()) {
+                <div class="formatting-buttons">
+                  <button mat-icon-button 
+                          type="button"
+                          (click)="insertFormatting('**', '**')"
+                          matTooltip="Bold">
+                    <mat-icon>format_bold</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          type="button"
+                          (click)="insertFormatting('*', '*')"
+                          matTooltip="Italic">
+                    <mat-icon>format_italic</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          type="button"
+                          (click)="insertFormatting('<h2>', '</h2>')"
+                          matTooltip="Heading">
+                    <mat-icon>title</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          type="button"
+                          (click)="insertFormatting('<p>', '</p>')"
+                          matTooltip="Paragraph">
+                    <mat-icon>notes</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (!isPreviewMode()) {
+              <!-- Rich Text Editor (Simple textarea for now) -->
+              <div class="editor-container">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email Content</mat-label>
+                  <textarea matInput 
+                           [value]="editorContent()"
+                           (input)="onTextareaInput($event)"
+                           [placeholder]="editorConfig.placeholder"
+                           [style.min-height]="editorConfig.minHeight"
+                           [style.max-height]="editorConfig.maxHeight"
+                           rows="15"
+                           class="editor-textarea">
+                  </textarea>
+                  <mat-hint>Use HTML tags for formatting</mat-hint>
+                </mat-form-field>
+              </div>
+            } @else {
+              <!-- Preview Mode -->
+              <div class="preview-container" [innerHTML]="getPreview()">
+              </div>
+            }
+          </mat-tab>
+
+          <!-- HTML Source Tab -->
+          <mat-tab label="HTML Source">
+            <mat-form-field appearance="outline" class="full-width source-field">
+              <mat-label>HTML Source</mat-label>
+              <textarea matInput 
+                        [value]="getPreview()"
+                        readonly
+                        rows="20"
+                        class="source-textarea">
+              </textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <!-- Action Buttons -->
+  <mat-card-actions align="end" class="action-buttons">
+    <button mat-button 
+            (click)="copyToClipboard()"
+            matTooltip="Copy email content to clipboard">
+      <mat-icon>content_copy</mat-icon>
+      Copy to Clipboard
+    </button>
+    
+    <button mat-button 
+            (click)="openInGmail()"
+            matTooltip="Open in Gmail compose"
+            color="accent">
+      <mat-icon>open_in_new</mat-icon>
+      Open in Gmail
+    </button>
+    
+    <button mat-raised-button 
+            (click)="composeEmail()"
+            color="primary"
+            [disabled]="!selectedTemplate() || recipientChips().length === 0">
+      <mat-icon>send</mat-icon>
+      Compose Email
+    </button>
+  </mat-card-actions>
+</mat-card>
