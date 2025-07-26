@@ -13,7 +13,6 @@ describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
   let mockRouter: jasmine.SpyObj<Router>;
-  let mockDirectoryService: jasmine.SpyObj<DirectoryService>;
 
   beforeEach(async () => {
     const authServiceSpy = jasmine.createSpyObj('AuthService', [], {
@@ -45,10 +44,7 @@ describe('DashboardComponent', () => {
     component = fixture.componentInstance;
     mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    mockDirectoryService = TestBed.inject(DirectoryService) as jasmine.SpyObj<DirectoryService>;
     fixture.detectChanges();
-  });
-// Removed redundant initialization code.
   });
 
   it('should create', () => {

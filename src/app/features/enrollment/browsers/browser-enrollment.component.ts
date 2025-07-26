@@ -33,7 +33,6 @@ import {
 import { OrgUnitsService, OrgUnit } from '../../../services/org-units.service';
 import {
   EmailTemplateService,
-  ComposedEmail,
 } from '../../../services/email-template.service';
 
 // Components
