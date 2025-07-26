@@ -159,7 +159,7 @@ export class OneClickActivationComponent implements OnInit {
       await this.directoryService.fetchInitialData();
       const users = this.directoryService.users();
       const hasActiveProfiles = users.length > 0 && 
-        users.some(user => !user.suspended && user.lastLoginTime);
+        users.some(user => !user.suspended && user.lastLoginTime !== null && user.lastLoginTime !== undefined);
 
       this._state.update(state => ({
         ...state,
