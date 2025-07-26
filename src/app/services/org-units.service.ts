@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 
 /**
@@ -170,6 +171,7 @@ export class OrgUnitsService {
       const response = await this.http
         .get<OrgUnitsApiResponse>(url, { headers })
         .toPromise();
+
 
       if (response?.organizationUnits) {
         const mappedUnits = response.organizationUnits.map(
