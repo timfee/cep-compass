@@ -15,8 +15,8 @@ export class GoogleApiErrorHandler {
    */
   static handleApiError(
     error: unknown, 
-    serviceName: string = 'Google service',
-    defaultAction: string = 'complete the operation'
+    serviceName = 'Google service',
+    defaultAction = 'complete the operation'
   ): string {
     if (error instanceof HttpErrorResponse) {
       switch (error.status) {

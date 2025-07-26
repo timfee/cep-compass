@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';

@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
 import { CEP_ADMIN_PRIVILEGES, GoogleApiUtils } from '../shared/constants/google-api.constants';
-import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
 
 export interface RolePrivilege {
   privilegeName: string;
