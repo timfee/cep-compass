@@ -37,8 +37,8 @@ import {
 } from '../../services/email-template.service';
 
 /**
- * Email composer component with ngx-editor integration
- * Provides rich text editing with template selection and variable substitution
+ * Email composer component for template-based email creation
+ * Provides HTML email editing with template selection and variable substitution
  */
 @Component({
   selector: 'app-email-composer',

@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login';
 import { SelectRoleComponent } from './auth/select-role/select-role';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -102,35 +101,6 @@ export const routes: Routes = [
     component: SelectRoleComponent,
     canActivate: [AuthGuard],
     data: { authGuardPipe: () => redirectUnauthorizedTo(['/login']) },
-  },
-  {
-    path: 'email-template-demo',
-    component: EmailStandaloneDemoComponent,
-    // No auth guard - public demo
-  },
-  {
-    path: 'profile-enrollment-demo',
-    loadComponent: () =>
-      import(
-        './features/enrollment/profiles/profile-enrollment-demo.component'
-      ).then((m) => m.ProfileEnrollmentDemoComponent),
-    // No auth guard - public demo
-  },
-  {
-    path: 'one-click-demo',
-    loadComponent: () =>
-      import(
-        './features/security/one-click/one-click-activation-demo.component'
-      ).then((m) => m.OneClickActivationDemoComponent),
-    // No auth guard - public demo
-  },
-  {
-    path: 'dlp-demo',
-    loadComponent: () =>
-      import('./features/security/dlp/dlp-configuration-demo.component').then(
-        (m) => m.DlpConfigurationDemoComponent,
-      ),
-    // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },
 ];
