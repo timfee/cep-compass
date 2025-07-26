@@ -331,7 +331,7 @@ export class EmailTemplateService {
       );
       this._customTemplates.set(validTemplates);
       this.saveCustomTemplatesToStorage();
-    } catch (error) {
+    } catch {
       throw new Error('Invalid template data format');
     }
   }

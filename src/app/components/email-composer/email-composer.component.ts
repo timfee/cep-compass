@@ -234,6 +234,16 @@ export class EmailComposerComponent implements OnInit {
   }
 
   /**
+   * Handles textarea input events in a type-safe way
+   */
+  onTextareaInput(event: Event): void {
+    const target = event.target as HTMLTextAreaElement | null;
+    if (target) {
+      this.onEditorContentChange(target.value);
+    }
+  }
+
+  /**
    * Updates editor content
    */
   onEditorContentChange(content: string): void {
@@ -250,7 +260,7 @@ export class EmailComposerComponent implements OnInit {
       this.snackBar.open('Email content copied to clipboard', 'Close', {
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       this.snackBar.open('Failed to copy to clipboard', 'Close', {
         duration: 3000,
       });
