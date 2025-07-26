@@ -105,31 +105,31 @@ function isValidUserApiResponse(data: unknown): data is NonNullable<UsersApiResp
   const user = data as Record<string, unknown>;
   
   // Check required fields
-  if (typeof user.id !== 'string' || typeof user.primaryEmail !== 'string') {
+  if (typeof user['id'] !== 'string' || typeof user['primaryEmail'] !== 'string') {
     return false;
   }
   
   // Validate name object structure if present
-  if (user.name !== undefined) {
-    if (typeof user.name !== 'object' || user.name === null) {
+  if (user['name'] !== undefined) {
+    if (typeof user['name'] !== 'object' || user['name'] === null) {
       return false;
     }
-    const name = user.name as Record<string, unknown>;
-    if (name.givenName !== undefined && typeof name.givenName !== 'string') return false;
-    if (name.familyName !== undefined && typeof name.familyName !== 'string') return false;
-    if (name.fullName !== undefined && typeof name.fullName !== 'string') return false;
+    const name = user['name'] as Record<string, unknown>;
+    if (name['givenName'] !== undefined && typeof name['givenName'] !== 'string') return false;
+    if (name['familyName'] !== undefined && typeof name['familyName'] !== 'string') return false;
+    if (name['fullName'] !== undefined && typeof name['fullName'] !== 'string') return false;
   }
   
   // Validate emails array if present
-  if (user.emails !== undefined) {
-    if (!Array.isArray(user.emails)) {
+  if (user['emails'] !== undefined) {
+    if (!Array.isArray(user['emails'])) {
       return false;
     }
-    for (const email of user.emails) {
+    for (const email of user['emails']) {
       if (email && typeof email === 'object') {
         const emailObj = email as Record<string, unknown>;
-        if (emailObj.address !== undefined && typeof emailObj.address !== 'string') return false;
-        if (emailObj.primary !== undefined && typeof emailObj.primary !== 'boolean') return false;
+        if (emailObj['address'] !== undefined && typeof emailObj['address'] !== 'string') return false;
+        if (emailObj['primary'] !== undefined && typeof emailObj['primary'] !== 'boolean') return false;
       }
     }
   }
@@ -145,21 +145,21 @@ function isValidGroupApiResponse(data: unknown): data is NonNullable<GroupsApiRe
   const group = data as Record<string, unknown>;
   
   // Check required fields
-  if (typeof group.id !== 'string' || typeof group.email !== 'string' || typeof group.name !== 'string') {
+  if (typeof group['id'] !== 'string' || typeof group['email'] !== 'string' || typeof group['name'] !== 'string') {
     return false;
   }
   
   // Validate optional fields
-  if (group.description !== undefined && typeof group.description !== 'string') return false;
-  if (group.directMembersCount !== undefined && typeof group.directMembersCount !== 'string') return false;
-  if (group.adminCreated !== undefined && typeof group.adminCreated !== 'boolean') return false;
+  if (group['description'] !== undefined && typeof group['description'] !== 'string') return false;
+  if (group['directMembersCount'] !== undefined && typeof group['directMembersCount'] !== 'string') return false;
+  if (group['adminCreated'] !== undefined && typeof group['adminCreated'] !== 'boolean') return false;
   
   // Validate aliases array if present
-  if (group.aliases !== undefined) {
-    if (!Array.isArray(group.aliases)) {
+  if (group['aliases'] !== undefined) {
+    if (!Array.isArray(group['aliases'])) {
       return false;
     }
-    for (const alias of group.aliases) {
+    for (const alias of group['aliases']) {
       if (typeof alias !== 'string') return false;
     }
   }
