@@ -1,0 +1,254 @@
+<div class="browser-enrollment-container">
+  <mat-card class="enrollment-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>laptop_chromebook</mat-icon>
+      <mat-card-title>Browser Enrollment</mat-card-title>
+      <mat-card-subtitle>Manage Chrome browser enrollment tokens</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Error Display -->
+      @if (error()) {
+        <div class="error-banner" role="alert">
+          <mat-icon>error</mat-icon>
+          <span>{{ error() }}</span>
+          <button mat-icon-button (click)="clearError()" aria-label="Clear error">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
+      <!-- View Tokens Section -->
+      <section class="tokens-section">
+        <div class="section-header">
+          <h3>Existing Enrollment Tokens</h3>
+          <button 
+            mat-icon-button 
+            (click)="refreshTokens()" 
+            matTooltip="Refresh tokens"
+            [disabled]="isLoadingTokens()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+        
+        <p class="section-description">
+          View and manage your organization's enrollment tokens in the Admin Console.
+        </p>
+        
+        <div class="action-buttons-row">
+          <button 
+            mat-raised-button 
+            color="primary"
+            (click)="openAdminConsole()"
+            class="admin-console-button">
+            <mat-icon>open_in_new</mat-icon>
+            View Tokens in Admin Console
+          </button>
+        </div>
+
+        <!-- Tokens List -->
+        @if (isLoadingTokens()) {
+          <div class="loading-section">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading enrollment tokens...</p>
+          </div>
+        } @else if (tokens().length > 0) {
+          <div class="tokens-list">
+            <h4>Recent Tokens:</h4>
+            @for (token of tokens(); track token.tokenId) {
+              <div class="token-item" [class.inactive]="!isTokenActive(token)">
+                <div class="token-info">
+                  <div class="token-path">
+                    <mat-icon>folder</mat-icon>
+                    <span>{{ token.orgUnitPath }}</span>
+                  </div>
+                  <div class="token-details">
+                    <span class="token-status" [class]="token.state.toLowerCase()">
+                      {{ token.state }}
+                    </span>
+                    <span class="token-expiry">
+                      Expires: {{ getExpirationDate(token) }}
+                    </span>
+                  </div>
+                </div>
+                @if (isTokenActive(token)) {
+                  <mat-icon class="status-icon active" matTooltip="Active token">
+                    check_circle
+                  </mat-icon>
+                } @else {
+                  <mat-icon class="status-icon inactive" matTooltip="Inactive token">
+                    cancel
+                  </mat-icon>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <mat-icon>info</mat-icon>
+            <p>No enrollment tokens found. Create your first token below.</p>
+          </div>
+        }
+      </section>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Create Token Section -->
+      <section class="create-token-section">
+        <div class="section-header">
+          <h3>Create New Enrollment Token</h3>
+          <button 
+            mat-icon-button 
+            (click)="refreshOrgUnits()" 
+            matTooltip="Refresh organizational units"
+            [disabled]="isLoadingOrgUnits()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+        
+        <div class="form-section">
+          <mat-form-field appearance="outline" class="org-unit-field">
+            <mat-label>Select Organizational Unit</mat-label>
+            <mat-select 
+              [value]="selectedOrgUnit()" 
+              (selectionChange)="setSelectedOrgUnit($event.value)"
+              [disabled]="isLoadingOrgUnits()">
+              @if (isLoadingOrgUnits()) {
+                <mat-option disabled>
+                  <mat-spinner diameter="20"></mat-spinner>
+                  Loading organizational units...
+                </mat-option>
+              } @else {
+                @for (ou of orgUnits(); track ou.orgUnitId) {
+                  <mat-option [value]="ou.orgUnitPath">
+                    {{ getOrgUnitDisplayName(ou) }}
+                  </mat-option>
+                }
+              }
+            </mat-select>
+            <mat-hint>Choose where enrolled browsers will be placed</mat-hint>
+          </mat-form-field>
+          
+          <div class="create-button-container">
+            <button 
+              mat-raised-button 
+              color="primary"
+              [disabled]="!selectedOrgUnit() || isCreating()"
+              (click)="createToken()"
+              class="create-token-button">
+              @if (isCreating()) {
+                <ng-container>
+                  <mat-spinner diameter="20"></mat-spinner>
+                  Creating...
+                </ng-container>
+              } @else {
+                <ng-container>
+                  <mat-icon>add</mat-icon>
+                  Create Token
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+        
+        <!-- Token Creation Success -->
+        @if (createdToken()) {
+          <mat-card class="token-display">
+            <mat-card-content>
+              <div class="success-header">
+                <mat-icon color="primary">check_circle</mat-icon>
+                <h4>Token Created Successfully!</h4>
+              </div>
+              
+              <div class="token-value-section">
+                <span class="token-label">Enrollment Token:</span>
+                <div class="token-value">
+                  <code>{{ maskToken(createdToken()!.token) }}</code>
+                  <button 
+                    mat-icon-button 
+                    (click)="copyToken()" 
+                    matTooltip="Copy full token to clipboard"
+                    aria-label="Copy token">
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="token-info-grid">
+                <div class="info-item">
+                  <strong>Organizational Unit:</strong>
+                  <span>{{ createdToken()!.orgUnitPath }}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Created:</strong>
+                  <span>{{ createdToken()!.createdTime | date:'medium' }}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Expires:</strong>
+                  <span>{{ getExpirationDate(createdToken()!) }}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Status:</strong>
+                  <span class="status-badge active">{{ createdToken()!.state }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </section>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Email Draft Section -->
+      <section class="email-section">
+        <h3>Draft Enrollment Email</h3>
+        <p class="section-description">
+          Create an email with enrollment instructions for your IT team.
+        </p>
+        
+        <div class="email-actions">
+          <button 
+            mat-raised-button 
+            color="accent"
+            [disabled]="!createdToken()"
+            (click)="draftEmail()"
+            class="draft-email-button">
+            <mat-icon>email</mat-icon>
+            Draft Email to IT Admin
+          </button>
+          
+          @if (!createdToken()) {
+            <div class="email-hint">
+              <mat-icon>info</mat-icon>
+              <span>Create a token first to enable email drafting</span>
+            </div>
+          }
+        </div>
+      </section>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Email Composer Dialog -->
+  @if (showEmailComposer() && createdToken()) {
+    <div class="email-composer-overlay">
+      <div class="email-composer-dialog">
+        <div class="dialog-header">
+          <h3>Draft Enrollment Email</h3>
+          <button 
+            mat-icon-button 
+            (click)="closeEmailComposer()"
+            aria-label="Close email composer">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        
+        <div class="dialog-content">
+          <app-email-composer
+            [template]="enrollmentEmailTemplate()"
+            (emailComposed)="onEmailComposed()">
+          </app-email-composer>
+        </div>
+      </div>
+    </div>
+  }
+</div>

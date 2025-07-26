@@ -1,0 +1,431 @@
+.browser-enrollment-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.enrollment-card {
+  margin-bottom: 24px;
+}
+
+.enrollment-card mat-card-header {
+  margin-bottom: 24px;
+}
+
+/* Error Banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  color: #c62828;
+}
+
+.error-banner mat-icon {
+  color: #ef5350;
+}
+
+/* Section Styling */
+section {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.section-description {
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* Button Styling */
+.action-buttons-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.admin-console-button {
+  min-width: 200px;
+}
+
+/* Loading Section */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  color: #666;
+}
+
+/* Tokens List */
+.tokens-list {
+  margin-top: 24px;
+}
+
+.tokens-list h4 {
+  margin-bottom: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.token-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: all 0.2s ease;
+}
+
+.token-item:hover {
+  border-color: #ccc;
+  background: #f5f5f5;
+}
+
+.token-item.inactive {
+  opacity: 0.6;
+  background: #f9f9f9;
+}
+
+.token-info {
+  flex: 1;
+}
+
+.token-path {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.token-details {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+.token-status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.token-status.active {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.token-status.revoked,
+.token-status.expired {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.status-icon.active {
+  color: #4caf50;
+}
+
+.status-icon.inactive {
+  color: #ff9800;
+}
+
+/* Form Section */
+.form-section {
+  max-width: 600px;
+}
+
+.org-unit-field {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.create-button-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.create-token-button {
+  min-width: 150px;
+  height: 48px;
+}
+
+/* Token Display */
+.token-display {
+  margin-top: 24px;
+  border: 2px solid #4caf50;
+  background: #f1f8e9;
+}
+
+.success-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.success-header h4 {
+  margin: 0;
+  color: #2e7d32;
+}
+
+.token-value-section {
+  margin-bottom: 24px;
+}
+
+.token-value-section .token-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.token-value {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.token-value code {
+  flex: 1;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  background: transparent;
+  word-break: break-all;
+  color: #333;
+}
+
+.token-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item strong {
+  color: #333;
+  font-size: 14px;
+}
+
+.info-item span {
+  color: #666;
+  font-size: 14px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  display: inline-block;
+  width: fit-content;
+}
+
+.status-badge.active {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+/* Email Section */
+.email-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.draft-email-button {
+  align-self: flex-start;
+  min-width: 200px;
+}
+
+.email-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+  color: #666;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+}
+
+/* Email Composer Overlay */
+.email-composer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.email-composer-dialog {
+  background: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 24px;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.dialog-content {
+  flex: 1;
+  padding: 0 24px 24px;
+  overflow: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .browser-enrollment-container {
+    padding: 16px;
+  }
+  
+  .action-buttons-row {
+    flex-direction: column;
+  }
+  
+  .admin-console-button {
+    width: 100%;
+  }
+  
+  .token-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .token-details {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .token-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .email-composer-overlay {
+    padding: 12px;
+  }
+  
+  .email-composer-dialog {
+    max-height: 95vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .create-button-container {
+    width: 100%;
+  }
+  
+  .create-token-button,
+  .draft-email-button {
+    width: 100%;
+  }
+  
+  .token-value {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .token-item {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .token-item {
+    border-color: #333;
+  }
+  
+  .token-status.active {
+    background: #000;
+    color: #fff;
+  }
+  
+  .error-banner {
+    background-color: #fff;
+    border: 2px solid #000;
+    color: #000;
+  }
+}
