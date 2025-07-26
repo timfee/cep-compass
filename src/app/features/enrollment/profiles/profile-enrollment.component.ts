@@ -18,7 +18,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 import { DirectoryService } from '../../../services/directory.service';
-import { EmailTemplateService } from '../../../services/email-template.service';
+import {
+  EmailTemplateService,
+  ComposedEmail,
+} from '../../../services/email-template.service';
 import { AuthService } from '../../../auth/auth.service';
 import { EmailComposerComponent } from '../../../components/email-composer/email-composer.component';
 
@@ -184,7 +187,8 @@ export class ProfileEnrollmentComponent implements OnInit {
   /**
    * Handles email composition completion
    */
-  onEmailComposed(email: any): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onEmailComposed(_email: ComposedEmail): void {
     // Email has been composed and is ready to send
     // In a real application, this might send the email or save it as a draft
     this.snackBar.open('Email composed successfully', 'Close', {

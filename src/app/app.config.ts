@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  ErrorHandler,
   isDevMode,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
@@ -16,6 +17,8 @@ import {
   provideFunctions,
 } from '@angular/fire/functions';
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
+import { GlobalErrorHandler } from './core/global-error.handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,16 +27,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    provideFirebaseApp(() =>
-      initializeApp({
-        projectId: 'timfee-cep-compass',
-        appId: '1:313000633718:web:f9c1b47788fa41fcdac657',
-        storageBucket: 'timfee-cep-compass.firebasestorage.app',
-        apiKey: 'AIzaSyD6KC2xozJ0-psZT_jlwpLLUxpBPgnXiCk',
-        authDomain: 'timfee-cep-compass.firebaseapp.com',
-        messagingSenderId: '313000633718',
-      }),
-    ),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFunctions(() => {
       const functions = getFunctions();

@@ -56,8 +56,10 @@ describe('ProfileEnrollmentComponent', () => {
     );
 
     // Add additional spy properties for the computed signals
-    (mockDirectoryService as any).isLoading = signal(false);
-    (mockDirectoryService as any).error = signal(null);
+    Object.assign(mockDirectoryService, {
+      isLoading: signal(false),
+      error: signal(null),
+    });
 
     mockEmailService = jasmine.createSpyObj(
       'EmailTemplateService',
@@ -111,7 +113,7 @@ describe('ProfileEnrollmentComponent', () => {
 
   it('should show loading state', () => {
     // Set loading state
-    (mockDirectoryService as any).isLoading.set(true);
+    Object.assign(mockDirectoryService, { isLoading: signal(true) });
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -121,7 +123,9 @@ describe('ProfileEnrollmentComponent', () => {
 
   it('should show error state', () => {
     // Set error state
-    (mockDirectoryService as any).error.set('Test error message');
+    Object.assign(mockDirectoryService, {
+      error: signal('Test error message'),
+    });
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -156,8 +160,8 @@ describe('ProfileEnrollmentComponent', () => {
     const buttons = fixture.nativeElement.querySelectorAll(
       'button[mat-raised-button]',
     );
-    const bulkButton = Array.from(buttons).find((btn: Element) =>
-      btn.textContent?.includes('Prepare Bulk Email'),
+    const bulkButton = Array.from(buttons).find((btn) =>
+      (btn as Element).textContent?.includes('Prepare Bulk Email'),
     ) as HTMLButtonElement;
 
     bulkButton.click();
@@ -181,7 +185,9 @@ describe('ProfileEnrollmentComponent', () => {
       href: '',
       download: '',
     };
-    spyOn(document, 'createElement').and.returnValue(mockAnchor as any);
+    spyOn(document, 'createElement').and.returnValue(
+      mockAnchor as unknown as HTMLAnchorElement,
+    );
     spyOn(document.body, 'appendChild');
     spyOn(document.body, 'removeChild');
 

@@ -1,16 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
-import { OrgUnitsService, OrgUnitNode } from '../services/org-units.service';
+import { OrgUnitsService } from '../services/org-units.service';
 
 /**
  * Demo component to test OrgUnitsService integration
@@ -209,13 +204,8 @@ import { OrgUnitsService, OrgUnitNode } from '../services/org-units.service';
     MatTreeModule,
   ],
 })
-export class OrgUnitsDemoComponent implements OnInit {
+export class OrgUnitsDemoComponent {
   protected readonly orgUnitsService = inject(OrgUnitsService);
-
-  ngOnInit(): void {
-    // Automatically fetch on component init for demo purposes
-    // In real usage, this would be triggered by user action or route
-  }
 
   fetchOrgUnits(): void {
     this.orgUnitsService.fetchOrgUnits();

@@ -2,18 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login';
 import { SelectRoleComponent } from './auth/select-role/select-role';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { OrgUnitsDemoComponent } from './org-units-demo/org-units-demo.component';
-import { EmailDemoComponent } from './email-demo/email-demo.component';
 import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
-import { DirectoryStatsComponent } from './components/directory-stats/directory-stats.component';
-import { CreateRoleComponent } from './features/admin/create-role/create-role.component';
-import { BrowserEnrollmentComponent } from './features/enrollment/browsers/browser-enrollment.component';
-import { ProfileEnrollmentComponent } from './features/enrollment/profiles/profile-enrollment.component';
-import { ProfileEnrollmentDemoComponent } from './features/enrollment/profiles/profile-enrollment-demo.component';
-import { OneClickActivationComponent } from './features/security/one-click/one-click-activation.component';
-import { OneClickActivationDemoComponent } from './features/security/one-click/one-click-activation-demo.component';
-import { DlpConfigurationComponent } from './features/security/dlp/dlp-configuration.component';
-import { DlpConfigurationDemoComponent } from './features/security/dlp/dlp-configuration-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -58,16 +47,45 @@ export const routes: Routes = [
     // This is the main, protected application view.
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'org-units-demo', component: OrgUnitsDemoComponent },
-      { path: 'email-demo', component: EmailDemoComponent },
-      { path: 'directory-stats', component: DirectoryStatsComponent },
-      { path: 'enrollment/browsers', component: BrowserEnrollmentComponent },
-      { path: 'enrollment/profiles', component: ProfileEnrollmentComponent },
-      { path: 'security/one-click', component: OneClickActivationComponent },
-      { path: 'security/dlp', component: DlpConfigurationComponent },
       {
-        path: 'admin/create-role',
-        component: CreateRoleComponent,
+        path: 'org-units-demo',
+        loadComponent: () =>
+          import('./org-units-demo/org-units-demo.component').then(
+            (m) => m.OrgUnitsDemoComponent,
+          ),
+      },
+      {
+        path: 'email-demo',
+        loadComponent: () =>
+          import('./email-demo/email-demo.component').then(
+            (m) => m.EmailDemoComponent,
+          ),
+      },
+      {
+        path: 'directory-stats',
+        loadComponent: () =>
+          import('./components/directory-stats/directory-stats.component').then(
+            (m) => m.DirectoryStatsComponent,
+          ),
+      },
+      {
+        path: 'enrollment',
+        loadChildren: () =>
+          import('./features/enrollment/enrollment.routes').then(
+            (m) => m.enrollmentRoutes,
+          ),
+      },
+      {
+        path: 'security',
+        loadChildren: () =>
+          import('./features/security/security.routes').then(
+            (m) => m.securityRoutes,
+          ),
+      },
+      {
+        path: 'admin',
+        loadChildren: () =>
+          import('./features/admin/admin.routes').then((m) => m.adminRoutes),
         canActivate: [superAdminGuard],
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -92,17 +110,26 @@ export const routes: Routes = [
   },
   {
     path: 'profile-enrollment-demo',
-    component: ProfileEnrollmentDemoComponent,
+    loadComponent: () =>
+      import(
+        './features/enrollment/profiles/profile-enrollment-demo.component'
+      ).then((m) => m.ProfileEnrollmentDemoComponent),
     // No auth guard - public demo
   },
   {
     path: 'one-click-demo',
-    component: OneClickActivationDemoComponent,
+    loadComponent: () =>
+      import(
+        './features/security/one-click/one-click-activation-demo.component'
+      ).then((m) => m.OneClickActivationDemoComponent),
     // No auth guard - public demo
   },
   {
     path: 'dlp-demo',
-    component: DlpConfigurationDemoComponent,
+    loadComponent: () =>
+      import('./features/security/dlp/dlp-configuration-demo.component').then(
+        (m) => m.DlpConfigurationDemoComponent,
+      ),
     // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },
