@@ -7,7 +7,7 @@ describe('EmailTemplateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(EmailTemplateService);
-    
+
     // Clear localStorage before each test
     localStorage.clear();
   });
@@ -24,9 +24,9 @@ describe('EmailTemplateService', () => {
     it('should load pre-built templates', () => {
       const templates = service.templates();
       expect(templates.length).toBeGreaterThan(0);
-      
+
       // Check for expected pre-built templates
-      const templateIds = templates.map(t => t.id);
+      const templateIds = templates.map((t) => t.id);
       expect(templateIds).toContain('browser-enrollment-token');
       expect(templateIds).toContain('user-chrome-profile-login');
       expect(templateIds).toContain('security-policy-notification');
@@ -35,25 +35,27 @@ describe('EmailTemplateService', () => {
     it('should select a template by ID', () => {
       const templates = service.templates();
       const firstTemplate = templates[0];
-      
+
       service.selectTemplate(firstTemplate.id);
-      
+
       expect(service.selectedTemplate()).toEqual(firstTemplate);
     });
 
     it('should initialize variable values with defaults when selecting template', () => {
       const templates = service.templates();
-      const templateWithDefaults = templates.find(t => 
-        t.variables.some(v => v.defaultValue)
+      const templateWithDefaults = templates.find((t) =>
+        t.variables.some((v) => v.defaultValue),
       );
-      
+
       if (templateWithDefaults) {
         service.selectTemplate(templateWithDefaults.id);
-        
+
         const values = service.variableValues();
-        const defaultVariables = templateWithDefaults.variables.filter(v => v.defaultValue);
-        
-        defaultVariables.forEach(variable => {
+        const defaultVariables = templateWithDefaults.variables.filter(
+          (v) => v.defaultValue,
+        );
+
+        defaultVariables.forEach((variable) => {
           expect(values[variable.key]).toBe(variable.defaultValue || '');
         });
       }
@@ -70,9 +72,9 @@ describe('EmailTemplateService', () => {
     it('should set variable value', () => {
       const testKey = 'testKey';
       const testValue = 'testValue';
-      
+
       service.setVariableValue(testKey, testValue);
-      
+
       expect(service.variableValues()[testKey]).toBe(testValue);
     });
 
@@ -82,9 +84,9 @@ describe('EmailTemplateService', () => {
         key2: 'value2',
         key3: 'value3',
       };
-      
+
       service.setVariableValues(testValues);
-      
+
       const values = service.variableValues();
       Object.entries(testValues).forEach(([key, value]) => {
         expect(values[key]).toBe(value);
@@ -94,9 +96,9 @@ describe('EmailTemplateService', () => {
     it('should clear variable values', () => {
       service.setVariableValue('test', 'value');
       expect(Object.keys(service.variableValues()).length).toBeGreaterThan(0);
-      
+
       service.clearVariableValues();
-      
+
       expect(Object.keys(service.variableValues()).length).toBe(0);
     });
   });
@@ -112,9 +114,9 @@ describe('EmailTemplateService', () => {
       if (template && template.variables.length > 0) {
         const variable = template.variables[0];
         const testValue = 'Test Value';
-        
+
         service.setVariableValue(variable.key, testValue);
-        
+
         const preview = service.previewHtml();
         expect(preview).toContain(testValue);
         expect(preview).not.toContain(`{{${variable.key}}}`);
@@ -126,9 +128,9 @@ describe('EmailTemplateService', () => {
       if (template && template.variables.length > 0) {
         const variable = template.variables[0];
         const testValue = 'Test Value';
-        
+
         service.setVariableValue(variable.key, testValue);
-        
+
         const preview = service.previewSubject();
         if (template.subject.includes(`{{${variable.key}}}`)) {
           expect(preview).toContain(testValue);
@@ -141,7 +143,7 @@ describe('EmailTemplateService', () => {
       const template = service.selectedTemplate();
       if (template && template.variables.length > 0) {
         const variable = template.variables[0];
-        
+
         // Don't set any value for the variable
         const preview = service.previewHtml();
         expect(preview).toContain(`{{${variable.key}}}`);
@@ -159,7 +161,7 @@ describe('EmailTemplateService', () => {
       const template = service.selectedTemplate();
       if (template) {
         // Set all required variables
-        template.variables.forEach(variable => {
+        template.variables.forEach((variable) => {
           if (variable.required) {
             service.setVariableValue(variable.key, `test-${variable.key}`);
           }
@@ -177,10 +179,12 @@ describe('EmailTemplateService', () => {
 
     it('should throw error when required variables are missing', () => {
       const template = service.selectedTemplate();
-      if (template && template.variables.some(v => v.required)) {
+      if (template && template.variables.some((v) => v.required)) {
         const recipients = ['test@example.com'];
-        
-        expect(() => service.composeEmail(recipients)).toThrowError(/Missing required variables/);
+
+        expect(() => service.composeEmail(recipients)).toThrowError(
+          /Missing required variables/,
+        );
       }
     });
 
@@ -188,7 +192,7 @@ describe('EmailTemplateService', () => {
       const template = service.selectedTemplate();
       if (template) {
         // Set all required variables
-        template.variables.forEach(variable => {
+        template.variables.forEach((variable) => {
           if (variable.required) {
             service.setVariableValue(variable.key, `test-${variable.key}`);
           }
@@ -212,8 +216,8 @@ describe('EmailTemplateService', () => {
     it('should validate required variables correctly', () => {
       const template = service.selectedTemplate();
       if (template) {
-        const requiredVariables = template.variables.filter(v => v.required);
-        
+        const requiredVariables = template.variables.filter((v) => v.required);
+
         if (requiredVariables.length > 0) {
           // Initially should be invalid
           let validation = service.validateRequiredVariables();
@@ -221,7 +225,7 @@ describe('EmailTemplateService', () => {
           expect(validation.missingVariables.length).toBeGreaterThan(0);
 
           // Set all required variables
-          requiredVariables.forEach(variable => {
+          requiredVariables.forEach((variable) => {
             service.setVariableValue(variable.key, `test-${variable.key}`);
           });
 
@@ -241,17 +245,24 @@ describe('EmailTemplateService', () => {
         subject: 'Test Subject {{name}}',
         body: '<p>Hello {{name}}</p>',
         variables: [
-          { key: 'name', label: 'Name', type: 'text', required: true } as EmailVariable
+          {
+            key: 'name',
+            label: 'Name',
+            type: 'text',
+            required: true,
+          } as EmailVariable,
         ],
         category: 'general' as const,
       };
 
       const initialCount = service.templates().length;
       service.saveCustomTemplate(customTemplate);
-      
+
       expect(service.templates().length).toBe(initialCount + 1);
-      
-      const savedTemplate = service.templates().find(t => t.name === customTemplate.name);
+
+      const savedTemplate = service
+        .templates()
+        .find((t) => t.name === customTemplate.name);
       expect(savedTemplate).toBeTruthy();
       expect(savedTemplate!.id).toContain('custom-');
     });
@@ -266,14 +277,18 @@ describe('EmailTemplateService', () => {
       };
 
       service.saveCustomTemplate(customTemplate);
-      const savedTemplate = service.templates().find(t => t.name === customTemplate.name);
-      
+      const savedTemplate = service
+        .templates()
+        .find((t) => t.name === customTemplate.name);
+
       if (savedTemplate) {
         const initialCount = service.templates().length;
         service.deleteCustomTemplate(savedTemplate.id);
-        
+
         expect(service.templates().length).toBe(initialCount - 1);
-        expect(service.templates().find(t => t.id === savedTemplate.id)).toBeFalsy();
+        expect(
+          service.templates().find((t) => t.id === savedTemplate.id),
+        ).toBeFalsy();
       }
     });
 
@@ -287,20 +302,24 @@ describe('EmailTemplateService', () => {
       };
 
       service.saveCustomTemplate(customTemplate);
-      
+
       const exportData = service.exportTemplates();
       expect(exportData).toBeTruthy();
-      
+
       // Clear custom templates
-      const savedTemplate = service.templates().find(t => t.name === customTemplate.name);
+      const savedTemplate = service
+        .templates()
+        .find((t) => t.name === customTemplate.name);
       if (savedTemplate) {
         service.deleteCustomTemplate(savedTemplate.id);
       }
-      
+
       // Import them back
       service.importTemplates(exportData);
-      
-      const importedTemplate = service.templates().find(t => t.name === customTemplate.name);
+
+      const importedTemplate = service
+        .templates()
+        .find((t) => t.name === customTemplate.name);
       expect(importedTemplate).toBeTruthy();
     });
   });
@@ -310,9 +329,9 @@ describe('EmailTemplateService', () => {
       const recipients = ['test@example.com'];
       const subject = 'Test Subject';
       const body = '<p>Test Body</p>';
-      
+
       const url = service.getGmailComposeUrl(recipients, subject, body);
-      
+
       expect(url).toContain('https://mail.google.com/mail/');
       expect(url).toContain('view=cm');
       expect(url).toContain('to=test%40example.com');
@@ -322,7 +341,9 @@ describe('EmailTemplateService', () => {
 
     it('should copy to clipboard', async () => {
       // Mock clipboard API
-      const mockWriteText = jasmine.createSpy('writeText').and.returnValue(Promise.resolve());
+      const mockWriteText = jasmine
+        .createSpy('writeText')
+        .and.returnValue(Promise.resolve());
       Object.assign(navigator, {
         clipboard: {
           writeText: mockWriteText,
@@ -335,7 +356,7 @@ describe('EmailTemplateService', () => {
 
       const testText = 'Test text to copy';
       await service.copyToClipboard(testText);
-      
+
       expect(mockWriteText).toHaveBeenCalledWith(testText);
     });
   });

@@ -59,38 +59,38 @@ export class DlpConfigurationDemoComponent {
     {
       id: 'sensitive-data-audit',
       name: 'Sensitive Data Monitoring',
-      description: 'Monitor uploads of files containing SSN, credit cards, or API keys',
+      description:
+        'Monitor uploads of files containing SSN, credit cards, or API keys',
       icon: 'credit_card',
-      severity: 'low'
+      severity: 'low',
     },
     {
       id: 'external-sharing-audit',
       name: 'External Sharing Tracking',
       description: 'Track when users share files with external domains',
       icon: 'share',
-      severity: 'low'
+      severity: 'low',
     },
     {
       id: 'download-monitoring',
       name: 'Download Activity Logging',
       description: 'Log downloads of documents from corporate sites',
       icon: 'download',
-      severity: 'low'
-    }
+      severity: 'low',
+    },
   ];
 
   /**
    * Opens Google Admin Console DLP configuration page
    */
   openDlpConsole(): void {
-    const dlpConsoleUrl = 'https://admin.google.com/ac/chrome/datalossPrevention';
+    const dlpConsoleUrl =
+      'https://admin.google.com/ac/chrome/datalossPrevention';
     window.open(dlpConsoleUrl, '_blank', 'noopener,noreferrer');
-    
-    this.snackBar.open(
-      'DLP Configuration page opened in new tab', 
-      'Close', 
-      { duration: 3000 }
-    );
+
+    this.snackBar.open('DLP Configuration page opened in new tab', 'Close', {
+      duration: 3000,
+    });
   }
 
   /**
@@ -106,7 +106,7 @@ export class DlpConfigurationDemoComponent {
    */
   async copyPolicyConfig(): Promise<void> {
     const selectedTemplate = this.auditPolicyTemplates.find(
-      template => template.id === this.selectedPolicyTemplate()
+      (template) => template.id === this.selectedPolicyTemplate(),
     );
 
     if (!selectedTemplate) {
@@ -129,7 +129,7 @@ Conditions:
 Actions: Log only (no blocking)
 Scope: All users, all destinations`;
         break;
-        
+
       case 'external-sharing-audit':
         configText = `DLP Rule Configuration - External Sharing Tracking
 
@@ -143,7 +143,7 @@ Conditions:
 Actions: Log only (no blocking)
 Scope: All users`;
         break;
-        
+
       case 'download-monitoring':
         configText = `DLP Rule Configuration - Download Activity Logging
 
@@ -161,21 +161,15 @@ Scope: All users`;
 
     try {
       await navigator.clipboard.writeText(configText);
-      this.snackBar.open(
-        'Policy configuration copied to clipboard!', 
-        'Close', 
-        { 
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        }
-      );
+      this.snackBar.open('Policy configuration copied to clipboard!', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar'],
+      });
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
-      this.snackBar.open(
-        'Failed to copy to clipboard', 
-        'Close', 
-        { duration: 3000 }
-      );
+      this.snackBar.open('Failed to copy to clipboard', 'Close', {
+        duration: 3000,
+      });
     }
   }
 
@@ -184,14 +178,14 @@ Scope: All users`;
    */
   markAsConfigured(): void {
     this.dlpActivated.set(true);
-    
+
     this.snackBar.open(
-      'DLP Configuration marked as completed! (Demo mode)', 
-      'Close', 
-      { 
+      'DLP Configuration marked as completed! (Demo mode)',
+      'Close',
+      {
         duration: 5000,
-        panelClass: ['success-snackbar']
-      }
+        panelClass: ['success-snackbar'],
+      },
     );
   }
 

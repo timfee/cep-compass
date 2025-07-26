@@ -60,24 +60,25 @@ export class DlpConfigurationComponent {
     {
       id: 'sensitive-data-audit',
       name: 'Sensitive Data Monitoring',
-      description: 'Monitor uploads of files containing SSN, credit cards, or API keys',
+      description:
+        'Monitor uploads of files containing SSN, credit cards, or API keys',
       icon: 'credit_card',
-      severity: 'low'
+      severity: 'low',
     },
     {
       id: 'external-sharing-audit',
       name: 'External Sharing Tracking',
       description: 'Track when users share files with external domains',
       icon: 'share',
-      severity: 'low'
+      severity: 'low',
     },
     {
       id: 'download-monitoring',
       name: 'Download Activity Logging',
       description: 'Log downloads of documents from corporate sites',
       icon: 'download',
-      severity: 'low'
-    }
+      severity: 'low',
+    },
   ];
 
   constructor() {
@@ -89,14 +90,13 @@ export class DlpConfigurationComponent {
    * Opens Google Admin Console DLP configuration page
    */
   openDlpConsole(): void {
-    const dlpConsoleUrl = 'https://admin.google.com/ac/chrome/datalossPrevention';
+    const dlpConsoleUrl =
+      'https://admin.google.com/ac/chrome/datalossPrevention';
     window.open(dlpConsoleUrl, '_blank', 'noopener,noreferrer');
-    
-    this.snackBar.open(
-      'DLP Configuration page opened in new tab', 
-      'Close', 
-      { duration: 3000 }
-    );
+
+    this.snackBar.open('DLP Configuration page opened in new tab', 'Close', {
+      duration: 3000,
+    });
   }
 
   /**
@@ -112,7 +112,7 @@ export class DlpConfigurationComponent {
    */
   async copyPolicyConfig(): Promise<void> {
     const selectedTemplate = this.auditPolicyTemplates.find(
-      template => template.id === this.selectedPolicyTemplate()
+      (template) => template.id === this.selectedPolicyTemplate(),
     );
 
     if (!selectedTemplate) {
@@ -135,7 +135,7 @@ Conditions:
 Actions: Log only (no blocking)
 Scope: All users, all destinations`;
         break;
-        
+
       case 'external-sharing-audit':
         configText = `DLP Rule Configuration - External Sharing Tracking
 
@@ -149,7 +149,7 @@ Conditions:
 Actions: Log only (no blocking)
 Scope: All users`;
         break;
-        
+
       case 'download-monitoring':
         configText = `DLP Rule Configuration - Download Activity Logging
 
@@ -167,21 +167,15 @@ Scope: All users`;
 
     try {
       await navigator.clipboard.writeText(configText);
-      this.snackBar.open(
-        'Policy configuration copied to clipboard!', 
-        'Close', 
-        { 
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        }
-      );
+      this.snackBar.open('Policy configuration copied to clipboard!', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar'],
+      });
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
-      this.snackBar.open(
-        'Failed to copy to clipboard', 
-        'Close', 
-        { duration: 3000 }
-      );
+      this.snackBar.open('Failed to copy to clipboard', 'Close', {
+        duration: 3000,
+      });
     }
   }
 
@@ -191,15 +185,11 @@ Scope: All users`;
   markAsConfigured(): void {
     this.dlpActivated.set(true);
     this.saveActivationState();
-    
-    this.snackBar.open(
-      'DLP Configuration marked as completed!', 
-      'Close', 
-      { 
-        duration: 5000,
-        panelClass: ['success-snackbar']
-      }
-    );
+
+    this.snackBar.open('DLP Configuration marked as completed!', 'Close', {
+      duration: 5000,
+      panelClass: ['success-snackbar'],
+    });
   }
 
   /**
@@ -222,7 +212,10 @@ Scope: All users`;
         this.dlpActivated.set(state.activated || false);
       }
     } catch (error) {
-      console.warn('Failed to load DLP activation state from localStorage:', error);
+      console.warn(
+        'Failed to load DLP activation state from localStorage:',
+        error,
+      );
     }
   }
 
@@ -233,11 +226,14 @@ Scope: All users`;
     try {
       const state = {
         activated: this.dlpActivated(),
-        activatedDate: new Date().toISOString()
+        activatedDate: new Date().toISOString(),
       };
       localStorage.setItem('cep-compass-dlp', JSON.stringify(state));
     } catch (error) {
-      console.warn('Failed to save DLP activation state to localStorage:', error);
+      console.warn(
+        'Failed to save DLP activation state to localStorage:',
+        error,
+      );
     }
   }
 }

@@ -65,7 +65,7 @@ export class ProfileEnrollmentComponent implements OnInit {
 
   // Profile enrollment template
   public readonly profileEnrollmentTemplate = computed(() =>
-    this.emailService.templates().find(t => t.id === 'profile-enrollment')
+    this.emailService.templates().find((t) => t.id === 'profile-enrollment'),
   );
 
   /**
@@ -108,9 +108,11 @@ export class ProfileEnrollmentComponent implements OnInit {
     const template = this.profileEnrollmentTemplate();
     if (template) {
       // Get all active users as potential recipients
-      const activeUsers = this.directoryService.users().filter(user => !user.suspended);
-      const emails = activeUsers.map(user => user.primaryEmail);
-      
+      const activeUsers = this.directoryService
+        .users()
+        .filter((user) => !user.suspended);
+      const emails = activeUsers.map((user) => user.primaryEmail);
+
       this.emailService.selectTemplate(template.id);
       this.selectedRecipients.set(emails);
       this.bulkEmailMode.set(true);
@@ -138,13 +140,15 @@ export class ProfileEnrollmentComponent implements OnInit {
     const headers = ['Email', 'Name', 'Status', 'Org Unit', 'Last Login'];
     const csvContent = [
       headers.join(','),
-      ...users.map(user => [
-        user.primaryEmail,
-        `"${user.name.fullName}"`,
-        user.suspended ? 'Suspended' : 'Active',
-        `"${user.orgUnitPath}"`,
-        user.lastLoginTime || 'Never'
-      ].join(','))
+      ...users.map((user) =>
+        [
+          user.primaryEmail,
+          `"${user.name.fullName}"`,
+          user.suspended ? 'Suspended' : 'Active',
+          `"${user.orgUnitPath}"`,
+          user.lastLoginTime || 'Never',
+        ].join(','),
+      ),
     ].join('\n');
 
     // Create and download file
@@ -173,7 +177,7 @@ export class ProfileEnrollmentComponent implements OnInit {
       helpDeskEmail: 'support@yourcompany.com',
       deadline: 'end of this week',
       senderName: 'IT Administrator',
-      senderTitle: 'IT Administrator'
+      senderTitle: 'IT Administrator',
     };
   }
 
@@ -194,7 +198,7 @@ export class ProfileEnrollmentComponent implements OnInit {
    */
   ngOnInit(): void {
     // Fetch initial directory data if not already loaded
-    this.directoryService.fetchInitialData().catch(error => {
+    this.directoryService.fetchInitialData().catch((error) => {
       console.error('Failed to fetch initial directory data:', error);
     });
   }

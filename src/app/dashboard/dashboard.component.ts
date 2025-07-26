@@ -65,7 +65,8 @@ export class DashboardComponent {
     {
       id: 'create-cep-admin',
       title: 'Create CEP Admin Role',
-      description: 'Set up delegated admin role for Chrome Enterprise management',
+      description:
+        'Set up delegated admin role for Chrome Enterprise management',
       icon: 'admin_panel_settings',
       route: '/admin/create-role',
       requiredRole: 'superAdmin',
@@ -76,7 +77,8 @@ export class DashboardComponent {
     {
       id: 'enroll-browsers',
       title: 'Enroll Browsers',
-      description: 'Generate enrollment tokens and configure browser management',
+      description:
+        'Generate enrollment tokens and configure browser management',
       icon: 'laptop_chromebook',
       route: '/enrollment/browsers',
       requiredRole: 'any',
@@ -179,10 +181,10 @@ export class DashboardComponent {
   // Computed signals for filtered cards and categories
   public readonly categories = computed(() => {
     const allCards = this.DASHBOARD_CARDS;
-    const visibleCards = allCards.filter(card => this.canShowCard(card));
-    
-    return this.CARD_CATEGORIES.filter(category => 
-      visibleCards.some(card => card.category === category.name)
+    const visibleCards = allCards.filter((card) => this.canShowCard(card));
+
+    return this.CARD_CATEGORIES.filter((category) =>
+      visibleCards.some((card) => card.category === category.name),
     );
   });
 
@@ -191,27 +193,26 @@ export class DashboardComponent {
   public readonly availableRoles = this.authService.availableRoles;
 
   getCardsByCategory(categoryName: string): DashboardCard[] {
-    return this.DASHBOARD_CARDS
-      .filter(card => card.category === categoryName)
-      .filter(card => this.canShowCard(card))
+    return this.DASHBOARD_CARDS.filter((card) => card.category === categoryName)
+      .filter((card) => this.canShowCard(card))
       .sort((a, b) => a.order - b.order);
   }
 
   canShowCard(card: DashboardCard): boolean {
     const currentRole = this.selectedRole();
-    
+
     if (card.requiredRole === 'any') {
       return true;
     }
-    
+
     if (card.requiredRole === 'superAdmin') {
       return currentRole === 'superAdmin';
     }
-    
+
     if (card.requiredRole === 'cepAdmin') {
       return currentRole === 'cepAdmin' || currentRole === 'superAdmin';
     }
-    
+
     return false;
   }
 

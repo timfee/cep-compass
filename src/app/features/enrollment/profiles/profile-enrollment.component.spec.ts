@@ -3,7 +3,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 
 import { ProfileEnrollmentComponent } from './profile-enrollment.component';
-import { DirectoryService, DirectoryStats } from '../../../services/directory.service';
+import {
+  DirectoryService,
+  DirectoryStats,
+} from '../../../services/directory.service';
 import { EmailTemplateService } from '../../../services/email-template.service';
 import { AuthService } from '../../../auth/auth.service';
 
@@ -24,47 +27,55 @@ describe('ProfileEnrollmentComponent', () => {
 
   beforeEach(async () => {
     // Create spy objects for services
-    mockDirectoryService = jasmine.createSpyObj('DirectoryService', [
-      'fetchInitialData',
-      'refreshStats',
-    ], {
-      stats: signal(mockStats),
-      isLoading: signal(false),
-      error: signal(null),
-      users: signal([
-        {
-          id: '1',
-          primaryEmail: 'user1@example.com',
-          name: { givenName: 'John', familyName: 'Doe', fullName: 'John Doe' },
-          suspended: false,
-          orgUnitPath: '/',
-          isAdmin: false,
-          isDelegatedAdmin: false,
-          lastLoginTime: '2024-01-01T00:00:00Z',
-          creationTime: '2023-01-01T00:00:00Z',
-          emails: [{ address: 'user1@example.com', primary: true }],
-        },
-      ]),
-    });
+    mockDirectoryService = jasmine.createSpyObj(
+      'DirectoryService',
+      ['fetchInitialData', 'refreshStats'],
+      {
+        stats: signal(mockStats),
+        isLoading: signal(false),
+        error: signal(null),
+        users: signal([
+          {
+            id: '1',
+            primaryEmail: 'user1@example.com',
+            name: {
+              givenName: 'John',
+              familyName: 'Doe',
+              fullName: 'John Doe',
+            },
+            suspended: false,
+            orgUnitPath: '/',
+            isAdmin: false,
+            isDelegatedAdmin: false,
+            lastLoginTime: '2024-01-01T00:00:00Z',
+            creationTime: '2023-01-01T00:00:00Z',
+            emails: [{ address: 'user1@example.com', primary: true }],
+          },
+        ]),
+      },
+    );
 
     // Add additional spy properties for the computed signals
     (mockDirectoryService as any).isLoading = signal(false);
     (mockDirectoryService as any).error = signal(null);
 
-    mockEmailService = jasmine.createSpyObj('EmailTemplateService', [
-      'selectTemplate',
-    ], {
-      templates: signal([
-        {
-          id: 'profile-enrollment',
-          name: 'Chrome Profile Sign-in Instructions',
-          subject: 'Action Required: Sign in to Chrome with Your Company Account',
-          category: 'enrollment' as const,
-          body: 'Test template body',
-          variables: [],
-        },
-      ]),
-    });
+    mockEmailService = jasmine.createSpyObj(
+      'EmailTemplateService',
+      ['selectTemplate'],
+      {
+        templates: signal([
+          {
+            id: 'profile-enrollment',
+            name: 'Chrome Profile Sign-in Instructions',
+            subject:
+              'Action Required: Sign in to Chrome with Your Company Account',
+            category: 'enrollment' as const,
+            body: 'Test template body',
+            variables: [],
+          },
+        ]),
+      },
+    );
 
     mockAuthService = jasmine.createSpyObj('AuthService', [], {
       user: signal(null),
@@ -90,12 +101,12 @@ describe('ProfileEnrollmentComponent', () => {
 
   it('should display directory statistics', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    
+
     // Check if stats are displayed
     expect(compiled.textContent).toContain('100'); // total users
-    expect(compiled.textContent).toContain('85');  // active users
-    expect(compiled.textContent).toContain('15');  // suspended users
-    expect(compiled.textContent).toContain('25');  // total groups
+    expect(compiled.textContent).toContain('85'); // active users
+    expect(compiled.textContent).toContain('15'); // suspended users
+    expect(compiled.textContent).toContain('25'); // total groups
   });
 
   it('should show loading state', () => {
@@ -120,30 +131,40 @@ describe('ProfileEnrollmentComponent', () => {
   it('should refresh stats when refresh button is clicked', async () => {
     mockDirectoryService.refreshStats.and.returnValue(Promise.resolve());
 
-    const refreshButton = fixture.nativeElement.querySelector('[matTooltip="Refresh"]') as HTMLButtonElement;
+    const refreshButton = fixture.nativeElement.querySelector(
+      '[matTooltip="Refresh"]',
+    ) as HTMLButtonElement;
     refreshButton.click();
 
     expect(mockDirectoryService.refreshStats).toHaveBeenCalled();
   });
 
   it('should draft single email when button is clicked', () => {
-    const button = fixture.nativeElement.querySelector('[color="primary"]') as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector(
+      '[color="primary"]',
+    ) as HTMLButtonElement;
     button.click();
 
-    expect(mockEmailService.selectTemplate).toHaveBeenCalledWith('profile-enrollment');
+    expect(mockEmailService.selectTemplate).toHaveBeenCalledWith(
+      'profile-enrollment',
+    );
     expect(component.showEmailComposer()).toBe(true);
     expect(component.bulkEmailMode()).toBe(false);
   });
 
   it('should draft bulk email when button is clicked', () => {
-    const buttons = fixture.nativeElement.querySelectorAll('button[mat-raised-button]');
-    const bulkButton = Array.from(buttons).find((btn: Element) => 
-      btn.textContent?.includes('Prepare Bulk Email')
+    const buttons = fixture.nativeElement.querySelectorAll(
+      'button[mat-raised-button]',
+    );
+    const bulkButton = Array.from(buttons).find((btn: Element) =>
+      btn.textContent?.includes('Prepare Bulk Email'),
     ) as HTMLButtonElement;
-    
+
     bulkButton.click();
 
-    expect(mockEmailService.selectTemplate).toHaveBeenCalledWith('profile-enrollment');
+    expect(mockEmailService.selectTemplate).toHaveBeenCalledWith(
+      'profile-enrollment',
+    );
     expect(component.showEmailComposer()).toBe(true);
     expect(component.bulkEmailMode()).toBe(true);
     expect(component.selectedRecipients()).toContain('user1@example.com');
@@ -153,7 +174,7 @@ describe('ProfileEnrollmentComponent', () => {
     // Mock the creation of blob and URL
     spyOn(window.URL, 'createObjectURL').and.returnValue('mock-url');
     spyOn(window.URL, 'revokeObjectURL');
-    
+
     // Mock DOM methods
     const mockAnchor = {
       click: jasmine.createSpy('click'),
@@ -191,7 +212,7 @@ describe('ProfileEnrollmentComponent', () => {
       helpDeskEmail: 'support@yourcompany.com',
       deadline: 'end of this week',
       senderName: 'IT Administrator',
-      senderTitle: 'IT Administrator'
+      senderTitle: 'IT Administrator',
     });
   });
 });

@@ -29,7 +29,9 @@
 }
 
 .stat-card {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
 
 .stat-card:hover {
@@ -244,28 +246,28 @@
     padding: 16px;
     gap: 16px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .search-controls {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
-  
+
   .load-more-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .result-item {
     padding: 8px;
     gap: 12px;
   }
-  
+
   .result-avatar {
     width: 32px;
     height: 32px;

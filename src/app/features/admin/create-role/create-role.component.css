@@ -128,7 +128,7 @@
     margin: 1rem;
     max-width: none;
   }
-  
+
   .center-content,
   .existing-role-content,
   .ready-content,
@@ -136,12 +136,12 @@
   .error-content {
     padding: 1rem 0.5rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .primary-action,
   .secondary-action,
   .create-button,
@@ -150,13 +150,13 @@
     width: 100%;
     max-width: 300px;
   }
-  
+
   .large-icon {
     font-size: 3rem;
     width: 3rem;
     height: 3rem;
   }
-  
+
   .privileges-list {
     max-height: 200px;
   }

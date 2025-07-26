@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 
-import { 
-  EnrollmentTokenService, 
-  EnrollmentToken, 
-  CreateTokenRequest 
+import {
+  EnrollmentTokenService,
+  EnrollmentToken,
+  CreateTokenRequest,
 } from './enrollment-token.service';
 import { AuthService } from '../auth/auth.service';
 import { OrgUnitsService, OrgUnit } from './org-units.service';
@@ -17,7 +20,7 @@ describe('EnrollmentTokenService', () => {
 
   const mockUser = { uid: 'test-user', email: 'test@example.com' };
   const mockAccessToken = 'mock-access-token';
-  
+
   const mockOrgUnit: OrgUnit = {
     orgUnitPath: '/Engineering',
     orgUnitId: 'ou-123',
@@ -37,8 +40,13 @@ describe('EnrollmentTokenService', () => {
   };
 
   beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthService', ['user', 'getAccessToken']);
-    const orgUnitsSpy = jasmine.createSpyObj('OrgUnitsService', ['getOrgUnitByPath']);
+    const authSpy = jasmine.createSpyObj('AuthService', [
+      'user',
+      'getAccessToken',
+    ]);
+    const orgUnitsSpy = jasmine.createSpyObj('OrgUnitsService', [
+      'getOrgUnitByPath',
+    ]);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -52,11 +60,15 @@ describe('EnrollmentTokenService', () => {
     service = TestBed.inject(EnrollmentTokenService);
     httpMock = TestBed.inject(HttpTestingController);
     authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    orgUnitsServiceSpy = TestBed.inject(OrgUnitsService) as jasmine.SpyObj<OrgUnitsService>;
+    orgUnitsServiceSpy = TestBed.inject(
+      OrgUnitsService,
+    ) as jasmine.SpyObj<OrgUnitsService>;
 
     // Setup default spy returns
     authServiceSpy.user.and.returnValue(mockUser as never);
-    authServiceSpy.getAccessToken.and.returnValue(Promise.resolve(mockAccessToken));
+    authServiceSpy.getAccessToken.and.returnValue(
+      Promise.resolve(mockAccessToken),
+    );
     orgUnitsServiceSpy.getOrgUnitByPath.and.returnValue(mockOrgUnit);
   });
 
@@ -109,7 +121,7 @@ describe('EnrollmentTokenService', () => {
     it('should return true for active non-expired token', () => {
       const futureDate = new Date();
       futureDate.setFullYear(futureDate.getFullYear() + 1);
-      
+
       const activeToken: EnrollmentToken = {
         ...mockEnrollmentToken,
         state: 'ACTIVE',
@@ -131,7 +143,7 @@ describe('EnrollmentTokenService', () => {
     it('should return false for expired token', () => {
       const pastDate = new Date();
       pastDate.setFullYear(pastDate.getFullYear() - 1);
-      
+
       const expiredToken: EnrollmentToken = {
         ...mockEnrollmentToken,
         state: 'ACTIVE',
@@ -178,7 +190,7 @@ describe('EnrollmentTokenService', () => {
     it('should mask long tokens showing only last 4 characters', () => {
       const token = 'very-long-enrollment-token-123456';
       const masked = service.maskToken(token);
-      
+
       expect(masked).toBe('*****************************3456');
       expect(masked.slice(-4)).toBe('3456');
     });
@@ -186,14 +198,14 @@ describe('EnrollmentTokenService', () => {
     it('should return original token if 4 characters or less', () => {
       const shortToken = 'abc';
       const masked = service.maskToken(shortToken);
-      
+
       expect(masked).toBe('abc');
     });
 
     it('should handle exactly 4 character tokens', () => {
       const token = 'abcd';
       const masked = service.maskToken(token);
-      
+
       expect(masked).toBe('abcd');
     });
   });
@@ -202,7 +214,7 @@ describe('EnrollmentTokenService', () => {
     it('should compute activeTokensByOu correctly', () => {
       const futureDate = new Date();
       futureDate.setFullYear(futureDate.getFullYear() + 1);
-      
+
       const activeToken: EnrollmentToken = {
         ...mockEnrollmentToken,
         tokenId: 'active-1',
@@ -228,7 +240,7 @@ describe('EnrollmentTokenService', () => {
       service['_tokens'].set([activeToken, revokedToken, expiredToken]);
 
       const activeTokensByOu = service.activeTokensByOu();
-      
+
       expect(activeTokensByOu.size).toBe(1);
       expect(activeTokensByOu.has('/Engineering')).toBe(true);
       expect(activeTokensByOu.get('/Engineering')).toEqual([activeToken]);
@@ -275,21 +287,23 @@ describe('EnrollmentTokenService', () => {
     it('should reject operations when user is not authenticated', async () => {
       authServiceSpy.user.and.returnValue(null);
 
-      await expectAsync(service.listTokens()).toBeRejectedWithError('User not authenticated');
+      await expectAsync(service.listTokens()).toBeRejectedWithError(
+        'User not authenticated',
+      );
     });
   });
 
   describe('org unit validation', () => {
     it('should validate org unit exists before creating token', async () => {
       orgUnitsServiceSpy.getOrgUnitByPath.and.returnValue(undefined);
-      
+
       const createRequest: CreateTokenRequest = {
         orgUnitPath: '/NonExistent',
       };
 
-      await expectAsync(service.createToken(createRequest)).toBeRejectedWithError(
-        'Organizational unit not found: /NonExistent'
-      );
+      await expectAsync(
+        service.createToken(createRequest),
+      ).toBeRejectedWithError('Organizational unit not found: /NonExistent');
     });
   });
 });

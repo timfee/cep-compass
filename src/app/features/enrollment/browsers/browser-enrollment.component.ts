@@ -108,7 +108,7 @@ export class BrowserEnrollmentComponent implements OnInit {
   // Browser enrollment email template
   readonly enrollmentEmailTemplate = computed(() => {
     const templates = this.emailService.templates();
-    return templates.find(t => t.id === 'browser-enrollment') || undefined;
+    return templates.find((t) => t.id === 'browser-enrollment') || undefined;
   });
 
   ngOnInit(): void {
@@ -121,7 +121,7 @@ export class BrowserEnrollmentComponent implements OnInit {
    * Sets the selected organizational unit
    */
   setSelectedOrgUnit(orgUnitPath: string): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       selectedOrgUnit: orgUnitPath,
       error: null,
@@ -133,13 +133,13 @@ export class BrowserEnrollmentComponent implements OnInit {
    */
   async createToken(): Promise<void> {
     const orgUnitPath = this.selectedOrgUnit();
-    
+
     if (!orgUnitPath) {
       this.setError('Please select an organizational unit');
       return;
     }
 
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       isCreating: true,
       error: null,
@@ -150,9 +150,10 @@ export class BrowserEnrollmentComponent implements OnInit {
         orgUnitPath,
       };
 
-      const response: TokenCreationResponse = await this.enrollmentService.createToken(request);
-      
-      this._state.update(state => ({
+      const response: TokenCreationResponse =
+        await this.enrollmentService.createToken(request);
+
+      this._state.update((state) => ({
         ...state,
         isCreating: false,
         createdToken: response.token,
@@ -164,10 +165,11 @@ export class BrowserEnrollmentComponent implements OnInit {
         panelClass: ['success-snackbar'],
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create token';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create token';
       this.setError(errorMessage);
-      
-      this._state.update(state => ({
+
+      this._state.update((state) => ({
         ...state,
         isCreating: false,
       }));
@@ -222,9 +224,11 @@ export class BrowserEnrollmentComponent implements OnInit {
 
     // Set up the email template with variables
     this.emailService.selectTemplate('browser-enrollment');
-    
-    const orgUnit = this.orgUnits().find(ou => ou.orgUnitPath === token.orgUnitPath);
-    const expirationDate = token.expireTime 
+
+    const orgUnit = this.orgUnits().find(
+      (ou) => ou.orgUnitPath === token.orgUnitPath,
+    );
+    const expirationDate = token.expireTime
       ? new Date(token.expireTime).toLocaleDateString()
       : 'No expiration set';
 
@@ -236,7 +240,7 @@ export class BrowserEnrollmentComponent implements OnInit {
       senderName: '', // User will fill this in
     });
 
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       showEmailComposer: true,
     }));
@@ -249,8 +253,8 @@ export class BrowserEnrollmentComponent implements OnInit {
     this.snackBar.open('Email composed successfully!', 'Close', {
       duration: 3000,
     });
-    
-    this._state.update(state => ({
+
+    this._state.update((state) => ({
       ...state,
       showEmailComposer: false,
     }));
@@ -260,7 +264,7 @@ export class BrowserEnrollmentComponent implements OnInit {
    * Closes the email composer
    */
   closeEmailComposer(): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       showEmailComposer: false,
     }));
@@ -302,8 +306,10 @@ export class BrowserEnrollmentComponent implements OnInit {
     const token = this.createdToken();
     if (!token) return {};
 
-    const orgUnit = this.orgUnits().find(ou => ou.orgUnitPath === token.orgUnitPath);
-    
+    const orgUnit = this.orgUnits().find(
+      (ou) => ou.orgUnitPath === token.orgUnitPath,
+    );
+
     return {
       orgUnitName: orgUnit?.name || token.orgUnitPath,
       enrollmentToken: token.token,
@@ -347,7 +353,7 @@ export class BrowserEnrollmentComponent implements OnInit {
    * Sets error state
    */
   private setError(error: string): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       error,
     }));
@@ -357,7 +363,7 @@ export class BrowserEnrollmentComponent implements OnInit {
    * Clears error state
    */
   clearError(): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       error: null,
     }));

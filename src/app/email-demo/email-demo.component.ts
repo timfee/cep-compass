@@ -14,11 +14,7 @@ import { ComposedEmail } from '../services/email-template.service';
   templateUrl: './email-demo.component.html',
   styleUrl: './email-demo.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    EmailComposerComponent,
-  ],
+  imports: [CommonModule, MatCardModule, EmailComposerComponent],
 })
 export class EmailDemoComponent {
   private readonly snackBar = inject(MatSnackBar);
@@ -31,7 +27,7 @@ export class EmailDemoComponent {
     this.snackBar.open(
       `Email composed for ${email.to.length} recipient(s)`,
       'Close',
-      { duration: 3000 }
+      { duration: 3000 },
     );
   }
 }

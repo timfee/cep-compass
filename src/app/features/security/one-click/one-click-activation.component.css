@@ -142,18 +142,18 @@
   .one-click-container {
     padding: 16px;
   }
-  
+
   .feature-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .warning-card mat-card-content,
   .success-card mat-card-content {
     flex-direction: column;
     align-items: flex-start;
     text-align: center;
   }
-  
+
   .success-content {
     text-align: center;
   }

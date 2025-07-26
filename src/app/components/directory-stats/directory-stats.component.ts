@@ -14,7 +14,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { DirectoryService, DirectoryUser, DirectoryGroup } from '../../services/directory.service';
+import {
+  DirectoryService,
+  DirectoryUser,
+  DirectoryGroup,
+} from '../../services/directory.service';
 
 @Component({
   selector: 'app-directory-stats',
@@ -87,7 +91,7 @@ export class DirectoryStatsComponent implements OnInit {
 
   async onSearch(): Promise<void> {
     const query = this.searchQuery().trim();
-    
+
     if (query.length === 0) {
       this.searchResults.set({ users: [], groups: [] });
       return;
@@ -97,12 +101,12 @@ export class DirectoryStatsComponent implements OnInit {
       // For short queries, use local filtering
       const allUsers = this.directoryService.users();
       const allGroups = this.directoryService.groups();
-      
-      const filteredUsers = allUsers.filter(user => 
-        this.matchesUserQuery(user, query)
+
+      const filteredUsers = allUsers.filter((user) =>
+        this.matchesUserQuery(user, query),
       );
-      const filteredGroups = allGroups.filter(group => 
-        this.matchesGroupQuery(group, query)
+      const filteredGroups = allGroups.filter((group) =>
+        this.matchesGroupQuery(group, query),
       );
 
       this.searchResults.set({
@@ -153,7 +157,9 @@ export class DirectoryStatsComponent implements OnInit {
     return (
       group.name.toLowerCase().includes(searchTerm) ||
       group.email.toLowerCase().includes(searchTerm) ||
-      (group.description ? group.description.toLowerCase().includes(searchTerm) : false)
+      (group.description
+        ? group.description.toLowerCase().includes(searchTerm)
+        : false)
     );
   }
 }

@@ -58,14 +58,20 @@ export class OneClickActivationDemoComponent implements OnInit {
   });
 
   // Public computed signals
-  readonly hasEnrolledBrowsers = computed(() => this._state().hasEnrolledBrowsers);
-  readonly hasEnrolledProfiles = computed(() => this._state().hasEnrolledProfiles);
-  readonly prerequisitesMet = computed(() => 
-    this.hasEnrolledBrowsers() && this.hasEnrolledProfiles()
+  readonly hasEnrolledBrowsers = computed(
+    () => this._state().hasEnrolledBrowsers,
+  );
+  readonly hasEnrolledProfiles = computed(
+    () => this._state().hasEnrolledProfiles,
+  );
+  readonly prerequisitesMet = computed(
+    () => this.hasEnrolledBrowsers() && this.hasEnrolledProfiles(),
   );
   readonly isActivated = computed(() => this._state().isActivated);
   readonly lastChecked = computed(() => this._state().lastChecked);
-  readonly isCheckingPrerequisites = computed(() => this._state().isCheckingPrerequisites);
+  readonly isCheckingPrerequisites = computed(
+    () => this._state().isCheckingPrerequisites,
+  );
   readonly error = computed(() => this._state().error);
 
   // Feature cards data
@@ -73,23 +79,25 @@ export class OneClickActivationDemoComponent implements OnInit {
     {
       icon: 'shield',
       title: 'Real-time Threat Detection',
-      description: 'Identifies and blocks malicious downloads, phishing sites, and suspicious extensions'
+      description:
+        'Identifies and blocks malicious downloads, phishing sites, and suspicious extensions',
     },
     {
       icon: 'analytics',
       title: 'Security Insights Dashboard',
-      description: 'Comprehensive view of security events across your organization'
+      description:
+        'Comprehensive view of security events across your organization',
     },
     {
       icon: 'notifications_active',
       title: 'Automated Alerts',
-      description: 'Instant notifications for critical security events'
+      description: 'Instant notifications for critical security events',
     },
     {
       icon: 'policy',
       title: 'Policy Recommendations',
-      description: 'AI-powered suggestions to improve your security posture'
-    }
+      description: 'AI-powered suggestions to improve your security posture',
+    },
   ];
 
   // Learning resources
@@ -97,18 +105,18 @@ export class OneClickActivationDemoComponent implements OnInit {
     {
       icon: 'article',
       title: 'One-Click Protection Documentation',
-      url: 'https://support.google.com/chrome/a/answer/13728522'
+      url: 'https://support.google.com/chrome/a/answer/13728522',
     },
     {
       icon: 'play_circle',
       title: 'Video: Chrome Security Best Practices',
-      url: 'https://www.youtube.com/watch?v=chrome-security'
+      url: 'https://www.youtube.com/watch?v=chrome-security',
     },
     {
       icon: 'help',
       title: 'Chrome Enterprise Help Center',
-      url: 'https://support.google.com/chrome/a/'
-    }
+      url: 'https://support.google.com/chrome/a/',
+    },
   ];
 
   ngOnInit(): void {
@@ -122,10 +130,10 @@ export class OneClickActivationDemoComponent implements OnInit {
    * Simulates checking prerequisites for demo purposes
    */
   async checkPrerequisites(): Promise<void> {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       isCheckingPrerequisites: true,
-      error: null
+      error: null,
     }));
 
     // Simulate API call delay
@@ -138,7 +146,9 @@ export class OneClickActivationDemoComponent implements OnInit {
    * Simulates opening Google Admin Console Security Insights page
    */
   openSecurityInsights(): void {
-    console.log('Would open: https://admin.google.com/ac/chrome/reports/securityinsights');
+    console.log(
+      'Would open: https://admin.google.com/ac/chrome/reports/securityinsights',
+    );
     alert('Demo: Would open Security Insights page in new tab');
   }
 
@@ -146,11 +156,11 @@ export class OneClickActivationDemoComponent implements OnInit {
    * Simulates marking One-Click protection as activated
    */
   markAsActivated(): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
-      isActivated: true
+      isActivated: true,
     }));
-    
+
     console.log('Demo: One-Click Protection marked as activated');
     alert('Demo: One-Click Protection marked as activated!');
   }
@@ -183,10 +193,10 @@ export class OneClickActivationDemoComponent implements OnInit {
    * Toggle browser enrollment status for demo
    */
   toggleBrowserEnrollment(): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       hasEnrolledBrowsers: !state.hasEnrolledBrowsers,
-      lastChecked: new Date()
+      lastChecked: new Date(),
     }));
   }
 
@@ -194,10 +204,10 @@ export class OneClickActivationDemoComponent implements OnInit {
    * Toggle profile enrollment status for demo
    */
   toggleProfileEnrollment(): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       hasEnrolledProfiles: !state.hasEnrolledProfiles,
-      lastChecked: new Date()
+      lastChecked: new Date(),
     }));
   }
 
@@ -207,14 +217,14 @@ export class OneClickActivationDemoComponent implements OnInit {
     // Randomly update statuses for demo
     const hasEnrolledBrowsers = Math.random() > 0.5;
     const hasEnrolledProfiles = Math.random() > 0.3;
-    
-    this._state.update(state => ({
+
+    this._state.update((state) => ({
       ...state,
       hasEnrolledBrowsers,
       hasEnrolledProfiles,
       lastChecked: new Date(),
       isCheckingPrerequisites: false,
-      error: null
+      error: null,
     }));
   }
 }

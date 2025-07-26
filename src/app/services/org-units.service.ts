@@ -172,7 +172,6 @@ export class OrgUnitsService {
         .get<OrgUnitsApiResponse>(url, { headers })
         .toPromise();
 
-
       if (response?.organizationUnits) {
         const mappedUnits = response.organizationUnits.map(
           this.mapApiResponseToOrgUnit,

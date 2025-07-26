@@ -34,7 +34,9 @@
           </div>
           <div class="breakdown-item suspended">
             <span class="indicator"></span>
-            {{ stats().suspendedUsers }} suspended ({{ suspendedPercentage() }}%)
+            {{ stats().suspendedUsers }} suspended ({{
+              suspendedPercentage()
+            }}%)
           </div>
         </div>
       </mat-card-content>
@@ -65,13 +67,14 @@
       </mat-card-header>
       <mat-card-content>
         <div class="stat-time">
-          {{ stats().lastSyncTime | date:'short' }}
+          {{ stats().lastSyncTime | date: "short" }}
         </div>
-        <button 
-          mat-button 
-          color="primary" 
-          (click)="onRefresh()" 
-          [disabled]="isLoading()">
+        <button
+          mat-button
+          color="primary"
+          (click)="onRefresh()"
+          [disabled]="isLoading()"
+        >
           @if (isLoading()) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
@@ -93,20 +96,22 @@
       <div class="search-controls">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search users and groups</mat-label>
-          <input 
-            matInput 
+          <input
+            matInput
             [(ngModel)]="searchQuery"
             (input)="onSearch()"
             placeholder="Enter name, email, or org unit..."
-            autocomplete="off">
+            autocomplete="off"
+          />
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
-        
+
         @if (searchQuery()) {
-          <button 
-            mat-icon-button 
-            (click)="onClearSearch()" 
-            matTooltip="Clear search">
+          <button
+            mat-icon-button
+            (click)="onClearSearch()"
+            matTooltip="Clear search"
+          >
             <mat-icon>clear</mat-icon>
           </button>
         }
@@ -129,7 +134,10 @@
                   <div class="result-item user-item">
                     <div class="result-avatar">
                       @if (user.thumbnailPhotoUrl) {
-                        <img [src]="user.thumbnailPhotoUrl" [alt]="user.name.fullName">
+                        <img
+                          [src]="user.thumbnailPhotoUrl"
+                          [alt]="user.name.fullName"
+                        />
                       } @else {
                         <mat-icon>person</mat-icon>
                       }
@@ -141,12 +149,18 @@
                     </div>
                     <div class="result-status">
                       @if (user.suspended) {
-                        <mat-icon color="warn" matTooltip="Suspended">pause_circle</mat-icon>
+                        <mat-icon color="warn" matTooltip="Suspended"
+                          >pause_circle</mat-icon
+                        >
                       } @else {
-                        <mat-icon color="accent" matTooltip="Active">check_circle</mat-icon>
+                        <mat-icon color="accent" matTooltip="Active"
+                          >check_circle</mat-icon
+                        >
                       }
                       @if (user.isAdmin) {
-                        <mat-icon color="primary" matTooltip="Admin">admin_panel_settings</mat-icon>
+                        <mat-icon color="primary" matTooltip="Admin"
+                          >admin_panel_settings</mat-icon
+                        >
                       }
                     </div>
                   </div>
@@ -169,7 +183,9 @@
                       <div class="result-name">{{ group.name }}</div>
                       <div class="result-email">{{ group.email }}</div>
                       @if (group.description) {
-                        <div class="result-description">{{ group.description }}</div>
+                        <div class="result-description">
+                          {{ group.description }}
+                        </div>
                       }
                     </div>
                     <div class="result-count">
@@ -192,22 +208,24 @@
 
   <!-- Load More Actions -->
   <div class="load-more-actions">
-    <button 
-      mat-raised-button 
-      color="primary" 
-      (click)="onLoadMoreUsers()" 
-      [disabled]="!hasMoreUsers() || isLoading()">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onLoadMoreUsers()"
+      [disabled]="!hasMoreUsers() || isLoading()"
+    >
       @if (isLoading()) {
         <mat-spinner diameter="20"></mat-spinner>
       }
       Load More Users
     </button>
-    
-    <button 
-      mat-raised-button 
-      color="accent" 
-      (click)="onLoadMoreGroups()" 
-      [disabled]="!hasMoreGroups() || isLoading()">
+
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="onLoadMoreGroups()"
+      [disabled]="!hasMoreGroups() || isLoading()"
+    >
       @if (isLoading()) {
         <mat-spinner diameter="20"></mat-spinner>
       }

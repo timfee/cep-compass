@@ -25,25 +25,25 @@ This service manages Chrome browser enrollment tokens using the Chrome Enterpris
 ### Basic Usage
 
 ```typescript
-import { inject } from '@angular/core';
-import { EnrollmentTokenService } from './services/enrollment-token.service';
+import { inject } from "@angular/core";
+import { EnrollmentTokenService } from "./services/enrollment-token.service";
 
 export class MyComponent {
   private tokenService = inject(EnrollmentTokenService);
 
   async createToken() {
     const result = await this.tokenService.createToken({
-      orgUnitPath: '/Engineering',
-      tokenPermanentId: 'eng-browsers-2024'
+      orgUnitPath: "/Engineering",
+      tokenPermanentId: "eng-browsers-2024",
     });
-    
-    console.log('Token created:', result.token.token);
-    console.log('Enrollment URL:', result.enrollmentUrl);
+
+    console.log("Token created:", result.token.token);
+    console.log("Enrollment URL:", result.enrollmentUrl);
   }
 
   async listTokens() {
     const tokens = await this.tokenService.listTokens();
-    console.log('All tokens:', tokens);
+    console.log("All tokens:", tokens);
   }
 }
 ```
@@ -74,12 +74,12 @@ export class TokenListComponent {
 ```typescript
 generateInstructions(token: string) {
   const instructions = this.tokenService.generateEnrollmentInstructions(token);
-  
+
   // Instructions include platform-specific commands for:
   // - Windows (Registry modification)
   // - macOS (defaults write command)
   // - Linux (JSON policy file)
-  
+
   return instructions;
 }
 ```
@@ -87,6 +87,7 @@ generateInstructions(token: string) {
 ## Data Models
 
 ### EnrollmentToken
+
 ```typescript
 interface EnrollmentToken {
   tokenId: string;
@@ -96,12 +97,13 @@ interface EnrollmentToken {
   orgUnitPath: string;
   createdTime: string;
   revocationTime?: string;
-  state: 'ACTIVE' | 'REVOKED' | 'EXPIRED';
+  state: "ACTIVE" | "REVOKED" | "EXPIRED";
   expireTime?: string;
 }
 ```
 
 ### CreateTokenRequest
+
 ```typescript
 interface CreateTokenRequest {
   orgUnitPath: string; // Required, must exist in OrgUnits service
@@ -111,6 +113,7 @@ interface CreateTokenRequest {
 ```
 
 ### TokenCreationResponse
+
 ```typescript
 interface TokenCreationResponse {
   token: EnrollmentToken;
@@ -153,6 +156,7 @@ The service includes comprehensive unit tests covering:
 - Utility functions (masking, validation, etc.)
 
 Run tests with:
+
 ```bash
 npm run test -- --include="**/enrollment-token.service.spec.ts"
 ```

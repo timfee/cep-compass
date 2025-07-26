@@ -77,14 +77,20 @@ export class OneClickActivationComponent implements OnInit {
   });
 
   // Public computed signals
-  readonly hasEnrolledBrowsers = computed(() => this._state().hasEnrolledBrowsers);
-  readonly hasEnrolledProfiles = computed(() => this._state().hasEnrolledProfiles);
-  readonly prerequisitesMet = computed(() => 
-    this.hasEnrolledBrowsers() && this.hasEnrolledProfiles()
+  readonly hasEnrolledBrowsers = computed(
+    () => this._state().hasEnrolledBrowsers,
+  );
+  readonly hasEnrolledProfiles = computed(
+    () => this._state().hasEnrolledProfiles,
+  );
+  readonly prerequisitesMet = computed(
+    () => this.hasEnrolledBrowsers() && this.hasEnrolledProfiles(),
   );
   readonly isActivated = computed(() => this._state().isActivated);
   readonly lastChecked = computed(() => this._state().lastChecked);
-  readonly isCheckingPrerequisites = computed(() => this._state().isCheckingPrerequisites);
+  readonly isCheckingPrerequisites = computed(
+    () => this._state().isCheckingPrerequisites,
+  );
   readonly error = computed(() => this._state().error);
 
   // Feature cards data
@@ -92,23 +98,25 @@ export class OneClickActivationComponent implements OnInit {
     {
       icon: 'shield',
       title: 'Real-time Threat Detection',
-      description: 'Identifies and blocks malicious downloads, phishing sites, and suspicious extensions'
+      description:
+        'Identifies and blocks malicious downloads, phishing sites, and suspicious extensions',
     },
     {
       icon: 'analytics',
       title: 'Security Insights Dashboard',
-      description: 'Comprehensive view of security events across your organization'
+      description:
+        'Comprehensive view of security events across your organization',
     },
     {
       icon: 'notifications_active',
       title: 'Automated Alerts',
-      description: 'Instant notifications for critical security events'
+      description: 'Instant notifications for critical security events',
     },
     {
       icon: 'policy',
       title: 'Policy Recommendations',
-      description: 'AI-powered suggestions to improve your security posture'
-    }
+      description: 'AI-powered suggestions to improve your security posture',
+    },
   ];
 
   // Learning resources
@@ -116,24 +124,24 @@ export class OneClickActivationComponent implements OnInit {
     {
       icon: 'article',
       title: 'One-Click Protection Documentation',
-      url: 'https://support.google.com/chrome/a/answer/13728522'
+      url: 'https://support.google.com/chrome/a/answer/13728522',
     },
     {
       icon: 'play_circle',
       title: 'Video: Chrome Security Best Practices',
-      url: 'https://www.youtube.com/watch?v=chrome-security'
+      url: 'https://www.youtube.com/watch?v=chrome-security',
     },
     {
       icon: 'help',
       title: 'Chrome Enterprise Help Center',
-      url: 'https://support.google.com/chrome/a/'
-    }
+      url: 'https://support.google.com/chrome/a/',
+    },
   ];
 
   async ngOnInit(): Promise<void> {
     // Load activation state from localStorage
     this.loadActivationState();
-    
+
     // Check prerequisites on component load
     await this.checkPrerequisites();
   }
@@ -142,43 +150,48 @@ export class OneClickActivationComponent implements OnInit {
    * Checks prerequisites for One-Click protection activation
    */
   async checkPrerequisites(): Promise<void> {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
       isCheckingPrerequisites: true,
-      error: null
+      error: null,
     }));
 
     try {
       // Check browser enrollment status
       const tokens = await this.enrollmentService.listTokens();
-      const hasActiveBrowserTokens = tokens.some(token => 
-        this.enrollmentService.isTokenActive(token)
+      const hasActiveBrowserTokens = tokens.some((token) =>
+        this.enrollmentService.isTokenActive(token),
       );
 
       // Check profile enrollment status by looking at directory users
       await this.directoryService.fetchInitialData();
       const users = this.directoryService.users();
-      const hasActiveProfiles = users.length > 0 && 
-        users.some(user => !user.suspended && user.lastLoginTime !== null && user.lastLoginTime !== undefined);
+      const hasActiveProfiles =
+        users.length > 0 &&
+        users.some(
+          (user) =>
+            !user.suspended &&
+            user.lastLoginTime !== null &&
+            user.lastLoginTime !== undefined,
+        );
 
-      this._state.update(state => ({
+      this._state.update((state) => ({
         ...state,
         hasEnrolledBrowsers: hasActiveBrowserTokens,
         hasEnrolledProfiles: hasActiveProfiles,
         lastChecked: new Date(),
         isCheckingPrerequisites: false,
-        error: null
+        error: null,
       }));
 
       // Save check time to localStorage
       this.savePrerequisiteCheckTime();
-
     } catch (error) {
       console.error('Failed to check prerequisites:', error);
-      this._state.update(state => ({
+      this._state.update((state) => ({
         ...state,
         isCheckingPrerequisites: false,
-        error: 'Failed to check prerequisites. Please try again.'
+        error: 'Failed to check prerequisites. Please try again.',
       }));
     }
   }
@@ -187,35 +200,30 @@ export class OneClickActivationComponent implements OnInit {
    * Opens Google Admin Console Security Insights page
    */
   openSecurityInsights(): void {
-    const securityInsightsUrl = 'https://admin.google.com/ac/chrome/reports/securityinsights';
+    const securityInsightsUrl =
+      'https://admin.google.com/ac/chrome/reports/securityinsights';
     window.open(securityInsightsUrl, '_blank', 'noopener,noreferrer');
-    
-    this.snackBar.open(
-      'Security Insights page opened in new tab', 
-      'Close', 
-      { duration: 3000 }
-    );
+
+    this.snackBar.open('Security Insights page opened in new tab', 'Close', {
+      duration: 3000,
+    });
   }
 
   /**
    * Marks One-Click protection as activated and saves to localStorage
    */
   markAsActivated(): void {
-    this._state.update(state => ({
+    this._state.update((state) => ({
       ...state,
-      isActivated: true
+      isActivated: true,
     }));
 
     this.saveActivationState();
-    
-    this.snackBar.open(
-      'One-Click Protection marked as activated!', 
-      'Close', 
-      { 
-        duration: 5000,
-        panelClass: ['success-snackbar']
-      }
-    );
+
+    this.snackBar.open('One-Click Protection marked as activated!', 'Close', {
+      duration: 5000,
+      panelClass: ['success-snackbar'],
+    });
   }
 
   /**
@@ -249,9 +257,9 @@ export class OneClickActivationComponent implements OnInit {
       const storedState = localStorage.getItem('cep-compass-one-click');
       if (storedState) {
         const state: OneClickState = JSON.parse(storedState);
-        this._state.update(currentState => ({
+        this._state.update((currentState) => ({
           ...currentState,
-          isActivated: state.activated || false
+          isActivated: state.activated || false,
         }));
       }
     } catch (error) {
@@ -267,7 +275,7 @@ export class OneClickActivationComponent implements OnInit {
       const state: OneClickState = {
         activated: true,
         activatedDate: new Date().toISOString(),
-        lastPrerequisiteCheck: new Date().toISOString()
+        lastPrerequisiteCheck: new Date().toISOString(),
       };
       localStorage.setItem('cep-compass-one-click', JSON.stringify(state));
     } catch (error) {
@@ -281,10 +289,10 @@ export class OneClickActivationComponent implements OnInit {
   private savePrerequisiteCheckTime(): void {
     try {
       const existingState = localStorage.getItem('cep-compass-one-click');
-      const state: OneClickState = existingState ? 
-        JSON.parse(existingState) : 
-        { activated: false };
-      
+      const state: OneClickState = existingState
+        ? JSON.parse(existingState)
+        : { activated: false };
+
       state.lastPrerequisiteCheck = new Date().toISOString();
       localStorage.setItem('cep-compass-one-click', JSON.stringify(state));
     } catch (error) {

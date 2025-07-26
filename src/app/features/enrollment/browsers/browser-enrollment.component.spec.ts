@@ -20,47 +20,51 @@ describe('BrowserEnrollmentComponent', () => {
 
   beforeEach(async () => {
     // Create spies for services
-    mockEnrollmentService = jasmine.createSpyObj('EnrollmentTokenService', [
-      'listTokens',
-      'createToken',
-      'maskToken',
-      'isTokenActive',
-      'getTokenExpirationDate'
-    ], {
-      tokens: signal([]),
-      isLoading: signal(false),
-      error: signal(null)
-    });
+    mockEnrollmentService = jasmine.createSpyObj(
+      'EnrollmentTokenService',
+      [
+        'listTokens',
+        'createToken',
+        'maskToken',
+        'isTokenActive',
+        'getTokenExpirationDate',
+      ],
+      {
+        tokens: signal([]),
+        isLoading: signal(false),
+        error: signal(null),
+      },
+    );
 
-    mockOrgUnitService = jasmine.createSpyObj('OrgUnitsService', [
-      'fetchOrgUnits'
-    ], {
-      orgUnits: signal([]),
-      isLoading: signal(false)
-    });
+    mockOrgUnitService = jasmine.createSpyObj(
+      'OrgUnitsService',
+      ['fetchOrgUnits'],
+      {
+        orgUnits: signal([]),
+        isLoading: signal(false),
+      },
+    );
 
-    mockEmailService = jasmine.createSpyObj('EmailTemplateService', [
-      'selectTemplate',
-      'setVariableValues'
-    ], {
-      templates: signal([])
-    });
+    mockEmailService = jasmine.createSpyObj(
+      'EmailTemplateService',
+      ['selectTemplate', 'setVariableValues'],
+      {
+        templates: signal([]),
+      },
+    );
 
     mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockClipboard = jasmine.createSpyObj('Clipboard', ['copy']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        BrowserEnrollmentComponent,
-        NoopAnimationsModule
-      ],
+      imports: [BrowserEnrollmentComponent, NoopAnimationsModule],
       providers: [
         { provide: EnrollmentTokenService, useValue: mockEnrollmentService },
         { provide: OrgUnitsService, useValue: mockOrgUnitService },
         { provide: EmailTemplateService, useValue: mockEmailService },
         { provide: MatSnackBar, useValue: mockSnackBar },
-        { provide: Clipboard, useValue: mockClipboard }
-      ]
+        { provide: Clipboard, useValue: mockClipboard },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BrowserEnrollmentComponent);
@@ -97,34 +101,36 @@ describe('BrowserEnrollmentComponent', () => {
       orgUnitPath: '/test/unit',
       createdTime: '2023-01-01T00:00:00Z',
       state: 'ACTIVE' as const,
-      expireTime: '2024-01-01T00:00:00Z'
+      expireTime: '2024-01-01T00:00:00Z',
     };
 
     const mockResponse = {
       token: mockToken,
-      enrollmentUrl: 'chrome://management/enrollment?token=test-token-value'
+      enrollmentUrl: 'chrome://management/enrollment?token=test-token-value',
     };
 
-    mockEnrollmentService.createToken.and.returnValue(Promise.resolve(mockResponse));
-    
+    mockEnrollmentService.createToken.and.returnValue(
+      Promise.resolve(mockResponse),
+    );
+
     component.setSelectedOrgUnit('/test/unit');
     await component.createToken();
 
     expect(mockEnrollmentService.createToken).toHaveBeenCalledWith({
-      orgUnitPath: '/test/unit'
+      orgUnitPath: '/test/unit',
     });
     expect(component.createdToken()).toEqual(mockToken);
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Enrollment token created successfully!',
       'Close',
-      jasmine.any(Object)
+      jasmine.any(Object),
     );
   });
 
   it('should handle token creation error', async () => {
     const error = new Error('Token creation failed');
     mockEnrollmentService.createToken.and.returnValue(Promise.reject(error));
-    
+
     component.setSelectedOrgUnit('/test/unit');
     await component.createToken();
 
@@ -132,7 +138,7 @@ describe('BrowserEnrollmentComponent', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Token creation failed',
       'Close',
-      jasmine.any(Object)
+      jasmine.any(Object),
     );
   });
 
@@ -145,13 +151,13 @@ describe('BrowserEnrollmentComponent', () => {
       orgUnitPath: '/test/unit',
       createdTime: '2023-01-01T00:00:00Z',
       state: 'ACTIVE' as const,
-      expireTime: '2024-01-01T00:00:00Z'
+      expireTime: '2024-01-01T00:00:00Z',
     };
 
     // Set up the component with a created token
-    component['_state'].update(state => ({
+    component['_state'].update((state) => ({
       ...state,
-      createdToken: mockToken
+      createdToken: mockToken,
     }));
 
     mockClipboard.copy.and.returnValue(true);
@@ -162,7 +168,7 @@ describe('BrowserEnrollmentComponent', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Token copied to clipboard!',
       'Close',
-      jasmine.any(Object)
+      jasmine.any(Object),
     );
   });
 
@@ -172,7 +178,7 @@ describe('BrowserEnrollmentComponent', () => {
     expect(window.open).toHaveBeenCalledWith(
       'https://admin.google.com/ac/chrome/browser-tokens?org&hl=en',
       '_blank',
-      'noopener,noreferrer'
+      'noopener,noreferrer',
     );
   });
 
@@ -181,7 +187,7 @@ describe('BrowserEnrollmentComponent', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Please create a token first',
       'Close',
-      jasmine.any(Object)
+      jasmine.any(Object),
     );
   });
 
@@ -194,18 +200,20 @@ describe('BrowserEnrollmentComponent', () => {
       orgUnitPath: '/test/unit',
       createdTime: '2023-01-01T00:00:00Z',
       state: 'ACTIVE' as const,
-      expireTime: '2024-01-01T00:00:00Z'
+      expireTime: '2024-01-01T00:00:00Z',
     };
 
     // Set up the component with a created token
-    component['_state'].update(state => ({
+    component['_state'].update((state) => ({
       ...state,
-      createdToken: mockToken
+      createdToken: mockToken,
     }));
 
     component.draftEmail();
 
-    expect(mockEmailService.selectTemplate).toHaveBeenCalledWith('browser-enrollment');
+    expect(mockEmailService.selectTemplate).toHaveBeenCalledWith(
+      'browser-enrollment',
+    );
     expect(mockEmailService.setVariableValues).toHaveBeenCalled();
     expect(component.showEmailComposer()).toBe(true);
   });
@@ -216,15 +224,15 @@ describe('BrowserEnrollmentComponent', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Email composed successfully!',
       'Close',
-      jasmine.any(Object)
+      jasmine.any(Object),
     );
     expect(component.showEmailComposer()).toBe(false);
   });
 
   it('should close email composer', () => {
-    component['_state'].update(state => ({
+    component['_state'].update((state) => ({
       ...state,
-      showEmailComposer: true
+      showEmailComposer: true,
     }));
 
     component.closeEmailComposer();
@@ -232,9 +240,9 @@ describe('BrowserEnrollmentComponent', () => {
   });
 
   it('should clear error', () => {
-    component['_state'].update(state => ({
+    component['_state'].update((state) => ({
       ...state,
-      error: 'Test error'
+      error: 'Test error',
     }));
 
     component.clearError();

@@ -5,7 +5,10 @@
         <mat-icon color="accent">science</mat-icon>
         <div>
           <h3>Demo Mode</h3>
-          <p>This is a demo version of the One-Click Security Activation component</p>
+          <p>
+            This is a demo version of the One-Click Security Activation
+            component
+          </p>
           <div class="demo-controls">
             <button mat-button (click)="toggleBrowserEnrollment()">
               Toggle Browser Enrollment
@@ -23,24 +26,32 @@
     <mat-card-header>
       <mat-icon mat-card-avatar color="primary">security</mat-icon>
       <mat-card-title>Activate One-Click Protection</mat-card-title>
-      <mat-card-subtitle>Enable Chrome security insights and dashboard population</mat-card-subtitle>
+      <mat-card-subtitle
+        >Enable Chrome security insights and dashboard
+        population</mat-card-subtitle
+      >
     </mat-card-header>
-    
+
     <mat-card-content>
       <!-- Prerequisites Section -->
       <section class="prerequisites-section">
         <h3>Prerequisites</h3>
-        
+
         <mat-list>
           <mat-list-item>
-            <mat-icon matListItemIcon [color]="hasEnrolledBrowsers() ? 'primary' : 'warn'">
-              {{ hasEnrolledBrowsers() ? 'check_circle' : 'cancel' }}
+            <mat-icon
+              matListItemIcon
+              [color]="hasEnrolledBrowsers() ? 'primary' : 'warn'"
+            >
+              {{ hasEnrolledBrowsers() ? "check_circle" : "cancel" }}
             </mat-icon>
             <span matListItemTitle>Browser Enrollment</span>
             <span matListItemLine>
-              {{ hasEnrolledBrowsers() 
-                ? 'Browsers are enrolled and managed' 
-                : 'No browsers enrolled yet' }}
+              {{
+                hasEnrolledBrowsers()
+                  ? "Browsers are enrolled and managed"
+                  : "No browsers enrolled yet"
+              }}
             </span>
             @if (!hasEnrolledBrowsers()) {
               <button mat-button (click)="navigateToBrowserEnrollment()">
@@ -48,16 +59,21 @@
               </button>
             }
           </mat-list-item>
-          
+
           <mat-list-item>
-            <mat-icon matListItemIcon [color]="hasEnrolledProfiles() ? 'primary' : 'warn'">
-              {{ hasEnrolledProfiles() ? 'check_circle' : 'cancel' }}
+            <mat-icon
+              matListItemIcon
+              [color]="hasEnrolledProfiles() ? 'primary' : 'warn'"
+            >
+              {{ hasEnrolledProfiles() ? "check_circle" : "cancel" }}
             </mat-icon>
             <span matListItemTitle>User Profile Sign-ins</span>
             <span matListItemLine>
-              {{ hasEnrolledProfiles() 
-                ? 'Users are signing in to Chrome' 
-                : 'Users need to sign in to Chrome' }}
+              {{
+                hasEnrolledProfiles()
+                  ? "Users are signing in to Chrome"
+                  : "Users need to sign in to Chrome"
+              }}
             </span>
             @if (!hasEnrolledProfiles()) {
               <button mat-button (click)="navigateToProfileEnrollment()">
@@ -66,12 +82,13 @@
             }
           </mat-list-item>
         </mat-list>
-        
-        <button 
-          mat-stroked-button 
-          (click)="checkPrerequisites()" 
+
+        <button
+          mat-stroked-button
+          (click)="checkPrerequisites()"
           class="refresh-button"
-          [disabled]="isCheckingPrerequisites()">
+          [disabled]="isCheckingPrerequisites()"
+        >
           @if (isCheckingPrerequisites()) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
@@ -82,7 +99,7 @@
 
         @if (lastChecked()) {
           <p class="last-checked">
-            Last checked: {{ lastChecked()! | date:'short' }}
+            Last checked: {{ lastChecked()! | date: "short" }}
           </p>
         }
 
@@ -95,13 +112,13 @@
           </mat-card>
         }
       </section>
-      
+
       <mat-divider></mat-divider>
-      
+
       <!-- One-Click Overview -->
       <section class="overview-section">
         <h3>What is One-Click Protection?</h3>
-        
+
         <div class="feature-grid">
           @for (feature of features; track feature.title) {
             <mat-card class="feature-card">
@@ -114,26 +131,36 @@
           }
         </div>
       </section>
-      
+
       <mat-divider></mat-divider>
-      
+
       <!-- Activation Steps -->
       <section class="activation-section">
         <h3>Activation Steps</h3>
-        
+
         @if (!prerequisitesMet()) {
           <mat-card class="warning-card">
             <mat-card-content>
               <mat-icon color="warn">warning</mat-icon>
-              <p>Please complete the prerequisites above before activating One-Click protection.</p>
+              <p>
+                Please complete the prerequisites above before activating
+                One-Click protection.
+              </p>
             </mat-card-content>
           </mat-card>
         } @else {
           <mat-stepper orientation="vertical" #stepper>
             <mat-step>
               <ng-template matStepLabel>Open Security Insights</ng-template>
-              <p>Click the button below to open the Chrome Security Insights page in the Google Admin Console.</p>
-              <button mat-raised-button color="primary" (click)="openSecurityInsights()">
+              <p>
+                Click the button below to open the Chrome Security Insights page
+                in the Google Admin Console.
+              </p>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="openSecurityInsights()"
+              >
                 <mat-icon>open_in_new</mat-icon>
                 Open Security Insights
               </button>
@@ -141,9 +168,11 @@
                 <button mat-button matStepperNext>Next</button>
               </div>
             </mat-step>
-            
+
             <mat-step>
-              <ng-template matStepLabel>Enable One-Click Protection</ng-template>
+              <ng-template matStepLabel
+                >Enable One-Click Protection</ng-template
+              >
               <p>On the Security Insights page:</p>
               <ol>
                 <li>Look for the "One-Click Protection" banner or settings</li>
@@ -156,7 +185,7 @@
                 <button mat-button matStepperNext>Next</button>
               </div>
             </mat-step>
-            
+
             <mat-step>
               <ng-template matStepLabel>Verify Activation</ng-template>
               <p>After enabling:</p>
@@ -165,22 +194,33 @@
                 <li>The dashboard will start populating within 24 hours</li>
                 <li>Initial data may take up to 48 hours to fully populate</li>
               </ul>
-              <button mat-raised-button color="accent" (click)="markAsActivated()">
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="markAsActivated()"
+              >
                 <mat-icon>check</mat-icon>
                 Mark as Completed
               </button>
             </mat-step>
           </mat-stepper>
         }
-        
+
         @if (isActivated()) {
           <mat-card class="success-card">
             <mat-card-content>
               <mat-icon color="primary">check_circle</mat-icon>
               <div class="success-content">
                 <h4>One-Click Protection Activated!</h4>
-                <p>Security insights will begin populating shortly. Check back in 24-48 hours for initial data.</p>
-                <button mat-button color="primary" (click)="openSecurityInsights()">
+                <p>
+                  Security insights will begin populating shortly. Check back in
+                  24-48 hours for initial data.
+                </p>
+                <button
+                  mat-button
+                  color="primary"
+                  (click)="openSecurityInsights()"
+                >
                   View Security Dashboard
                   <mat-icon>arrow_forward</mat-icon>
                 </button>
@@ -189,19 +229,20 @@
           </mat-card>
         }
       </section>
-      
+
       <!-- Additional Resources -->
       <section class="resources-section">
         <h3>Learn More</h3>
-        
+
         <mat-list>
           @for (resource of resources; track resource.title) {
             <mat-list-item>
               <mat-icon matListItemIcon>{{ resource.icon }}</mat-icon>
-              <button 
-                mat-list-item 
+              <button
+                mat-list-item
                 (click)="openExternalLink(resource.url)"
-                class="resource-link">
+                class="resource-link"
+              >
                 {{ resource.title }}
               </button>
             </mat-list-item>

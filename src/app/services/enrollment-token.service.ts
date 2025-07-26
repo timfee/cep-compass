@@ -102,8 +102,9 @@ export class EnrollmentTokenService {
    */
   public readonly tokens = computed(() => {
     const tokens = this._tokens();
-    return [...tokens].sort((a, b) => 
-      new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime()
+    return [...tokens].sort(
+      (a, b) =>
+        new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime(),
     );
   });
 
@@ -112,14 +113,14 @@ export class EnrollmentTokenService {
    */
   public readonly activeTokensByOu = computed(() => {
     const tokens = this.tokens();
-    const activeTokens = tokens.filter(token => this.isTokenActive(token));
-    
+    const activeTokens = tokens.filter((token) => this.isTokenActive(token));
+
     const tokensByOu = new Map<string, EnrollmentToken[]>();
-    activeTokens.forEach(token => {
+    activeTokens.forEach((token) => {
       const existing = tokensByOu.get(token.orgUnitPath) || [];
       tokensByOu.set(token.orgUnitPath, [...existing, token]);
     });
-    
+
     return tokensByOu;
   });
 
@@ -165,13 +166,13 @@ export class EnrollmentTokenService {
       }
 
       const tokens = await this.fetchAllTokens(accessToken, orgUnitPath);
-      
+
       if (!orgUnitPath) {
         // Only cache if we're fetching all tokens
         this._tokens.set(tokens);
         this._lastFetchTime.set(now);
       }
-      
+
       this._error.set(null);
       return tokens;
     } catch (error) {
@@ -191,7 +192,9 @@ export class EnrollmentTokenService {
    * @param request - Token creation request parameters
    * @returns Promise that resolves to token creation response
    */
-  async createToken(request: CreateTokenRequest): Promise<TokenCreationResponse> {
+  async createToken(
+    request: CreateTokenRequest,
+  ): Promise<TokenCreationResponse> {
     // Validate org unit exists
     if (!this.validateOrgUnit(request.orgUnitPath)) {
       throw new Error(`Organizational unit not found: ${request.orgUnitPath}`);
@@ -216,13 +219,17 @@ export class EnrollmentTokenService {
       let expireTime = request.expireTime;
       if (!expireTime) {
         const now = new Date();
-        const expirationDate = new Date(now.getTime() + (this.DEFAULT_EXPIRATION_DAYS * 24 * 60 * 60 * 1000));
+        const expirationDate = new Date(
+          now.getTime() + this.DEFAULT_EXPIRATION_DAYS * 24 * 60 * 60 * 1000,
+        );
         expireTime = expirationDate.toISOString();
       }
 
       const createPayload = {
         orgUnitPath: request.orgUnitPath,
-        ...(request.tokenPermanentId && { tokenPermanentId: request.tokenPermanentId }),
+        ...(request.tokenPermanentId && {
+          tokenPermanentId: request.tokenPermanentId,
+        }),
         expireTime,
       };
 
@@ -232,22 +239,23 @@ export class EnrollmentTokenService {
         'Content-Type': 'application/json',
       };
 
-      const response = await firstValueFrom(this.http
-        .post<CreateTokenApiResponse>(url, createPayload, { headers }));
+      const response = await firstValueFrom(
+        this.http.post<CreateTokenApiResponse>(url, createPayload, { headers }),
+      );
 
       if (!response) {
         throw new Error('Empty response from Chrome Enterprise API');
       }
 
       const newToken = this.mapApiResponseToToken(response);
-      
+
       // Add to cached tokens
       const currentTokens = this._tokens();
       this._tokens.set([...currentTokens, newToken]);
-      
+
       // Generate enrollment URL
       const enrollmentUrl = this.generateEnrollmentUrl(newToken.token);
-      
+
       this._error.set(null);
       return {
         token: newToken,
@@ -265,7 +273,7 @@ export class EnrollmentTokenService {
 
   /**
    * Revokes an enrollment token by ID
-   * 
+   *
    * @param tokenId - ID of the token to revoke
    * @returns Promise that resolves when revocation is complete
    */
@@ -295,13 +303,17 @@ export class EnrollmentTokenService {
 
       // Update cached token state
       const currentTokens = this._tokens();
-      const updatedTokens = currentTokens.map(token => 
-        token.tokenId === tokenId 
-          ? { ...token, state: 'REVOKED' as const, revocationTime: new Date().toISOString() }
-          : token
+      const updatedTokens = currentTokens.map((token) =>
+        token.tokenId === tokenId
+          ? {
+              ...token,
+              state: 'REVOKED' as const,
+              revocationTime: new Date().toISOString(),
+            }
+          : token,
       );
       this._tokens.set(updatedTokens);
-      
+
       this._error.set(null);
     } catch (error) {
       const errorMessage = this.handleApiError(error);
@@ -315,32 +327,32 @@ export class EnrollmentTokenService {
 
   /**
    * Gets detailed information about a specific enrollment token
-   * 
+   *
    * @param tokenId - ID of the token to retrieve
    * @returns Promise that resolves to the token details
    */
   async getTokenDetails(tokenId: string): Promise<EnrollmentToken> {
     // First check if we have it in cache
     const cachedTokens = this._tokens();
-    const cachedToken = cachedTokens.find(token => token.tokenId === tokenId);
+    const cachedToken = cachedTokens.find((token) => token.tokenId === tokenId);
     if (cachedToken) {
       return cachedToken;
     }
 
     // If not in cache, fetch all tokens to get the latest data
     const tokens = await this.listTokens();
-    const token = tokens.find(t => t.tokenId === tokenId);
-    
+    const token = tokens.find((t) => t.tokenId === tokenId);
+
     if (!token) {
       throw new Error(`Enrollment token not found: ${tokenId}`);
     }
-    
+
     return token;
   }
 
   /**
    * Generates enrollment instructions for different operating systems
-   * 
+   *
    * @param token - The enrollment token string
    * @returns Formatted enrollment instructions
    */
@@ -365,7 +377,7 @@ Linux:
 
   /**
    * Checks if a token is currently active
-   * 
+   *
    * @param token - The enrollment token to check
    * @returns True if the token is active
    */
@@ -386,7 +398,7 @@ Linux:
 
   /**
    * Gets the expiration date of a token
-   * 
+   *
    * @param token - The enrollment token
    * @returns Expiration date or null if no expiration
    */
@@ -396,7 +408,7 @@ Linux:
 
   /**
    * Masks token value for display (shows last 4 characters)
-   * 
+   *
    * @param tokenValue - The full token value
    * @returns Masked token string
    */
@@ -423,12 +435,15 @@ Linux:
 
   /**
    * Fetches all enrollment tokens from the API, handling pagination
-   * 
+   *
    * @param accessToken - OAuth access token for API authentication
    * @param orgUnitPath - Optional filter by org unit path
    * @returns Promise resolving to array of enrollment tokens
    */
-  private async fetchAllTokens(accessToken: string, orgUnitPath?: string): Promise<EnrollmentToken[]> {
+  private async fetchAllTokens(
+    accessToken: string,
+    orgUnitPath?: string,
+  ): Promise<EnrollmentToken[]> {
     const allTokens: EnrollmentToken[] = [];
     let pageToken: string | undefined;
 
@@ -439,12 +454,13 @@ Linux:
         'Content-Type': 'application/json',
       };
 
-      const response = await firstValueFrom(this.http
-        .get<EnrollmentTokensApiResponse>(url, { headers }));
+      const response = await firstValueFrom(
+        this.http.get<EnrollmentTokensApiResponse>(url, { headers }),
+      );
 
       if (response?.enrollmentTokens) {
         const mappedTokens = response.enrollmentTokens.map(
-          this.mapApiResponseToToken
+          this.mapApiResponseToToken,
         );
         allTokens.push(...mappedTokens);
       }
@@ -457,7 +473,7 @@ Linux:
 
   /**
    * Builds the API URL for fetching enrollment tokens
-   * 
+   *
    * @param pageToken - Optional page token for pagination
    * @param orgUnitPath - Optional filter by org unit path
    * @returns Complete API URL
@@ -480,7 +496,7 @@ Linux:
 
   /**
    * Maps API response object to internal EnrollmentToken interface
-   * 
+   *
    * @param apiToken - Raw enrollment token from API response
    * @returns Mapped EnrollmentToken object
    */
@@ -499,7 +515,7 @@ Linux:
     if (!apiToken.tokenId || !apiToken.token || !apiToken.orgUnitPath) {
       console.warn('Missing required fields in API response:', apiToken);
       throw new Error(
-        'API response is missing required fields: tokenId, token, or orgUnitPath.'
+        'API response is missing required fields: tokenId, token, or orgUnitPath.',
       );
     }
 
@@ -518,7 +534,7 @@ Linux:
 
   /**
    * Generates an enrollment URL for easy access
-   * 
+   *
    * @param token - The enrollment token string
    * @returns Enrollment helper URL
    */
@@ -530,7 +546,7 @@ Linux:
 
   /**
    * Handles API errors and returns user-friendly error messages
-   * 
+   *
    * @param error - Error from HTTP request
    * @returns User-friendly error message
    */
@@ -566,7 +582,7 @@ Linux:
 
   /**
    * Validates org unit path exists
-   * 
+   *
    * @param orgUnitPath - The org unit path to validate
    * @returns True if org unit exists
    */

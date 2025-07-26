@@ -34,19 +34,19 @@ const superAdminGuard = () => {
   const user = authService.user();
   const selectedRole = authService.selectedRole();
   const availableRoles = authService.availableRoles();
-  
+
   if (!user) {
     return ['/login'];
   }
-  
+
   if (!selectedRole) {
     return ['/select-role'];
   }
-  
+
   if (selectedRole !== 'superAdmin' || !availableRoles.isSuperAdmin) {
     return ['/dashboard']; // Redirect to dashboard if not super admin
   }
-  
+
   return true;
 };
 
@@ -65,10 +65,10 @@ export const routes: Routes = [
       { path: 'enrollment/profiles', component: ProfileEnrollmentComponent },
       { path: 'security/one-click', component: OneClickActivationComponent },
       { path: 'security/dlp', component: DlpConfigurationComponent },
-      { 
-        path: 'admin/create-role', 
+      {
+        path: 'admin/create-role',
         component: CreateRoleComponent,
-        canActivate: [superAdminGuard]
+        canActivate: [superAdminGuard],
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
