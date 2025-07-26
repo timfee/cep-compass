@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,4 +24,10 @@ import { CommonModule } from '@angular/common';
 })
 export class App {
   public authService = inject(AuthService);
+  private router = inject(Router);
+  
+  changeRole(): void {
+    this.authService.selectRole(null);
+    this.router.navigate(['/select-role']);
+  }
 }

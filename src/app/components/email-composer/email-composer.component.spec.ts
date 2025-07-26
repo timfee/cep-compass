@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { QuillModule } from 'ngx-quill';
 
 import { EmailComposerComponent } from './email-composer.component';
 import { EmailTemplateService } from '../../services/email-template.service';
@@ -34,13 +35,11 @@ describe('EmailComposerComponent', () => {
         'getGmailComposeUrl',
       ],
       {
-        templates: jasmine.createSpy().and.returnValue([mockTemplate]),
-        selectedTemplate: jasmine.createSpy().and.returnValue(mockTemplate),
-        variableValues: jasmine.createSpy().and.returnValue({}),
-        previewHtml: jasmine.createSpy().and.returnValue('<p>Hello Test</p>'),
-        previewSubject: jasmine
-          .createSpy()
-          .and.returnValue('Test Subject Test'),
+        templates: () => [mockTemplate],
+        selectedTemplate: () => mockTemplate,
+        variableValues: () => ({}),
+        previewHtml: () => '<p>Hello Test</p>',
+        previewSubject: () => 'Test Subject Test',
       },
     );
 
@@ -50,6 +49,7 @@ describe('EmailComposerComponent', () => {
         ReactiveFormsModule,
         NoopAnimationsModule,
         MatSnackBarModule,
+        QuillModule.forRoot(),
       ],
       providers: [{ provide: EmailTemplateService, useValue: emailServiceSpy }],
     }).compileComponents();
@@ -206,6 +206,7 @@ describe('EmailComposerComponent', () => {
     });
 
     it('should get preview content', () => {
+      component.editorContent.set('Test content');
       const preview = component.getPreview();
 
       expect(preview).toBeTruthy();

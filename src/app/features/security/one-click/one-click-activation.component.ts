@@ -172,7 +172,8 @@ export class OneClickActivationComponent implements OnInit {
           (user) =>
             !user.suspended &&
             user.lastLoginTime !== null &&
-            user.lastLoginTime !== undefined,
+            user.lastLoginTime !== undefined &&
+            user.lastLoginTime !== '',
         );
 
       this._state.update((state) => ({

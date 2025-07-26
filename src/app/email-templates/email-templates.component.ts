@@ -7,16 +7,16 @@ import { EmailComposerComponent } from '../components/email-composer/email-compo
 import { ComposedEmail } from '../services/email-template.service';
 
 /**
- * Demo page for testing the email composer component
+ * Email Templates page for managing and composing email templates
  */
 @Component({
-  selector: 'app-email-demo',
-  templateUrl: './email-demo.component.html',
-  styleUrl: './email-demo.component.css',
+  selector: 'app-email-templates',
+  templateUrl: './email-templates.component.html',
+  styleUrl: './email-templates.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatCardModule, EmailComposerComponent],
 })
-export class EmailDemoComponent {
+export class EmailTemplatesComponent {
   private readonly snackBar = inject(MatSnackBar);
 
   /**

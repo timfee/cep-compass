@@ -12,24 +12,6 @@
     <meta name="author" content="CEP Compass Team" />
     <meta name="robots" content="noindex, nofollow" />
 
-    <!-- Note: Security headers are configured in firebase.json for proper HTTP header delivery -->
-
-    <!-- Content Security Policy - restrictive for production -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' https://www.googleapis.com https://www.gstatic.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebase.com;
-      img-src 'self' data: https:;
-      frame-src 'none';
-      object-src 'none';
-      media-src 'none';
-    "
-    />
-
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

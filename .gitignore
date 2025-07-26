@@ -18,7 +18,10 @@ yarn-error.log
 .c9/
 *.launch
 .settings/
+test-results
 *.sublime-workspace
+.claude
+.angular
 
 # Visual Studio Code
 .vscode/*

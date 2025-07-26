@@ -15,8 +15,12 @@ import { MatIconModule } from '@angular/material/icon';
 export class LoginComponent {
   public authService = inject(AuthService);
 
-  login(): void {
-    this.authService.loginWithGoogle();
-    // Navigation is now handled by the auth guards and effects.
+  async login(): Promise<void> {
+    try {
+      await this.authService.loginWithGoogle();
+      // Navigation is now handled by the auth guards and effects.
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   }
 }

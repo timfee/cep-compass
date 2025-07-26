@@ -80,7 +80,7 @@ export class EmailComposerComponent implements OnInit {
 
   // Component state signals
   private readonly _isPreviewMode = signal(false);
-  public readonly editorContent = signal('');
+  public editorContent = signal('');
 
   // Form and editor state
   public readonly emailForm: FormGroup;
@@ -262,7 +262,7 @@ export class EmailComposerComponent implements OnInit {
   /**
    * Handles Quill editor content changes
    */
-  onQuillContentChange(event: any): void {
+  onQuillContentChange(event: { html: string | null; text: string | null }): void {
     const content = event.html || event.text || '';
     this.editorContent.set(content);
   }

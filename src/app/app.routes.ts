@@ -47,17 +47,17 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       {
-        path: 'org-units-demo',
+        path: 'org-units',
         loadComponent: () =>
-          import('./org-units-demo/org-units-demo.component').then(
-            (m) => m.OrgUnitsDemoComponent,
+          import('./org-units/org-units.component').then(
+            (m) => m.OrgUnitsComponent,
           ),
       },
       {
-        path: 'email-demo',
+        path: 'email-templates',
         loadComponent: () =>
-          import('./email-demo/email-demo.component').then(
-            (m) => m.EmailDemoComponent,
+          import('./email-templates/email-templates.component').then(
+            (m) => m.EmailTemplatesComponent,
           ),
       },
       {
@@ -89,13 +89,6 @@ export const routes: Routes = [
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
-  },
-  {
-    path: 'email-composer-demo',
-    loadComponent: () =>
-      import('./email-composer-demo/email-composer-demo.component').then(
-        (m) => m.EmailComposerDemoComponent,
-      ),
   },
   {
     path: 'login',

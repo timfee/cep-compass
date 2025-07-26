@@ -1,0 +1,14 @@
+<div class="email-templates-container">
+  <mat-card class="templates-card">
+    <mat-card-header>
+      <mat-card-title>Email Templates</mat-card-title>
+      <mat-card-subtitle>
+        Compose and manage email templates with variable substitution for Chrome Enterprise Premium
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <app-email-composer
+    (emailComposed)="onEmailComposed($event)"
+  ></app-email-composer>
+</div>

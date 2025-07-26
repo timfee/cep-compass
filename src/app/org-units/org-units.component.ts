@@ -8,17 +8,17 @@ import { MatTreeModule } from '@angular/material/tree';
 import { OrgUnitsService } from '../services/org-units.service';
 
 /**
- * Demo component to test OrgUnitsService integration
- * This component demonstrates the service functionality
+ * Organizational Units management component
+ * Provides interface for viewing and managing Google Workspace organizational units
  */
 @Component({
-  selector: 'app-org-units-demo',
+  selector: 'app-org-units',
   template: `
     <mat-card>
       <mat-card-header>
-        <mat-card-title>Organizational Units Service Demo</mat-card-title>
+        <mat-card-title>Organizational Units</mat-card-title>
         <mat-card-subtitle
-          >Testing Google Workspace OU integration</mat-card-subtitle
+          >View and manage Google Workspace organizational units</mat-card-subtitle
         >
       </mat-card-header>
 
@@ -204,7 +204,7 @@ import { OrgUnitsService } from '../services/org-units.service';
     MatTreeModule,
   ],
 })
-export class OrgUnitsDemoComponent {
+export class OrgUnitsComponent {
   protected readonly orgUnitsService = inject(OrgUnitsService);
 
   fetchOrgUnits(): void {
