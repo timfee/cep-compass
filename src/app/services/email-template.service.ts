@@ -110,26 +110,45 @@ export class EmailTemplateService {
   private getPrebuiltTemplates(): EmailTemplate[] {
     return [
       {
-        id: 'browser-enrollment-token',
-        name: 'Browser Enrollment Token Email',
-        subject: 'Chrome Browser Enrollment Token for {{orgUnitName}}',
+        id: 'browser-enrollment',
+        name: 'Browser Enrollment Instructions',
+        subject: 'Chrome Browser Enrollment Token - {{orgUnitName}}',
         body: `
-          <h2>Chrome Browser Enrollment Token</h2>
           <p>Hello {{adminName}},</p>
-          <p>Here is the enrollment token for the organizational unit: <strong>{{orgUnitName}}</strong></p>
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <strong>Enrollment Token:</strong><br>
-            <code style="font-size: 14px; word-break: break-all;">{{enrollmentToken}}</code>
+          
+          <p>Here is the Chrome browser enrollment token for <strong>{{orgUnitName}}</strong>:</p>
+          
+          <div style="background: #f5f5f5; padding: 15px; margin: 20px 0; font-family: monospace;">
+            {{enrollmentToken}}
           </div>
-          <p><strong>Expiration Date:</strong> {{expirationDate}}</p>
-          <p>Please use this token to enroll Chrome browsers in your organization.</p>
-          <p>Best regards,<br>IT Administration Team</p>
+          
+          <p><strong>Token expires on:</strong> {{expirationDate}}</p>
+          
+          <h3>Deployment Instructions:</h3>
+          
+          <h4>Windows (Group Policy or Registry):</h4>
+          <pre style="background: #f5f5f5; padding: 10px; overflow-x: auto;">reg add HKLM\\Software\\Policies\\Google\\Chrome\\CloudManagementEnrollmentToken /v CloudManagementEnrollmentToken /t REG_SZ /d {{enrollmentToken}} /f</pre>
+          
+          <h4>macOS (Configuration Profile or Terminal):</h4>
+          <pre style="background: #f5f5f5; padding: 10px; overflow-x: auto;">sudo defaults write com.google.Chrome CloudManagementEnrollmentToken -string "{{enrollmentToken}}"</pre>
+          
+          <h4>Linux (Policy File):</h4>
+          <p>Create <code>/etc/opt/chrome/policies/managed/enrollment.json</code>:</p>
+          <pre style="background: #f5f5f5; padding: 10px; overflow-x: auto;">{"CloudManagementEnrollmentToken": "{{enrollmentToken}}"}</pre>
+          
+          <p><strong>Important:</strong> After applying the token, users must restart Chrome for enrollment to take effect.</p>
+          
+          <p>For more information, visit the <a href="https://support.google.com/chrome/a/answer/9116852">Chrome Browser Cloud Management documentation</a>.</p>
+          
+          <p>Best regards,<br>
+          {{senderName}}</p>
         `,
         variables: [
-          { key: 'orgUnitName', label: 'Organization Unit Name', type: 'text', required: true },
+          { key: 'adminName', label: 'IT Admin Name', type: 'text', required: true },
+          { key: 'orgUnitName', label: 'Organizational Unit', type: 'text', required: true },
           { key: 'enrollmentToken', label: 'Enrollment Token', type: 'text', required: true },
-          { key: 'adminName', label: 'Admin Name', type: 'text', required: true },
-          { key: 'expirationDate', label: 'Expiration Date', type: 'text', required: true },
+          { key: 'expirationDate', label: 'Token Expiration Date', type: 'text', required: true },
+          { key: 'senderName', label: 'Your Name', type: 'text', required: true }
         ],
         category: 'enrollment',
       },

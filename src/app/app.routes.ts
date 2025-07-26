@@ -7,6 +7,7 @@ import { EmailDemoComponent } from './email-demo/email-demo.component';
 import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
 import { DirectoryStatsComponent } from './components/directory-stats/directory-stats.component';
 import { CreateRoleComponent } from './features/admin/create-role/create-role.component';
+import { BrowserEnrollmentComponent } from './features/enrollment/browsers/browser-enrollment.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -54,6 +55,7 @@ export const routes: Routes = [
       { path: 'org-units-demo', component: OrgUnitsDemoComponent },
       { path: 'email-demo', component: EmailDemoComponent },
       { path: 'directory-stats', component: DirectoryStatsComponent },
+      { path: 'enrollment/browsers', component: BrowserEnrollmentComponent },
       { 
         path: 'admin/create-role', 
         component: CreateRoleComponent,
