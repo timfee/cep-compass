@@ -32,3 +32,11 @@
 .welcome-message {
   text-align: center;
 }
+
+.demo-links {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}

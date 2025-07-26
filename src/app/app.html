@@ -36,6 +36,10 @@
           <strong>{{ selectedRole === 'superAdmin' ? 'Super Admin' : 'CEP Delegated Admin' }}</strong>.
         </p>
         <p>Navigate to a feature module to get started.</p>
+        <div class="demo-links">
+          <a mat-raised-button color="primary" routerLink="/org-units-demo">Org Units Demo</a>
+          <a mat-raised-button color="accent" routerLink="/email-demo">Email Template Demo</a>
+        </div>
       </div>
     } @else {
       <router-outlet></router-outlet>
