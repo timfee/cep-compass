@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectRoleComponent } from './select-role';
+import { SelectRoleComponent } from './select-role.component';
 
 describe('SelectRoleComponent', () => {
   let component: SelectRoleComponent;

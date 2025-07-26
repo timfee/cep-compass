@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login';
-import { SelectRoleComponent } from './auth/select-role/select-role';
+import { LoginComponent } from './auth/login/login.component';
+import { SelectRoleComponent } from './auth/select-role/select-role.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {
   AuthGuard,

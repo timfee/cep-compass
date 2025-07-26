@@ -6,8 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [MatButtonModule, MatCardModule, MatIconModule],

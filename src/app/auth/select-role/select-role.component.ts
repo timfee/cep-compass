@@ -12,8 +12,8 @@ import { AuthService, SelectedRole } from '../../services/auth.service';
 
 @Component({
   selector: 'app-select-role',
-  templateUrl: './select-role.html',
-  styleUrl: './select-role.css',
+  templateUrl: './select-role.component.html',
+  styleUrl: './select-role.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
