@@ -48,12 +48,7 @@ describe('DashboardComponent', () => {
     mockDirectoryService = TestBed.inject(DirectoryService) as jasmine.SpyObj<DirectoryService>;
     fixture.detectChanges();
   });
-    fixture = TestBed.createComponent(DashboardComponent);
-    component = fixture.componentInstance;
-    mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    mockDirectoryService = TestBed.inject(DirectoryService) as jasmine.SpyObj<DirectoryService>;
-    fixture.detectChanges();
+// Removed redundant initialization code.
   });
 
   it('should create', () => {
