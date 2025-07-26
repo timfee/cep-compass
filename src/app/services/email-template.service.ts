@@ -202,6 +202,65 @@ export class EmailTemplateService {
         ],
         category: 'security',
       },
+      {
+        id: 'profile-enrollment',
+        name: 'Chrome Profile Sign-in Instructions',
+        subject: 'Action Required: Sign in to Chrome with Your {{companyName}} Account',
+        category: 'enrollment',
+        body: `
+          <p>Dear {{userName}},</p>
+          
+          <p>To ensure you have access to all {{companyName}} resources and maintain security compliance, please sign in to Chrome with your work account.</p>
+          
+          <h3>Why Sign In to Chrome?</h3>
+          <ul>
+            <li>Access bookmarks and passwords across devices</li>
+            <li>Automatic security updates and protections</li>
+            <li>Seamless access to company applications</li>
+            <li>Enhanced browsing security and data protection</li>
+          </ul>
+          
+          <h3>How to Sign In:</h3>
+          <ol>
+            <li><strong>Open Chrome</strong> and click your profile icon (top-right corner)</li>
+            <li>Click <strong>"Turn on sync"</strong> or <strong>"Sign in to Chrome"</strong></li>
+            <li>Enter your work email: <strong>{{userEmail}}</strong></li>
+            <li>You'll be redirected to {{ssoProvider}} - complete the sign-in process</li>
+            <li>Click <strong>"Yes, I'm in"</strong> when asked about sync</li>
+          </ol>
+          
+          <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 20px 0;">
+            <strong>⚠️ Important:</strong> Make sure to use your <strong>work email address</strong>, not a personal Gmail account.
+          </div>
+          
+          <h3>Need Help?</h3>
+          <p>If you encounter any issues:</p>
+          <ul>
+            <li>Contact IT Support at {{helpDeskEmail}}</li>
+            <li>Visit our <a href="{{helpDeskUrl}}">Help Center</a></li>
+            <li>Review the <a href="https://support.google.com/chrome/a/answer/7394216">Chrome Sign-in Guide</a></li>
+          </ul>
+          
+          <p>Please complete this process by <strong>{{deadline}}</strong> to ensure uninterrupted access to company resources.</p>
+          
+          <p>Thank you for your cooperation!</p>
+          
+          <p>Best regards,<br>
+          {{senderName}}<br>
+          {{senderTitle}}</p>
+        `,
+        variables: [
+          { key: 'userName', label: 'User Name', type: 'text', required: false, defaultValue: 'Team' },
+          { key: 'userEmail', label: 'User Email', type: 'text', required: false, defaultValue: 'your work email' },
+          { key: 'companyName', label: 'Company Name', type: 'text', required: true },
+          { key: 'ssoProvider', label: 'SSO Provider', type: 'select', required: true, options: ['Google Workspace', 'Microsoft Azure AD', 'Okta', 'OneLogin', 'Other SSO'] },
+          { key: 'helpDeskEmail', label: 'IT Support Email', type: 'text', required: true },
+          { key: 'helpDeskUrl', label: 'Help Center URL', type: 'text', required: false },
+          { key: 'deadline', label: 'Completion Deadline', type: 'text', required: true, defaultValue: 'end of this week' },
+          { key: 'senderName', label: 'Your Name', type: 'text', required: true },
+          { key: 'senderTitle', label: 'Your Title', type: 'text', required: true, defaultValue: 'IT Administrator' }
+        ]
+      },
     ];
   }
 

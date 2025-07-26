@@ -1,0 +1,154 @@
+<div class="profile-enrollment-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar>account_circle</mat-icon>
+      <mat-card-title>User Profile Enrollment</mat-card-title>
+      <mat-card-subtitle>Help users sign in to Chrome with managed accounts</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Directory Statistics Section -->
+      <section class="stats-section">
+        <h3>Directory Overview</h3>
+        
+        @if (isLoading()) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        
+        @if (error()) {
+          <div class="error-message">
+            <mat-icon>error</mat-icon>
+            <span>{{ error() }}</span>
+            <button mat-button (click)="refreshStats()">Retry</button>
+          </div>
+        }
+        
+        <div class="stats-grid">
+          <mat-card class="stat-card">
+            <mat-card-content>
+              <div class="stat-value">{{ userStats().totalUsers }}</div>
+              <div class="stat-label">Total Users</div>
+            </mat-card-content>
+          </mat-card>
+          
+          <mat-card class="stat-card">
+            <mat-card-content>
+              <div class="stat-value">{{ userStats().activeUsers }}</div>
+              <div class="stat-label">Active Users</div>
+            </mat-card-content>
+          </mat-card>
+          
+          <mat-card class="stat-card">
+            <mat-card-content>
+              <div class="stat-value">{{ userStats().suspendedUsers }}</div>
+              <div class="stat-label">Suspended</div>
+            </mat-card-content>
+          </mat-card>
+          
+          <mat-card class="stat-card">
+            <mat-card-content>
+              <div class="stat-value">{{ userStats().totalGroups }}</div>
+              <div class="stat-label">Groups</div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        
+        <div class="sync-info">
+          <mat-icon>sync</mat-icon>
+          <span>Last synced: {{ userStats().lastSyncTime | date:'short' }}</span>
+          <button mat-icon-button (click)="refreshStats()" matTooltip="Refresh" [disabled]="isLoading()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </section>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Email Instructions Section -->
+      <section class="email-section">
+        <h3>User Instructions</h3>
+        <p>Draft an email to educate users about signing in to Chrome with their work accounts.</p>
+        
+        <div class="email-actions">
+          <button mat-raised-button color="primary" (click)="draftSingleEmail()">
+            <mat-icon>email</mat-icon>
+            Draft Individual Email
+          </button>
+          
+          <button mat-raised-button color="accent" (click)="draftBulkEmail()">
+            <mat-icon>mail_outline</mat-icon>
+            Prepare Bulk Email
+          </button>
+        </div>
+        
+        <mat-expansion-panel class="instructions-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>info</mat-icon>
+              Quick Reference: User Sign-in Steps
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <mat-list>
+            <mat-list-item>
+              <mat-icon matListItemIcon>looks_one</mat-icon>
+              <span matListItemTitle>Open Chrome and click profile icon</span>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon matListItemIcon>looks_two</mat-icon>
+              <span matListItemTitle>Click "Turn on sync" or "Sign in to Chrome"</span>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon matListItemIcon>looks_3</mat-icon>
+              <span matListItemTitle>Enter work email address</span>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon matListItemIcon>looks_4</mat-icon>
+              <span matListItemTitle>Complete SSO authentication</span>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon matListItemIcon>looks_5</mat-icon>
+              <span matListItemTitle>Accept sync and management</span>
+            </mat-list-item>
+          </mat-list>
+        </mat-expansion-panel>
+      </section>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Additional Resources -->
+      <section class="resources-section">
+        <h3>Additional Actions</h3>
+        
+        <button mat-stroked-button (click)="exportUserList()">
+          <mat-icon>download</mat-icon>
+          Export User List
+        </button>
+        
+        <a mat-stroked-button href="https://support.google.com/chrome/a/answer/7394216" target="_blank">
+          <mat-icon>help</mat-icon>
+          Chrome Sign-in Guide
+        </a>
+      </section>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Email Composer -->
+  @if (showEmailComposer()) {
+    <mat-card class="email-composer-wrapper">
+      <mat-card-header>
+        <mat-card-title>Email Composer</mat-card-title>
+        <button mat-icon-button (click)="showEmailComposer.set(false)" matTooltip="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <app-email-composer
+          [template]="profileEnrollmentTemplate()"
+          [recipients]="selectedRecipients()"
+          (emailComposed)="onEmailComposed($event)">
+        </app-email-composer>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

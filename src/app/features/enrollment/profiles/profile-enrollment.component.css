@@ -1,0 +1,226 @@
+.profile-enrollment-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.profile-enrollment-container mat-card {
+  margin-bottom: 24px;
+}
+
+.stats-section {
+  margin-bottom: 24px;
+}
+
+.stats-section h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.stat-card {
+  text-align: center;
+  background: rgba(63, 81, 181, 0.05);
+  border: 1px solid rgba(63, 81, 181, 0.12);
+}
+
+.stat-card mat-card-content {
+  padding: 16px !important;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 500;
+  color: #3f51b5;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.sync-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.sync-info mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 4px;
+  color: #d32f2f;
+  margin: 16px 0;
+}
+
+.error-message mat-icon {
+  color: #d32f2f;
+}
+
+.email-section {
+  margin: 24px 0;
+}
+
+.email-section h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.email-section p {
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.email-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.email-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.instructions-panel {
+  margin-top: 24px;
+}
+
+.instructions-panel mat-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.instructions-panel mat-list {
+  padding-top: 8px;
+}
+
+.instructions-panel mat-list-item {
+  height: auto;
+  min-height: 48px;
+}
+
+.instructions-panel mat-icon[matListItemIcon] {
+  color: #3f51b5;
+}
+
+.resources-section {
+  margin-top: 24px;
+}
+
+.resources-section h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.resources-section button,
+.resources-section a {
+  margin-right: 16px;
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profile-enrollment-container {
+    padding: 8px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+  }
+  
+  .email-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .email-actions button {
+    justify-content: center;
+  }
+  
+  .resources-section button,
+  .resources-section a {
+    margin-right: 0;
+    margin-bottom: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.email-composer-wrapper {
+  margin-top: 24px;
+}
+
+.email-composer-wrapper mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.email-composer-wrapper mat-card-header button {
+  margin-left: auto;
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .sync-info {
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .stat-card {
+    background: rgba(63, 81, 181, 0.1);
+    border: 1px solid rgba(63, 81, 181, 0.2);
+  }
+  
+  .error-message {
+    background: rgba(244, 67, 54, 0.15);
+    border: 1px solid rgba(244, 67, 54, 0.4);
+  }
+}
