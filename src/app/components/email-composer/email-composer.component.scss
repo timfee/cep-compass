@@ -1,0 +1,150 @@
+@use '@angular/material' as mat;
+
+.email-composer-card {
+  max-width: 1200px;
+  margin: 20px auto;
+  @include mat.elevation(1);
+}
+
+.email-composer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.template-selection-section {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding-bottom: 20px;
+}
+
+.template-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.template-name {
+  flex: 1;
+}
+
+.category-chip {
+  margin-left: 8px;
+  font-size: 11px;
+  height: 20px;
+  min-height: 20px;
+}
+
+.variables-section h3 {
+  margin: 0 0 16px 0;
+  font-weight: 500;
+}
+
+.variables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.variable-field {
+  width: 100%;
+}
+
+.variable-chips {
+  margin-top: 8px;
+}
+
+.recipient-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 20px;
+}
+
+.recipient-section h3 {
+  margin: 0 0 16px 0;
+  font-weight: 500;
+}
+
+.recipient-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.recipient-input {
+  flex: 1;
+}
+
+.add-recipient-btn {
+  height: 56px;
+  min-width: 56px;
+}
+
+.recipient-chips {
+  margin-top: 16px;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.subject-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 20px;
+}
+
+.subject-field {
+  width: 100%;
+}
+
+.content-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 20px;
+}
+
+.preview-toggle {
+  margin-bottom: 16px;
+}
+
+.quill-editor {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+
+.email-preview {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  padding: 16px;
+  background-color: #fff;
+  min-height: 300px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .email-composer-card {
+    margin: 16px;
+  }
+  
+  .variables-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .recipient-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}
