@@ -6,6 +6,7 @@ import { OrgUnitsDemoComponent } from './org-units-demo/org-units-demo.component
 import { EmailDemoComponent } from './email-demo/email-demo.component';
 import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
 import { DirectoryStatsComponent } from './components/directory-stats/directory-stats.component';
+import { CreateRoleComponent } from './features/admin/create-role/create-role.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -20,6 +21,28 @@ const canActivate = () => {
   return authService.selectedRole() ? true : ['/select-role'];
 };
 
+// A guard to ensure only Super Admins can access certain routes
+const superAdminGuard = () => {
+  const authService = inject(AuthService);
+  const user = authService.user();
+  const selectedRole = authService.selectedRole();
+  const availableRoles = authService.availableRoles();
+  
+  if (!user) {
+    return ['/login'];
+  }
+  
+  if (!selectedRole) {
+    return ['/select-role'];
+  }
+  
+  if (selectedRole !== 'superAdmin' || !availableRoles.isSuperAdmin) {
+    return ['/dashboard']; // Redirect to dashboard if not super admin
+  }
+  
+  return true;
+};
+
 export const routes: Routes = [
   {
     path: '',
@@ -31,6 +54,11 @@ export const routes: Routes = [
       { path: 'org-units-demo', component: OrgUnitsDemoComponent },
       { path: 'email-demo', component: EmailDemoComponent },
       { path: 'directory-stats', component: DirectoryStatsComponent },
+      { 
+        path: 'admin/create-role', 
+        component: CreateRoleComponent,
+        canActivate: [superAdminGuard]
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

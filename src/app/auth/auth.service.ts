@@ -86,7 +86,7 @@ export class AuthService {
       'https://www.googleapis.com/auth/admin.directory.group.readonly',
     );
     provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
+      'https://www.googleapis.com/auth/admin.directory.rolemanagement',
     );
     provider.addScope(
       'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
@@ -148,7 +148,7 @@ export class AuthService {
         'https://www.googleapis.com/auth/admin.directory.group.readonly',
       );
       provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
+        'https://www.googleapis.com/auth/admin.directory.rolemanagement',
       );
       provider.addScope(
         'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
