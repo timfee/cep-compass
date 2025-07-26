@@ -9,6 +9,7 @@ import { DirectoryStatsComponent } from './components/directory-stats/directory-
 import { CreateRoleComponent } from './features/admin/create-role/create-role.component';
 import { BrowserEnrollmentComponent } from './features/enrollment/browsers/browser-enrollment.component';
 import { ProfileEnrollmentComponent } from './features/enrollment/profiles/profile-enrollment.component';
+import { ProfileEnrollmentDemoComponent } from './features/enrollment/profiles/profile-enrollment-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -81,6 +82,11 @@ export const routes: Routes = [
   {
     path: 'email-template-demo',
     component: EmailStandaloneDemoComponent,
+    // No auth guard - public demo
+  },
+  {
+    path: 'profile-enrollment-demo',
+    component: ProfileEnrollmentDemoComponent,
     // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },

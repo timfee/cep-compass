@@ -197,6 +197,23 @@
   margin-left: auto;
 }
 
+.demo-note {
+  margin-top: 24px;
+  background: rgba(33, 150, 243, 0.05);
+  border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.demo-note mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1976d2;
+}
+
+.demo-note mat-icon {
+  color: #1976d2;
+}
+
 @media (max-width: 480px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
