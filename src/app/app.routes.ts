@@ -3,6 +3,7 @@ import { LoginComponent } from './auth/login/login';
 import { SelectRoleComponent } from './auth/select-role/select-role';
 import { OrgUnitsDemoComponent } from './org-units-demo/org-units-demo.component';
 import { EmailDemoComponent } from './email-demo/email-demo.component';
+import { EmailStandaloneDemoComponent } from './email-demo/email-standalone-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -50,6 +51,11 @@ export const routes: Routes = [
     component: SelectRoleComponent,
     canActivate: [AuthGuard],
     data: { authGuardPipe: () => redirectUnauthorizedTo(['/login']) },
+  },
+  {
+    path: 'email-template-demo',
+    component: EmailStandaloneDemoComponent,
+    // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },
 ];
