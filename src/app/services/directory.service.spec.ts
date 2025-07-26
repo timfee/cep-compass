@@ -1,6 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DirectoryService, DirectoryUser, DirectoryGroup } from './directory.service';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import {
+  DirectoryService,
+  DirectoryUser,
+  DirectoryGroup,
+} from './directory.service';
 import { AuthService } from '../auth/auth.service';
 import { signal } from '@angular/core';
 
@@ -118,9 +125,13 @@ describe('DirectoryService', () => {
 
     service = TestBed.inject(DirectoryService);
     httpMock = TestBed.inject(HttpTestingController);
-    authServiceMock = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    authServiceMock = TestBed.inject(
+      AuthService,
+    ) as jasmine.SpyObj<AuthService>;
 
-    authServiceMock.getAccessToken.and.returnValue(Promise.resolve('test-token'));
+    authServiceMock.getAccessToken.and.returnValue(
+      Promise.resolve('test-token'),
+    );
   });
 
   afterEach(() => {
@@ -137,12 +148,18 @@ describe('DirectoryService', () => {
 
       // Expect two HTTP requests (users and groups)
       const usersReq = httpMock.expectOne((req) => req.url.includes('/users'));
-      const groupsReq = httpMock.expectOne((req) => req.url.includes('/groups'));
+      const groupsReq = httpMock.expectOne((req) =>
+        req.url.includes('/groups'),
+      );
 
       expect(usersReq.request.method).toBe('GET');
       expect(groupsReq.request.method).toBe('GET');
-      expect(usersReq.request.headers.get('Authorization')).toBe('Bearer test-token');
-      expect(groupsReq.request.headers.get('Authorization')).toBe('Bearer test-token');
+      expect(usersReq.request.headers.get('Authorization')).toBe(
+        'Bearer test-token',
+      );
+      expect(groupsReq.request.headers.get('Authorization')).toBe(
+        'Bearer test-token',
+      );
 
       usersReq.flush(mockApiUsersResponse);
       groupsReq.flush(mockApiGroupsResponse);
@@ -171,7 +188,9 @@ describe('DirectoryService', () => {
       const usersReq = httpMock.expectOne((req) => req.url.includes('/users'));
       usersReq.error(new ErrorEvent('Network error'));
 
-      const groupsReq = httpMock.expectOne((req) => req.url.includes('/groups'));
+      const groupsReq = httpMock.expectOne((req) =>
+        req.url.includes('/groups'),
+      );
       groupsReq.flush(mockApiGroupsResponse);
 
       await fetchPromise;
@@ -189,10 +208,12 @@ describe('DirectoryService', () => {
 
       const loadPromise = service.loadMoreUsers();
 
-      const req = httpMock.expectOne((request) => 
-        request.url.includes('/users') && request.url.includes('pageToken=existing-token')
+      const req = httpMock.expectOne(
+        (request) =>
+          request.url.includes('/users') &&
+          request.url.includes('pageToken=existing-token'),
       );
-      
+
       expect(req.request.method).toBe('GET');
       req.flush({
         users: [mockApiUsersResponse.users[0]],
@@ -218,10 +239,11 @@ describe('DirectoryService', () => {
     it('should search users with query', async () => {
       const searchPromise = service.searchUsers('john');
 
-      const req = httpMock.expectOne((request) => 
-        request.url.includes('/users') && request.url.includes('query=john')
+      const req = httpMock.expectOne(
+        (request) =>
+          request.url.includes('/users') && request.url.includes('query=john'),
       );
-      
+
       expect(req.request.method).toBe('GET');
       req.flush(mockApiUsersResponse);
 
@@ -247,10 +269,12 @@ describe('DirectoryService', () => {
     it('should get groups for a user', async () => {
       const groupsPromise = service.getUserGroups('john.doe@example.com');
 
-      const req = httpMock.expectOne((request) => 
-        request.url.includes('/groups') && request.url.includes('userKey=john.doe@example.com')
+      const req = httpMock.expectOne(
+        (request) =>
+          request.url.includes('/groups') &&
+          request.url.includes('userKey=john.doe@example.com'),
       );
-      
+
       expect(req.request.method).toBe('GET');
       req.flush(mockApiGroupsResponse);
 
@@ -308,7 +332,9 @@ describe('DirectoryService', () => {
 
       // Should make new HTTP requests
       const usersReq = httpMock.expectOne((req) => req.url.includes('/users'));
-      const groupsReq = httpMock.expectOne((req) => req.url.includes('/groups'));
+      const groupsReq = httpMock.expectOne((req) =>
+        req.url.includes('/groups'),
+      );
 
       usersReq.flush(mockApiUsersResponse);
       groupsReq.flush(mockApiGroupsResponse);
@@ -342,7 +368,9 @@ describe('DirectoryService', () => {
       const req = httpMock.expectOne((req) => req.url.includes('/users'));
       req.error(new ErrorEvent('Unauthorized'), { status: 401 });
 
-      const groupsReq = httpMock.expectOne((req) => req.url.includes('/groups'));
+      const groupsReq = httpMock.expectOne((req) =>
+        req.url.includes('/groups'),
+      );
       groupsReq.flush(mockApiGroupsResponse);
 
       await fetchPromise;
@@ -356,7 +384,9 @@ describe('DirectoryService', () => {
       const req = httpMock.expectOne((req) => req.url.includes('/users'));
       req.error(new ErrorEvent('Forbidden'), { status: 403 });
 
-      const groupsReq = httpMock.expectOne((req) => req.url.includes('/groups'));
+      const groupsReq = httpMock.expectOne((req) =>
+        req.url.includes('/groups'),
+      );
       groupsReq.flush(mockApiGroupsResponse);
 
       await fetchPromise;
@@ -370,7 +400,9 @@ describe('DirectoryService', () => {
       const req = httpMock.expectOne((req) => req.url.includes('/users'));
       req.error(new ErrorEvent('Too Many Requests'), { status: 429 });
 
-      const groupsReq = httpMock.expectOne((req) => req.url.includes('/groups'));
+      const groupsReq = httpMock.expectOne((req) =>
+        req.url.includes('/groups'),
+      );
       groupsReq.flush(mockApiGroupsResponse);
 
       await fetchPromise;

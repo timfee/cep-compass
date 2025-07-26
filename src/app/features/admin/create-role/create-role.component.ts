@@ -1,9 +1,9 @@
-import { 
-  ChangeDetectionStrategy, 
-  Component, 
-  inject, 
-  signal, 
-  computed 
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+  computed,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -17,16 +17,22 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 
-import { 
-  AdminRoleService, 
-  AdminRole, 
-  RoleCreationResponse, 
+import {
+  AdminRoleService,
+  AdminRole,
+  RoleCreationResponse,
   CEP_ADMIN_ROLE,
-  RolePrivilege
+  RolePrivilege,
 } from '../../../services/admin-role.service';
 import { AuthService } from '../../../auth/auth.service';
 
-type ComponentState = 'checking' | 'exists' | 'ready' | 'creating' | 'success' | 'error';
+type ComponentState =
+  | 'checking'
+  | 'exists'
+  | 'ready'
+  | 'creating'
+  | 'success'
+  | 'error';
 
 interface RoleCreationState {
   state: ComponentState;
@@ -50,11 +56,11 @@ interface RoleCreationState {
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatListModule,
-    MatExpansionModule
+    MatExpansionModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './create-role.component.html',
-  styleUrl: './create-role.component.css'
+  styleUrl: './create-role.component.css',
 })
 export class CreateRoleComponent {
   private readonly adminRoleService = inject(AdminRoleService);
@@ -69,7 +75,7 @@ export class CreateRoleComponent {
     checking: true,
     roleExists: false,
     creating: false,
-    success: false
+    success: false,
   });
 
   // Computed values for template
@@ -101,25 +107,29 @@ export class CreateRoleComponent {
       this.updateState({ checking: true, state: 'checking' });
 
       const result = await this.adminRoleService.checkCepAdminRoleExists();
-      
+
       if (result.exists && result.role) {
         this.updateState({
           checking: false,
           roleExists: true,
           state: 'exists',
           existingRole: result.role,
-          existingRoleId: result.role.roleId
+          existingRoleId: result.role.roleId,
         });
       } else {
         this.updateState({
           checking: false,
           roleExists: false,
-          state: 'ready'
+          state: 'ready',
         });
       }
     } catch (error) {
       console.error('Error checking for existing role:', error);
-      this.setError(error instanceof Error ? error.message : 'Failed to check for existing role');
+      this.setError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to check for existing role',
+      );
     }
   }
 
@@ -128,21 +138,25 @@ export class CreateRoleComponent {
       this.updateState({ creating: true, state: 'creating' });
 
       const createdRole = await this.adminRoleService.createCepAdminRole();
-      
+
       this.updateState({
         creating: false,
         success: true,
         state: 'success',
-        createdRole
+        createdRole,
       });
 
       this.snackBar.open('CEP Admin role created successfully!', 'Close', {
         duration: 5000,
-        panelClass: ['success-snackbar']
+        panelClass: ['success-snackbar'],
       });
     } catch (error) {
       console.error('Error creating role:', error);
-      this.setError(error instanceof Error ? error.message : 'Failed to create CEP Admin role');
+      this.setError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to create CEP Admin role',
+      );
     }
   }
 
@@ -159,7 +173,7 @@ export class CreateRoleComponent {
     if (roleId) {
       this.clipboard.copy(roleId);
       this.snackBar.open('Role ID copied to clipboard!', 'Close', {
-        duration: 3000
+        duration: 3000,
       });
     }
   }
@@ -169,7 +183,7 @@ export class CreateRoleComponent {
   }
 
   private updateState(updates: Partial<RoleCreationState>): void {
-    this.componentState.update(current => ({ ...current, ...updates }));
+    this.componentState.update((current) => ({ ...current, ...updates }));
   }
 
   formatPrivilege(privilege: RolePrivilege): string {
@@ -181,7 +195,7 @@ export class CreateRoleComponent {
       checking: false,
       creating: false,
       state: 'error',
-      error: errorMessage
+      error: errorMessage,
     });
   }
 }

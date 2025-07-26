@@ -164,9 +164,13 @@ export class AuthService {
         return credential.accessToken;
       } else {
         if (!credential) {
-          console.error('Failed to retrieve OAuth access token: No credential returned from sign-in result.');
+          console.error(
+            'Failed to retrieve OAuth access token: No credential returned from sign-in result.',
+          );
         } else if (!credential.accessToken) {
-          console.error('Failed to retrieve OAuth access token: No access token in credential response.');
+          console.error(
+            'Failed to retrieve OAuth access token: No access token in credential response.',
+          );
         }
         return null;
       }

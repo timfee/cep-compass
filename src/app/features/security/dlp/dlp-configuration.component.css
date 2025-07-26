@@ -1,0 +1,145 @@
+.dlp-configuration-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.info-card {
+  background-color: #e3f2fd;
+  margin-bottom: 24px;
+}
+
+.info-card mat-card-content {
+  display: flex;
+  gap: 16px;
+}
+
+.info-card mat-icon {
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.template-card {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.template-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.template-card.selected {
+  border: 2px solid #1976d2;
+}
+
+.template-card mat-chip-set {
+  margin-top: 8px;
+}
+
+.template-card mat-chip {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.policy-details {
+  margin-top: 24px;
+}
+
+.policy-config {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.policy-config h4 {
+  margin-top: 0;
+}
+
+.policy-config button {
+  margin-top: 16px;
+}
+
+.step-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+.warning-card {
+  background-color: #fff3e0;
+  margin: 16px 0;
+}
+
+.warning-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resource-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.resource-links a {
+  text-decoration: none;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .dlp-configuration-container {
+    padding: 16px;
+  }
+
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-links {
+    flex-direction: column;
+  }
+
+  .resource-links a {
+    width: 100%;
+  }
+
+  .info-card mat-card-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Stepper customizations */
+mat-stepper {
+  margin: 16px 0;
+}
+
+.mat-step-header {
+  pointer-events: none;
+}
+
+/* Success snackbar styling */
+::ng-deep .success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Enhanced accessibility */
+.template-card:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}

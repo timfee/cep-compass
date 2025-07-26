@@ -82,9 +82,9 @@ export class EmailTemplateService {
   public readonly previewHtml = computed(() => {
     const template = this._selectedTemplate();
     const values = this._variableValues();
-    
+
     if (!template) return '';
-    
+
     return this.substituteVariables(template.body, values);
   });
 
@@ -94,9 +94,9 @@ export class EmailTemplateService {
   public readonly previewSubject = computed(() => {
     const template = this._selectedTemplate();
     const values = this._variableValues();
-    
+
     if (!template) return '';
-    
+
     return this.substituteVariables(template.subject, values);
   });
 
@@ -144,11 +144,36 @@ export class EmailTemplateService {
           {{senderName}}</p>
         `,
         variables: [
-          { key: 'adminName', label: 'IT Admin Name', type: 'text', required: true },
-          { key: 'orgUnitName', label: 'Organizational Unit', type: 'text', required: true },
-          { key: 'enrollmentToken', label: 'Enrollment Token', type: 'text', required: true },
-          { key: 'expirationDate', label: 'Token Expiration Date', type: 'text', required: true },
-          { key: 'senderName', label: 'Your Name', type: 'text', required: true }
+          {
+            key: 'adminName',
+            label: 'IT Admin Name',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'orgUnitName',
+            label: 'Organizational Unit',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'enrollmentToken',
+            label: 'Enrollment Token',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'expirationDate',
+            label: 'Token Expiration Date',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'senderName',
+            label: 'Your Name',
+            type: 'text',
+            required: true,
+          },
         ],
         category: 'enrollment',
       },
@@ -172,9 +197,25 @@ export class EmailTemplateService {
           <p>Best regards,<br>IT Support Team</p>
         `,
         variables: [
-          { key: 'companyName', label: 'Company Name', type: 'text', required: true },
-          { key: 'helpDeskEmail', label: 'Help Desk Email', type: 'text', required: true },
-          { key: 'ssoProvider', label: 'SSO Provider', type: 'select', options: ['Google', 'Microsoft', 'Okta', 'SAML'], required: true },
+          {
+            key: 'companyName',
+            label: 'Company Name',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'helpDeskEmail',
+            label: 'Help Desk Email',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'ssoProvider',
+            label: 'SSO Provider',
+            type: 'select',
+            options: ['Google', 'Microsoft', 'Okta', 'SAML'],
+            required: true,
+          },
         ],
         category: 'onboarding',
       },
@@ -196,16 +237,32 @@ export class EmailTemplateService {
           <p>Thank you for your cooperation,<br>IT Security Team</p>
         `,
         variables: [
-          { key: 'policyName', label: 'Policy Name', type: 'text', required: true },
-          { key: 'effectiveDate', label: 'Effective Date', type: 'text', required: true },
-          { key: 'affectedUsers', label: 'Affected Users', type: 'text', required: true },
+          {
+            key: 'policyName',
+            label: 'Policy Name',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'effectiveDate',
+            label: 'Effective Date',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'affectedUsers',
+            label: 'Affected Users',
+            type: 'text',
+            required: true,
+          },
         ],
         category: 'security',
       },
       {
         id: 'profile-enrollment',
         name: 'Chrome Profile Sign-in Instructions',
-        subject: 'Action Required: Sign in to Chrome with Your {{companyName}} Account',
+        subject:
+          'Action Required: Sign in to Chrome with Your {{companyName}} Account',
         category: 'enrollment',
         body: `
           <p>Dear {{userName}},</p>
@@ -250,16 +307,72 @@ export class EmailTemplateService {
           {{senderTitle}}</p>
         `,
         variables: [
-          { key: 'userName', label: 'User Name', type: 'text', required: false, defaultValue: 'Team' },
-          { key: 'userEmail', label: 'User Email', type: 'text', required: false, defaultValue: 'your work email' },
-          { key: 'companyName', label: 'Company Name', type: 'text', required: true },
-          { key: 'ssoProvider', label: 'SSO Provider', type: 'select', required: true, options: ['Google Workspace', 'Microsoft Azure AD', 'Okta', 'OneLogin', 'Other SSO'] },
-          { key: 'helpDeskEmail', label: 'IT Support Email', type: 'text', required: true },
-          { key: 'helpDeskUrl', label: 'Help Center URL', type: 'text', required: false },
-          { key: 'deadline', label: 'Completion Deadline', type: 'text', required: true, defaultValue: 'end of this week' },
-          { key: 'senderName', label: 'Your Name', type: 'text', required: true },
-          { key: 'senderTitle', label: 'Your Title', type: 'text', required: true, defaultValue: 'IT Administrator' }
-        ]
+          {
+            key: 'userName',
+            label: 'User Name',
+            type: 'text',
+            required: false,
+            defaultValue: 'Team',
+          },
+          {
+            key: 'userEmail',
+            label: 'User Email',
+            type: 'text',
+            required: false,
+            defaultValue: 'your work email',
+          },
+          {
+            key: 'companyName',
+            label: 'Company Name',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'ssoProvider',
+            label: 'SSO Provider',
+            type: 'select',
+            required: true,
+            options: [
+              'Google Workspace',
+              'Microsoft Azure AD',
+              'Okta',
+              'OneLogin',
+              'Other SSO',
+            ],
+          },
+          {
+            key: 'helpDeskEmail',
+            label: 'IT Support Email',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'helpDeskUrl',
+            label: 'Help Center URL',
+            type: 'text',
+            required: false,
+          },
+          {
+            key: 'deadline',
+            label: 'Completion Deadline',
+            type: 'text',
+            required: true,
+            defaultValue: 'end of this week',
+          },
+          {
+            key: 'senderName',
+            label: 'Your Name',
+            type: 'text',
+            required: true,
+          },
+          {
+            key: 'senderTitle',
+            label: 'Your Title',
+            type: 'text',
+            required: true,
+            defaultValue: 'IT Administrator',
+          },
+        ],
       },
     ];
   }
@@ -268,12 +381,12 @@ export class EmailTemplateService {
    * Selects a template by ID
    */
   selectTemplate(templateId: string): void {
-    const template = this.templates().find(t => t.id === templateId);
+    const template = this.templates().find((t) => t.id === templateId);
     if (template) {
       this._selectedTemplate.set(template);
       // Initialize variables with default values
       const defaultValues: Record<string, string> = {};
-      template.variables.forEach(variable => {
+      template.variables.forEach((variable) => {
         if (variable.defaultValue) {
           defaultValues[variable.key] = variable.defaultValue;
         }
@@ -314,7 +427,10 @@ export class EmailTemplateService {
   /**
    * Substitutes variables in a text string
    */
-  private substituteVariables(text: string, values: Record<string, string>): string {
+  private substituteVariables(
+    text: string,
+    values: Record<string, string>,
+  ): string {
     let result = text;
     Object.entries(values).forEach(([key, value]) => {
       const regex = new RegExp(`{{${key}}}`, 'g');
@@ -326,17 +442,23 @@ export class EmailTemplateService {
   /**
    * Validates that all required variables have values
    */
-  validateRequiredVariables(): { isValid: boolean; missingVariables: string[] } {
+  validateRequiredVariables(): {
+    isValid: boolean;
+    missingVariables: string[];
+  } {
     const template = this._selectedTemplate();
     const values = this._variableValues();
-    
+
     if (!template) {
       return { isValid: false, missingVariables: [] };
     }
 
     const missingVariables: string[] = [];
-    template.variables.forEach(variable => {
-      if (variable.required && (!values[variable.key] || values[variable.key].trim() === '')) {
+    template.variables.forEach((variable) => {
+      if (
+        variable.required &&
+        (!values[variable.key] || values[variable.key].trim() === '')
+      ) {
         missingVariables.push(variable.label);
       }
     });
@@ -353,12 +475,14 @@ export class EmailTemplateService {
   composeEmail(recipients: string[], cc?: string[]): ComposedEmail | null {
     const template = this._selectedTemplate();
     const values = this._variableValues();
-    
+
     if (!template) return null;
 
     const validation = this.validateRequiredVariables();
     if (!validation.isValid) {
-      throw new Error(`Missing required variables: ${validation.missingVariables.join(', ')}`);
+      throw new Error(
+        `Missing required variables: ${validation.missingVariables.join(', ')}`,
+      );
     }
 
     return {
@@ -375,7 +499,7 @@ export class EmailTemplateService {
   saveCustomTemplate(template: Omit<EmailTemplate, 'id'>): void {
     const id = `custom-${Date.now()}`;
     const customTemplate: EmailTemplate = { ...template, id };
-    
+
     const currentCustom = this._customTemplates();
     this._customTemplates.set([...currentCustom, customTemplate]);
     this.saveCustomTemplatesToStorage();
@@ -386,7 +510,7 @@ export class EmailTemplateService {
    */
   deleteCustomTemplate(templateId: string): void {
     const currentCustom = this._customTemplates();
-    this._customTemplates.set(currentCustom.filter(t => t.id !== templateId));
+    this._customTemplates.set(currentCustom.filter((t) => t.id !== templateId));
     this.saveCustomTemplatesToStorage();
   }
 
@@ -404,8 +528,9 @@ export class EmailTemplateService {
     try {
       const templates = JSON.parse(jsonData) as EmailTemplate[];
       // Validate templates
-      const validTemplates = templates.filter(t => 
-        t.id && t.name && t.subject && t.body && t.variables && t.category
+      const validTemplates = templates.filter(
+        (t) =>
+          t.id && t.name && t.subject && t.body && t.variables && t.category,
       );
       this._customTemplates.set(validTemplates);
       this.saveCustomTemplatesToStorage();
@@ -434,7 +559,10 @@ export class EmailTemplateService {
    */
   private saveCustomTemplatesToStorage(): void {
     try {
-      localStorage.setItem('customEmailTemplates', JSON.stringify(this._customTemplates()));
+      localStorage.setItem(
+        'customEmailTemplates',
+        JSON.stringify(this._customTemplates()),
+      );
     } catch (err) {
       console.warn('Failed to save custom templates to storage:', err);
     }
@@ -443,7 +571,11 @@ export class EmailTemplateService {
   /**
    * Gets the mailto URL for opening in Gmail
    */
-  getGmailComposeUrl(recipients: string[], subject: string, body: string): string {
+  getGmailComposeUrl(
+    recipients: string[],
+    subject: string,
+    body: string,
+  ): string {
     const params = new URLSearchParams({
       to: recipients.join(','),
       subject,

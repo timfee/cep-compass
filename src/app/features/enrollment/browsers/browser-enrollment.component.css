@@ -216,7 +216,7 @@ section {
 
 .token-value code {
   flex: 1;
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 14px;
   background: transparent;
   word-break: break-all;
@@ -349,34 +349,34 @@ section {
   .browser-enrollment-container {
     padding: 16px;
   }
-  
+
   .action-buttons-row {
     flex-direction: column;
   }
-  
+
   .admin-console-button {
     width: 100%;
   }
-  
+
   .token-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .token-details {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .token-info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .email-composer-overlay {
     padding: 12px;
   }
-  
+
   .email-composer-dialog {
     max-height: 95vh;
   }
@@ -388,16 +388,16 @@ section {
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .create-button-container {
     width: 100%;
   }
-  
+
   .create-token-button,
   .draft-email-button {
     width: 100%;
   }
-  
+
   .token-value {
     flex-direction: column;
     align-items: flex-start;
@@ -417,12 +417,12 @@ section {
   .token-item {
     border-color: #333;
   }
-  
+
   .token-status.active {
     background: #000;
     color: #fff;
   }
-  
+
   .error-banner {
     background-color: #fff;
     border: 2px solid #000;

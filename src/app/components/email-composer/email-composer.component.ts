@@ -1,16 +1,22 @@
-import { 
-  ChangeDetectionStrategy, 
-  Component, 
-  computed, 
-  inject, 
-  input, 
-  output, 
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
   signal,
   DestroyRef,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,11 +29,11 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-import { 
-  EmailTemplateService, 
-  EmailTemplate, 
-  ComposedEmail, 
-  EmailVariable 
+import {
+  EmailTemplateService,
+  EmailTemplate,
+  ComposedEmail,
+  EmailVariable,
 } from '../../services/email-template.service';
 
 /**
@@ -131,7 +137,7 @@ export class EmailComposerComponent implements OnInit {
   loadTemplate(templateId: string): void {
     this.emailService.selectTemplate(templateId);
     const template = this.selectedTemplate();
-    
+
     if (template) {
       this.emailForm.patchValue({
         templateId: template.id,
@@ -148,7 +154,7 @@ export class EmailComposerComponent implements OnInit {
    */
   setVariable(key: string, value: string): void {
     this.emailService.setVariableValue(key, value);
-    
+
     // Update subject if it contains this variable
     const updatedSubject = this.previewSubject();
     this.emailForm.patchValue({ subject: updatedSubject });
@@ -172,7 +178,7 @@ export class EmailComposerComponent implements OnInit {
    */
   removeRecipient(email: string): void {
     const current = this.recipientChips();
-    this.recipientChips.set(current.filter(r => r !== email));
+    this.recipientChips.set(current.filter((r) => r !== email));
   }
 
   /**
@@ -193,7 +199,7 @@ export class EmailComposerComponent implements OnInit {
    */
   removeCc(email: string): void {
     const current = this.ccChips();
-    this.ccChips.set(current.filter(c => c !== email));
+    this.ccChips.set(current.filter((c) => c !== email));
   }
 
   /**
@@ -204,7 +210,7 @@ export class EmailComposerComponent implements OnInit {
       event.preventDefault();
       const input = event.target as HTMLInputElement;
       const email = input.value.trim();
-      
+
       if (type === 'recipient') {
         this.addRecipient(email);
       } else {
@@ -227,7 +233,7 @@ export class EmailComposerComponent implements OnInit {
     if (this._isPreviewMode()) {
       return this.previewHtml();
     }
-    
+
     const content = this.editorContent();
     const values = this.variableValues();
     return this.substituteVariables(content, values);
@@ -274,7 +280,7 @@ export class EmailComposerComponent implements OnInit {
     const recipients = this.recipientChips();
     const subject = this.previewSubject();
     const body = this.getPreview();
-    
+
     if (recipients.length === 0) {
       this.snackBar.open('Please add at least one recipient', 'Close', {
         duration: 3000,
@@ -282,7 +288,11 @@ export class EmailComposerComponent implements OnInit {
       return;
     }
 
-    const gmailUrl = this.emailService.getGmailComposeUrl(recipients, subject, body);
+    const gmailUrl = this.emailService.getGmailComposeUrl(
+      recipients,
+      subject,
+      body,
+    );
     window.open(gmailUrl, '_blank');
   }
 
@@ -293,9 +303,9 @@ export class EmailComposerComponent implements OnInit {
     const validation = this.emailService.validateRequiredVariables();
     if (!validation.isValid) {
       this.snackBar.open(
-        `Please fill in required variables: ${validation.missingVariables.join(', ')}`, 
+        `Please fill in required variables: ${validation.missingVariables.join(', ')}`,
         'Close',
-        { duration: 5000 }
+        { duration: 5000 },
       );
       return;
     }
@@ -311,7 +321,7 @@ export class EmailComposerComponent implements OnInit {
     try {
       const composedEmail = this.emailService.composeEmail(
         recipients,
-        this.ccChips().length > 0 ? this.ccChips() : undefined
+        this.ccChips().length > 0 ? this.ccChips() : undefined,
       );
 
       if (composedEmail) {
@@ -324,7 +334,7 @@ export class EmailComposerComponent implements OnInit {
       this.snackBar.open(
         err instanceof Error ? err.message : 'Failed to compose email',
         'Close',
-        { duration: 5000 }
+        { duration: 5000 },
       );
     }
   }
@@ -357,7 +367,10 @@ export class EmailComposerComponent implements OnInit {
   /**
    * Substitutes variables in text (local helper)
    */
-  private substituteVariables(text: string, values: Record<string, string>): string {
+  private substituteVariables(
+    text: string,
+    values: Record<string, string>,
+  ): string {
     let result = text;
     Object.entries(values).forEach(([key, value]) => {
       const regex = new RegExp(`{{${key}}}`, 'g');

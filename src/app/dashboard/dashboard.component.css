@@ -169,25 +169,25 @@
   .dashboard-container {
     padding: 16px;
   }
-  
+
   .dashboard-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .welcome-section h1 {
     font-size: 1.75rem;
   }
-  
+
   .card-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .card-section {
     margin-bottom: 32px;
   }
-  
+
   .stats-section {
     margin-top: 32px;
   }
@@ -197,15 +197,15 @@
   .dashboard-container {
     padding: 12px;
   }
-  
+
   .welcome-section h1 {
     font-size: 1.5rem;
   }
-  
+
   .dashboard-card {
     min-height: 180px;
   }
-  
+
   .dashboard-card mat-icon[mat-card-avatar] {
     font-size: 28px;
     height: 36px;
@@ -218,11 +218,11 @@
   .dashboard-card {
     border: 2px solid #000;
   }
-  
+
   .dashboard-card:hover:not(.disabled) {
     border-color: #1976d2;
   }
-  
+
   .dashboard-card.disabled {
     border-color: #ccc;
   }
@@ -233,7 +233,7 @@
   .dashboard-card {
     transition: none;
   }
-  
+
   .dashboard-card:hover:not(.disabled) {
     transform: none;
   }

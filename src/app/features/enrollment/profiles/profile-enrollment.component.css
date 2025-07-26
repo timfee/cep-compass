@@ -155,25 +155,25 @@
   .profile-enrollment-container {
     padding: 8px;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 12px;
   }
-  
+
   .stat-value {
     font-size: 28px;
   }
-  
+
   .email-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .email-actions button {
     justify-content: center;
   }
-  
+
   .resources-section button,
   .resources-section a {
     margin-right: 0;
@@ -218,11 +218,11 @@
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .stat-value {
     font-size: 24px;
   }
-  
+
   .sync-info {
     flex-wrap: wrap;
     font-size: 12px;
@@ -235,7 +235,7 @@
     background: rgba(63, 81, 181, 0.1);
     border: 1px solid rgba(63, 81, 181, 0.2);
   }
-  
+
   .error-message {
     background: rgba(244, 67, 54, 0.15);
     border: 1px solid rgba(244, 67, 54, 0.4);

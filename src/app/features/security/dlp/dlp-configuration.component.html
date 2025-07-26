@@ -1,0 +1,300 @@
+<div class="dlp-configuration-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar color="primary">policy</mat-icon>
+      <mat-card-title>Configure DLP Policies</mat-card-title>
+      <mat-card-subtitle
+        >Start with safe audit-only policies to monitor without
+        disruption</mat-card-subtitle
+      >
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- DLP Introduction -->
+      <section class="intro-section">
+        <mat-card class="info-card">
+          <mat-card-content>
+            <mat-icon color="primary">info</mat-icon>
+            <div>
+              <h4>Safe Starting Approach</h4>
+              <p>
+                We'll guide you through creating
+                <strong>audit-only</strong> policies that:
+              </p>
+              <ul>
+                <li>Generate logs for visibility</li>
+                <li>Do NOT block any user actions</li>
+                <li>Help you understand data movement patterns</li>
+                <li>Allow gradual, informed policy refinement</li>
+              </ul>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Policy Templates -->
+      <section class="templates-section">
+        <h3>Recommended Starter Policies</h3>
+        <p>Choose an audit policy template to begin monitoring:</p>
+
+        <div class="template-grid">
+          @for (template of auditPolicyTemplates; track template.id) {
+            <mat-card
+              class="template-card"
+              [class.selected]="selectedPolicyTemplate() === template.id"
+              (click)="selectTemplate(template.id)"
+            >
+              <mat-card-header>
+                <mat-icon
+                  mat-card-avatar
+                  [color]="
+                    selectedPolicyTemplate() === template.id ? 'primary' : ''
+                  "
+                >
+                  {{ template.icon }}
+                </mat-icon>
+                <mat-card-title>{{ template.name }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <p>{{ template.description }}</p>
+                <mat-chip-set>
+                  <mat-chip disabled>
+                    <mat-icon>visibility</mat-icon>
+                    Audit Only
+                  </mat-chip>
+                </mat-chip-set>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+
+        @if (selectedPolicyTemplate()) {
+          <mat-expansion-panel class="policy-details">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>description</mat-icon>
+                Policy Configuration Details
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="policy-config">
+              @switch (selectedPolicyTemplate()) {
+                @case ("sensitive-data-audit") {
+                  <h4>Sensitive Data Monitoring Configuration</h4>
+                  <ol>
+                    <li>
+                      <strong>Rule Name:</strong> "Audit Sensitive Data Uploads"
+                    </li>
+                    <li>
+                      <strong>Conditions:</strong>
+                      <ul>
+                        <li>
+                          Content contains: Credit card numbers (via regex)
+                        </li>
+                        <li>
+                          Content contains: Social Security numbers (via regex)
+                        </li>
+                        <li>Content contains: API keys or passwords</li>
+                      </ul>
+                    </li>
+                    <li><strong>Actions:</strong> Log only (no blocking)</li>
+                    <li><strong>Scope:</strong> All users, all destinations</li>
+                  </ol>
+                }
+
+                @case ("external-sharing-audit") {
+                  <h4>External Sharing Tracking Configuration</h4>
+                  <ol>
+                    <li>
+                      <strong>Rule Name:</strong> "Audit External File Sharing"
+                    </li>
+                    <li>
+                      <strong>Conditions:</strong>
+                      <ul>
+                        <li>Destination: External domains</li>
+                        <li>
+                          File types: Documents, spreadsheets, presentations
+                        </li>
+                        <li>Action: Upload or share</li>
+                      </ul>
+                    </li>
+                    <li><strong>Actions:</strong> Log only (no blocking)</li>
+                    <li><strong>Scope:</strong> All users</li>
+                  </ol>
+                }
+
+                @case ("download-monitoring") {
+                  <h4>Download Activity Logging Configuration</h4>
+                  <ol>
+                    <li>
+                      <strong>Rule Name:</strong> "Audit Corporate Downloads"
+                    </li>
+                    <li>
+                      <strong>Conditions:</strong>
+                      <ul>
+                        <li>Source: Corporate Google Drive or intranet</li>
+                        <li>Action: Download</li>
+                        <li>File size: Over 10MB</li>
+                      </ul>
+                    </li>
+                    <li><strong>Actions:</strong> Log only (no blocking)</li>
+                    <li><strong>Scope:</strong> All users</li>
+                  </ol>
+                }
+              }
+
+              <button mat-raised-button (click)="copyPolicyConfig()">
+                <mat-icon>content_copy</mat-icon>
+                Copy Configuration
+              </button>
+            </div>
+          </mat-expansion-panel>
+        }
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Implementation Steps -->
+      <section class="implementation-section">
+        <h3>Implementation Steps</h3>
+
+        <mat-stepper orientation="vertical">
+          <mat-step>
+            <ng-template matStepLabel>Access DLP Configuration</ng-template>
+            <p>Open the Google Admin Console DLP configuration page:</p>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="openDlpConsole()"
+            >
+              <mat-icon>open_in_new</mat-icon>
+              Open DLP Configuration
+            </button>
+            <div class="step-note">
+              <mat-icon>lightbulb</mat-icon>
+              <span>The page will open in a new tab</span>
+            </div>
+          </mat-step>
+
+          <mat-step>
+            <ng-template matStepLabel>Create New Rule</ng-template>
+            <ol>
+              <li>Click "Create rule" or "Add rule"</li>
+              <li>Name your rule (e.g., "Audit - Sensitive Data")</li>
+              <li>Set rule to "Active"</li>
+              <li>Choose "Chrome" as the app</li>
+            </ol>
+          </mat-step>
+
+          <mat-step>
+            <ng-template matStepLabel>Configure Conditions</ng-template>
+            <p>Based on your selected template, add the conditions:</p>
+            <ul>
+              <li>Content inspection triggers</li>
+              <li>Destination restrictions</li>
+              <li>File type filters</li>
+            </ul>
+            <mat-card class="warning-card">
+              <mat-card-content>
+                <mat-icon color="warn">warning</mat-icon>
+                <span
+                  >Double-check: Ensure action is set to "Audit only" not
+                  "Block"</span
+                >
+              </mat-card-content>
+            </mat-card>
+          </mat-step>
+
+          <mat-step>
+            <ng-template matStepLabel>Review and Save</ng-template>
+            <ul>
+              <li>Review all settings</li>
+              <li>Confirm "Audit only" mode</li>
+              <li>Save the rule</li>
+              <li>Monitor alerts for 1-2 weeks before considering blocking</li>
+            </ul>
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="markAsConfigured()"
+            >
+              <mat-icon>check</mat-icon>
+              Mark as Completed
+            </button>
+          </mat-step>
+        </mat-stepper>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Next Steps -->
+      <section class="next-steps-section">
+        <h3>After Creating Audit Policies</h3>
+
+        <mat-list>
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">schedule</mat-icon>
+            <span matListItemTitle>Monitor for 1-2 weeks</span>
+            <span matListItemLine>Review logs to understand data patterns</span>
+          </mat-list-item>
+
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">analytics</mat-icon>
+            <span matListItemTitle>Analyze alert volume</span>
+            <span matListItemLine
+              >Identify false positives and refine rules</span
+            >
+          </mat-list-item>
+
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">tune</mat-icon>
+            <span matListItemTitle>Gradually increase protection</span>
+            <span matListItemLine>Add warnings before implementing blocks</span>
+          </mat-list-item>
+
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">group</mat-icon>
+            <span matListItemTitle>Communicate with users</span>
+            <span matListItemLine>Educate before enforcing restrictions</span>
+          </mat-list-item>
+        </mat-list>
+      </section>
+
+      <!-- Resources -->
+      <section class="resources-section">
+        <h3>DLP Resources</h3>
+
+        <div class="resource-links">
+          <a
+            mat-stroked-button
+            href="https://support.google.com/a/answer/9725686"
+            target="_blank"
+          >
+            <mat-icon>article</mat-icon>
+            DLP Documentation
+          </a>
+
+          <a
+            mat-stroked-button
+            href="https://support.google.com/chrome/a/answer/13117550"
+            target="_blank"
+          >
+            <mat-icon>school</mat-icon>
+            Chrome DLP Guide
+          </a>
+
+          <a
+            mat-stroked-button
+            href="https://workspace.google.com/demos/dlp-demo/"
+            target="_blank"
+          >
+            <mat-icon>play_circle</mat-icon>
+            Interactive Demo
+          </a>
+        </div>
+      </section>
+    </mat-card-content>
+  </mat-card>
+</div>

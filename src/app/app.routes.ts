@@ -12,6 +12,8 @@ import { ProfileEnrollmentComponent } from './features/enrollment/profiles/profi
 import { ProfileEnrollmentDemoComponent } from './features/enrollment/profiles/profile-enrollment-demo.component';
 import { OneClickActivationComponent } from './features/security/one-click/one-click-activation.component';
 import { OneClickActivationDemoComponent } from './features/security/one-click/one-click-activation-demo.component';
+import { DlpConfigurationComponent } from './features/security/dlp/dlp-configuration.component';
+import { DlpConfigurationDemoComponent } from './features/security/dlp/dlp-configuration-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -32,19 +34,19 @@ const superAdminGuard = () => {
   const user = authService.user();
   const selectedRole = authService.selectedRole();
   const availableRoles = authService.availableRoles();
-  
+
   if (!user) {
     return ['/login'];
   }
-  
+
   if (!selectedRole) {
     return ['/select-role'];
   }
-  
+
   if (selectedRole !== 'superAdmin' || !availableRoles.isSuperAdmin) {
     return ['/dashboard']; // Redirect to dashboard if not super admin
   }
-  
+
   return true;
 };
 
@@ -62,10 +64,11 @@ export const routes: Routes = [
       { path: 'enrollment/browsers', component: BrowserEnrollmentComponent },
       { path: 'enrollment/profiles', component: ProfileEnrollmentComponent },
       { path: 'security/one-click', component: OneClickActivationComponent },
-      { 
-        path: 'admin/create-role', 
+      { path: 'security/dlp', component: DlpConfigurationComponent },
+      {
+        path: 'admin/create-role',
         component: CreateRoleComponent,
-        canActivate: [superAdminGuard]
+        canActivate: [superAdminGuard],
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
@@ -95,6 +98,11 @@ export const routes: Routes = [
   {
     path: 'one-click-demo',
     component: OneClickActivationDemoComponent,
+    // No auth guard - public demo
+  },
+  {
+    path: 'dlp-demo',
+    component: DlpConfigurationDemoComponent,
     // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },

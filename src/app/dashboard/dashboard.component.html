@@ -5,22 +5,30 @@
       <h1>CEP Compass Dashboard</h1>
       @if (user(); as currentUser) {
         <p class="welcome-message">
-          Welcome back, <strong>{{ currentUser.displayName }}</strong>!
+          Welcome back, <strong>{{ currentUser.displayName }}</strong
+          >!
           @if (selectedRole()) {
-            You are currently acting as a <strong>{{ getRoleDisplayName(selectedRole()) }}</strong>.
+            You are currently acting as a
+            <strong>{{ getRoleDisplayName(selectedRole()) }}</strong
+            >.
           }
         </p>
       }
     </div>
-    
+
     @if (selectedRole()) {
       <div class="role-indicator">
         <mat-chip-set>
-          <mat-chip 
+          <mat-chip
             [color]="selectedRole() === 'superAdmin' ? 'warn' : 'primary'"
-            selected>
+            selected
+          >
             <mat-icon matChipAvatar>
-              {{ selectedRole() === 'superAdmin' ? 'admin_panel_settings' : 'manage_accounts' }}
+              {{
+                selectedRole() === "superAdmin"
+                  ? "admin_panel_settings"
+                  : "manage_accounts"
+              }}
             </mat-icon>
             {{ getRoleDisplayName(selectedRole()) }}
           </mat-chip>
@@ -38,39 +46,41 @@
           <p class="section-description">{{ category.description }}</p>
         }
       </div>
-      
+
       <div class="card-grid">
         @for (card of getCardsByCategory(category.name); track card.id) {
-          <mat-card 
+          <mat-card
             class="dashboard-card"
             [class.disabled]="!card.enabled"
             [class.elevated]="card.enabled"
             (click)="handleCardClick(card)"
-            [attr.aria-label]="card.title + ': ' + card.description">
-            
+            [attr.aria-label]="card.title + ': ' + card.description"
+          >
             <mat-card-header>
               <mat-icon mat-card-avatar>{{ card.icon }}</mat-icon>
               <mat-card-title>{{ card.title }}</mat-card-title>
               @if (card.badge) {
-                <mat-chip 
+                <mat-chip
                   class="card-badge"
                   [color]="card.badge.color"
-                  selected>
+                  selected
+                >
                   {{ card.badge.value }}
                 </mat-chip>
               }
             </mat-card-header>
-            
+
             <mat-card-content>
               <p>{{ card.description }}</p>
             </mat-card-content>
-            
+
             <mat-card-actions align="end">
-              <button 
-                mat-button 
+              <button
+                mat-button
                 color="primary"
                 [disabled]="!card.enabled"
-                [attr.aria-label]="'Go to ' + card.title">
+                [attr.aria-label]="'Go to ' + card.title"
+              >
                 Get Started
                 <mat-icon>arrow_forward</mat-icon>
               </button>

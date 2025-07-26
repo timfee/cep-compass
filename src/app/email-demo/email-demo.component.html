@@ -3,10 +3,13 @@
     <mat-card-header>
       <mat-card-title>Email Template Service Demo</mat-card-title>
       <mat-card-subtitle>
-        Test the email composer component with pre-built templates and variable substitution
+        Test the email composer component with pre-built templates and variable
+        substitution
       </mat-card-subtitle>
     </mat-card-header>
   </mat-card>
 
-  <app-email-composer (emailComposed)="onEmailComposed($event)"></app-email-composer>
+  <app-email-composer
+    (emailComposed)="onEmailComposed($event)"
+  ></app-email-composer>
 </div>

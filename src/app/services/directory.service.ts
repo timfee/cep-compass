@@ -299,9 +299,7 @@ export class DirectoryService {
    */
   async searchUsers(query: string): Promise<DirectoryUser[]> {
     if (query.length < 3) {
-      return this._users().filter((user) =>
-        this.matchesUserQuery(user, query),
-      );
+      return this._users().filter((user) => this.matchesUserQuery(user, query));
     }
 
     const currentUser = this.authService.user();
@@ -557,15 +555,15 @@ export class DirectoryService {
     const params = new URLSearchParams();
 
     params.set('customer', 'my_customer');
-    
+
     if (maxResults) {
       params.set('maxResults', Math.min(maxResults, 500).toString());
     }
-    
+
     if (pageToken) {
       params.set('pageToken', pageToken);
     }
-    
+
     if (query) {
       params.set('query', query);
     }
@@ -589,19 +587,19 @@ export class DirectoryService {
     const params = new URLSearchParams();
 
     params.set('customer', 'my_customer');
-    
+
     if (maxResults) {
       params.set('maxResults', Math.min(maxResults, 200).toString());
     }
-    
+
     if (pageToken) {
       params.set('pageToken', pageToken);
     }
-    
+
     if (userKey) {
       params.set('userKey', userKey);
     }
-    
+
     if (query) {
       params.set('query', query);
     }
@@ -626,7 +624,7 @@ export class DirectoryService {
     if (maxResults) {
       params.set('maxResults', Math.min(maxResults, 200).toString());
     }
-    
+
     if (pageToken) {
       params.set('pageToken', pageToken);
     }
@@ -658,7 +656,7 @@ export class DirectoryService {
         primary?: boolean;
       }[];
     };
-    
+
     // Validate required fields
     if (!user.id || !user.primaryEmail) {
       throw new Error('API response is missing required user fields');
@@ -679,12 +677,10 @@ export class DirectoryService {
       lastLoginTime: user.lastLoginTime || '',
       creationTime: user.creationTime || '',
       thumbnailPhotoUrl: user.thumbnailPhotoUrl,
-      emails: user.emails?.map(email => ({
+      emails: user.emails?.map((email) => ({
         address: email.address || '',
         primary: email.primary || false,
-      })) || [
-        { address: user.primaryEmail, primary: true },
-      ],
+      })) || [{ address: user.primaryEmail, primary: true }],
     };
   }
 
@@ -698,7 +694,7 @@ export class DirectoryService {
       adminCreated?: boolean;
       aliases?: string[];
     };
-    
+
     // Validate required fields
     if (!group.id || !group.email || !group.name) {
       throw new Error('API response is missing required group fields');
@@ -731,7 +727,9 @@ export class DirectoryService {
     return (
       group.name.toLowerCase().includes(searchTerm) ||
       group.email.toLowerCase().includes(searchTerm) ||
-      (group.description ? group.description.toLowerCase().includes(searchTerm) : false)
+      (group.description
+        ? group.description.toLowerCase().includes(searchTerm)
+        : false)
     );
   }
 
