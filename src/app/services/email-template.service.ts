@@ -378,10 +378,10 @@ export class EmailTemplateService {
    * Converts HTML to plain text for mailto links
    */
   private htmlToPlainText(html: string): string {
-    // Create a temporary div to parse HTML
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
+    // Use DOMParser to safely parse the HTML string
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
   }
 
   /**
