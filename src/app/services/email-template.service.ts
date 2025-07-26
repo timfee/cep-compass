@@ -393,13 +393,17 @@ export class EmailTemplateService {
     } else {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'absolute';
-      textArea.style.left = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
+      try {
+        textArea.value = text;
+        textArea.style.position = 'absolute';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+      } finally {
+        // Ensure the textarea is removed from the DOM
+        document.body.removeChild(textArea);
+      }
     }
   }
 }
