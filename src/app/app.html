@@ -27,31 +27,5 @@
 </mat-toolbar>
 
 <main class="content">
-  @if (authService.user(); as user) {
-    @if (authService.selectedRole(); as selectedRole) {
-      <div class="welcome-message">
-        <h1>Welcome!</h1>
-        <p>
-          You are currently acting as a
-          <strong>{{
-            selectedRole === "superAdmin"
-              ? "Super Admin"
-              : "CEP Delegated Admin"
-          }}</strong
-          >.
-        </p>
-        <p>Navigate to a feature module to get started.</p>
-        <div class="demo-links">
-          <a mat-raised-button color="primary" routerLink="/org-units-demo">Org Units Demo</a>
-          <a mat-raised-button color="accent" routerLink="/email-demo">Email Template Demo</a>
-          <a mat-raised-button color="warn" routerLink="/directory-stats">Directory & Users</a>
-        </div>
-      </div>
-      <router-outlet></router-outlet>
-    } @else {
-      <router-outlet></router-outlet>
-    }
-  } @else {
-    <router-outlet></router-outlet>
-  }
+  <router-outlet></router-outlet>
 </main>
