@@ -14,7 +14,10 @@ const REQUIRED_CEP_ADMIN_PRIVILEGES = [
   // Table: Google Admin Console Privileges
   // Privilege Area: Organizational Units -> Permission: Read
   // API Privilege: Organizational Units -> Read
-  { privilegeName: 'ORGANIZATION_UNITS_RETRIEVE', serviceId: '00haapch16h1ysv' },
+  {
+    privilegeName: 'ORGANIZATION_UNITS_RETRIEVE',
+    serviceId: '00haapch16h1ysv',
+  },
 
   // Privilege Area: Security Center -> Permission: Activity Rules Full administrative rights for Security Center
   { privilegeName: 'ACTIVITY_RULES', serviceId: '01egqt2p2p8gvae' },
@@ -35,13 +38,22 @@ const REQUIRED_CEP_ADMIN_PRIVILEGES = [
   { privilegeName: 'MANAGE_DEVICE_SETTINGS', serviceId: '03hv69ve4bjwe54' },
 
   // Privilege Area: Chrome DLP -> Permission: Manage Chrome DLP application insights settings
-  { privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS', serviceId: '01x0gk371sq486y' },
+  {
+    privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS',
+    serviceId: '01x0gk371sq486y',
+  },
 
   // Privilege Area: Chrome DLP -> Permission: View and manage Chrome DLP application OCR setting
-  { privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING', serviceId: '01x0gk371sq486y' },
+  {
+    privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING',
+    serviceId: '01x0gk371sq486y',
+  },
 
   // Privilege Area: Chrome DLP -> Permission: View Chrome DLP application insights settings
-  { privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS', serviceId: '01x0gk371sq486y' },
+  {
+    privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS',
+    serviceId: '01x0gk371sq486y',
+  },
 
   // Privilege Area: Mobile Device Management -> Permission: Managed Devices
   { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
@@ -121,9 +133,7 @@ export const getRoles = onCall(async (request): Promise<UserRoles> => {
     const rolePromises = roleAssignments
       .map((assignment) => assignment.roleId)
       .filter((roleId): roleId is string => !!roleId)
-      .map((roleId) =>
-        admin.roles.get({ customer: 'my_customer', roleId })
-      );
+      .map((roleId) => admin.roles.get({ customer: 'my_customer', roleId }));
 
     const roles = await Promise.all(rolePromises);
 
