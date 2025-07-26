@@ -177,7 +177,10 @@ export class EmailComposerComponent implements OnInit {
 
     // Update subject if it contains this variable
     const updatedSubject = this.previewSubject();
-    this.emailForm.patchValue({ subject: updatedSubject }, { emitEvent: false });
+    this.emailForm.patchValue(
+      { subject: updatedSubject },
+      { emitEvent: false },
+    );
   }
 
   /**
@@ -262,7 +265,10 @@ export class EmailComposerComponent implements OnInit {
   /**
    * Handles Quill editor content changes
    */
-  onQuillContentChange(event: { html: string | null; text: string | null }): void {
+  onQuillContentChange(event: {
+    html: string | null;
+    text: string | null;
+  }): void {
     const content = event.html || event.text || '';
     this.editorContent.set(content);
   }

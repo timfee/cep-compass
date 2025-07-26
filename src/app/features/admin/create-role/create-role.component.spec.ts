@@ -5,7 +5,11 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CreateRoleComponent } from './create-role.component';
-import { AdminRoleService, AdminRole, RoleCreationResponse } from '../../../services/admin-role.service';
+import {
+  AdminRoleService,
+  AdminRole,
+  RoleCreationResponse,
+} from '../../../services/admin-role.service';
 import { AuthService } from '../../../auth/auth.service';
 
 describe('CreateRoleComponent', () => {
@@ -61,7 +65,9 @@ describe('CreateRoleComponent', () => {
       ],
     }).compileComponents();
 
-    adminRoleService = TestBed.inject(AdminRoleService) as jasmine.SpyObj<AdminRoleService>;
+    adminRoleService = TestBed.inject(
+      AdminRoleService,
+    ) as jasmine.SpyObj<AdminRoleService>;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     clipboard = TestBed.inject(Clipboard) as jasmine.SpyObj<Clipboard>;
@@ -70,9 +76,9 @@ describe('CreateRoleComponent', () => {
   describe('when user is super admin and role does not exist', () => {
     beforeEach(async () => {
       adminRoleService.checkCepAdminRoleExists.and.returnValue(
-        Promise.resolve({ exists: false, role: undefined })
+        Promise.resolve({ exists: false, role: undefined }),
       );
-      
+
       fixture = TestBed.createComponent(CreateRoleComponent);
       component = fixture.componentInstance;
       await fixture.whenStable();
@@ -90,7 +96,7 @@ describe('CreateRoleComponent', () => {
 
     it('should create role successfully', async () => {
       adminRoleService.createCepAdminRole.and.returnValue(
-        Promise.resolve(mockRoleCreationResponse)
+        Promise.resolve(mockRoleCreationResponse),
       );
 
       await component.createRole();
@@ -101,13 +107,13 @@ describe('CreateRoleComponent', () => {
       expect(snackBar.open).toHaveBeenCalledWith(
         'CEP Admin role created successfully!',
         'Close',
-        { duration: 5000, panelClass: ['success-snackbar'] }
+        { duration: 5000, panelClass: ['success-snackbar'] },
       );
     });
 
     it('should handle role creation error', async () => {
       adminRoleService.createCepAdminRole.and.returnValue(
-        Promise.reject(new Error('Creation failed'))
+        Promise.reject(new Error('Creation failed')),
       );
 
       await component.createRole();
@@ -120,9 +126,9 @@ describe('CreateRoleComponent', () => {
   describe('when role already exists', () => {
     beforeEach(async () => {
       adminRoleService.checkCepAdminRoleExists.and.returnValue(
-        Promise.resolve({ exists: true, role: mockAdminRole })
+        Promise.resolve({ exists: true, role: mockAdminRole }),
       );
-      
+
       fixture = TestBed.createComponent(CreateRoleComponent);
       component = fixture.componentInstance;
       await fixture.whenStable();
@@ -142,7 +148,9 @@ describe('CreateRoleComponent', () => {
 
       component.openAdminConsole();
 
-      expect(adminRoleService.getAdminConsoleUrl).toHaveBeenCalledWith('test-role-id');
+      expect(adminRoleService.getAdminConsoleUrl).toHaveBeenCalledWith(
+        'test-role-id',
+      );
       expect(window.open).toHaveBeenCalledWith(mockUrl, '_blank');
     });
 
@@ -153,7 +161,7 @@ describe('CreateRoleComponent', () => {
       expect(snackBar.open).toHaveBeenCalledWith(
         'Role ID copied to clipboard!',
         'Close',
-        { duration: 3000 }
+        { duration: 3000 },
       );
     });
   });
@@ -161,9 +169,9 @@ describe('CreateRoleComponent', () => {
   describe('when user is not super admin', () => {
     beforeEach(async () => {
       Object.defineProperty(authService, 'availableRoles', {
-        value: () => ({ isSuperAdmin: false })
+        value: () => ({ isSuperAdmin: false }),
       });
-      
+
       fixture = TestBed.createComponent(CreateRoleComponent);
       component = fixture.componentInstance;
       await fixture.whenStable();
@@ -172,23 +180,25 @@ describe('CreateRoleComponent', () => {
 
     it('should show error when user is not super admin', () => {
       expect(component.state()).toBe('error');
-      expect(component.error()).toBe('Super Admin role required to create CEP Admin roles');
+      expect(component.error()).toBe(
+        'Super Admin role required to create CEP Admin roles',
+      );
     });
   });
 
   describe('error handling', () => {
     beforeEach(() => {
       adminRoleService.checkCepAdminRoleExists.and.returnValue(
-        Promise.resolve({ exists: false, role: undefined })
+        Promise.resolve({ exists: false, role: undefined }),
       );
-      
+
       fixture = TestBed.createComponent(CreateRoleComponent);
       component = fixture.componentInstance;
     });
 
     it('should handle check role error', async () => {
       adminRoleService.checkCepAdminRoleExists.and.returnValue(
-        Promise.reject(new Error('Check failed'))
+        Promise.reject(new Error('Check failed')),
       );
 
       component.retry();
@@ -208,9 +218,9 @@ describe('CreateRoleComponent', () => {
   describe('UI interactions', () => {
     beforeEach(async () => {
       adminRoleService.checkCepAdminRoleExists.and.returnValue(
-        Promise.resolve({ exists: false, role: undefined })
+        Promise.resolve({ exists: false, role: undefined }),
       );
-      
+
       fixture = TestBed.createComponent(CreateRoleComponent);
       component = fixture.componentInstance;
       await fixture.whenStable();
@@ -218,7 +228,10 @@ describe('CreateRoleComponent', () => {
     });
 
     it('should call retry when retry method is called', () => {
-      const privateSpy = spyOn(component as unknown as { checkForExistingRole: () => void }, 'checkForExistingRole');
+      const privateSpy = spyOn(
+        component as unknown as { checkForExistingRole: () => void },
+        'checkForExistingRole',
+      );
       component.retry();
       expect(privateSpy).toHaveBeenCalled();
     });

@@ -57,12 +57,12 @@ describe('DlpConfigurationComponent', () => {
       expect(window.open).toHaveBeenCalledWith(
         'https://admin.google.com/ac/chrome/datalossPrevention',
         '_blank',
-        'noopener,noreferrer'
+        'noopener,noreferrer',
       );
       expect(snackBar.open).toHaveBeenCalledWith(
         'DLP Configuration page opened in new tab',
         'Close',
-        { duration: 3000 }
+        { duration: 3000 },
       );
     });
   });
@@ -81,7 +81,9 @@ describe('DlpConfigurationComponent', () => {
       // Mock clipboard API
       Object.assign(navigator, {
         clipboard: {
-          writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
+          writeText: jasmine
+            .createSpy('writeText')
+            .and.returnValue(Promise.resolve()),
         },
       });
     });
@@ -92,12 +94,12 @@ describe('DlpConfigurationComponent', () => {
       await component.copyPolicyConfig();
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        jasmine.stringContaining('Audit Sensitive Data Uploads')
+        jasmine.stringContaining('Audit Sensitive Data Uploads'),
       );
       expect(snackBar.open).toHaveBeenCalledWith(
         'Policy configuration copied to clipboard!',
         'Close',
-        { duration: 3000, panelClass: ['success-snackbar'] }
+        { duration: 3000, panelClass: ['success-snackbar'] },
       );
     });
 
@@ -107,7 +109,7 @@ describe('DlpConfigurationComponent', () => {
       await component.copyPolicyConfig();
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        jasmine.stringContaining('Audit External File Sharing')
+        jasmine.stringContaining('Audit External File Sharing'),
       );
     });
 
@@ -117,13 +119,13 @@ describe('DlpConfigurationComponent', () => {
       await component.copyPolicyConfig();
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        jasmine.stringContaining('Audit Corporate Downloads')
+        jasmine.stringContaining('Audit Corporate Downloads'),
       );
     });
 
     it('should handle clipboard error', async () => {
       (navigator.clipboard.writeText as jasmine.Spy).and.returnValue(
-        Promise.reject(new Error('Clipboard error'))
+        Promise.reject(new Error('Clipboard error')),
       );
       component.selectTemplate('sensitive-data-audit');
 
@@ -132,7 +134,7 @@ describe('DlpConfigurationComponent', () => {
       expect(snackBar.open).toHaveBeenCalledWith(
         'Failed to copy to clipboard',
         'Close',
-        { duration: 3000 }
+        { duration: 3000 },
       );
     });
 
@@ -151,7 +153,7 @@ describe('DlpConfigurationComponent', () => {
       expect(snackBar.open).toHaveBeenCalledWith(
         'DLP Configuration marked as completed!',
         'Close',
-        { duration: 5000, panelClass: ['success-snackbar'] }
+        { duration: 5000, panelClass: ['success-snackbar'] },
       );
     });
 
@@ -160,7 +162,7 @@ describe('DlpConfigurationComponent', () => {
 
       const storedState = localStorage.getItem('cep-compass-dlp');
       expect(storedState).toBeTruthy();
-      
+
       const parsedState = JSON.parse(storedState!);
       expect(parsedState.activated).toBeTrue();
       expect(parsedState.activatedDate).toBeTruthy();
@@ -174,7 +176,11 @@ describe('DlpConfigurationComponent', () => {
 
       component.openExternalLink(testUrl);
 
-      expect(window.open).toHaveBeenCalledWith(testUrl, '_blank', 'noopener,noreferrer');
+      expect(window.open).toHaveBeenCalledWith(
+        testUrl,
+        '_blank',
+        'noopener,noreferrer',
+      );
     });
   });
 

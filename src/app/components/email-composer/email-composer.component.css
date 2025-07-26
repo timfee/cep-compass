@@ -72,7 +72,7 @@
 
 .email-chips mat-chip {
   background-color: #e3f2fd;
-  color: #1976d2;
+  color: var(--primary-color);
 }
 
 /* Subject Section */
@@ -237,12 +237,12 @@
 
 :host ::ng-deep .ql-snow .ql-toolbar button:hover .ql-stroke,
 :host ::ng-deep .ql-snow .ql-toolbar button.ql-active .ql-stroke {
-  stroke: #1976d2;
+  stroke: var(--primary-color);
 }
 
 :host ::ng-deep .ql-snow .ql-toolbar button:hover .ql-fill,
 :host ::ng-deep .ql-snow .ql-toolbar button.ql-active .ql-fill {
-  fill: #1976d2;
+  fill: var(--primary-color);
 }
 
 /* Preview Mode Styles */
@@ -317,7 +317,7 @@
 }
 
 .preview-container a {
-  color: #1976d2;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -358,12 +358,12 @@
 
 /* Accessibility */
 .email-composer-card:focus-within {
-  outline: 2px solid #1976d2;
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
 .action-buttons button:focus {
-  outline: 2px solid #1976d2;
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 

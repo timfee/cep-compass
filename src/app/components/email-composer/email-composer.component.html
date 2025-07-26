@@ -195,7 +195,7 @@
                 <quill-editor
                   #quillEditor
                   [(ngModel)]="editorContent"
-                  [ngModelOptions]="{standalone: true}"
+                  [ngModelOptions]="{ standalone: true }"
                   (onContentChanged)="onQuillContentChange($event)"
                   [modules]="editorConfig"
                   [styles]="editorStyle"

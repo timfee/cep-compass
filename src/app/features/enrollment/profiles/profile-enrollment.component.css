@@ -207,11 +207,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #1976d2;
+  color: var(--primary-color);
 }
 
 .demo-note mat-icon {
-  color: #1976d2;
+  color: var(--primary-color);
 }
 
 @media (max-width: 480px) {

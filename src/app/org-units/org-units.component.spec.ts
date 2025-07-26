@@ -3,7 +3,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 
 import { OrgUnitsComponent } from './org-units.component';
-import { OrgUnitsService, OrgUnit, OrgUnitNode } from '../services/org-units.service';
+import {
+  OrgUnitsService,
+  OrgUnit,
+  OrgUnitNode,
+} from '../services/org-units.service';
 
 describe('OrgUnitsComponent', () => {
   let component: OrgUnitsComponent;
@@ -68,7 +72,9 @@ describe('OrgUnitsComponent', () => {
       providers: [{ provide: OrgUnitsService, useValue: mockOrgUnitsService }],
     }).compileComponents();
 
-    orgUnitsService = TestBed.inject(OrgUnitsService) as jasmine.SpyObj<OrgUnitsService>;
+    orgUnitsService = TestBed.inject(
+      OrgUnitsService,
+    ) as jasmine.SpyObj<OrgUnitsService>;
     fixture = TestBed.createComponent(OrgUnitsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -179,7 +185,6 @@ describe('OrgUnitsComponent', () => {
 
     expect(orgUnitsService.clearCache).toHaveBeenCalled();
   });
-
 
   it('should display tree structure correctly', () => {
     const compiled = fixture.nativeElement as HTMLElement;

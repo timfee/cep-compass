@@ -144,7 +144,9 @@ export class AuthService {
 
     // Don't automatically re-authenticate - just return null
     // This prevents the popup spam issue
-    console.warn('No OAuth access token available. User needs to sign in again.');
+    console.warn(
+      'No OAuth access token available. User needs to sign in again.',
+    );
     return null;
   }
 
