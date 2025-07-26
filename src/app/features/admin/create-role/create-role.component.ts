@@ -24,7 +24,7 @@ import {
   CEP_ADMIN_ROLE,
   RolePrivilege,
 } from '../../../services/admin-role.service';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../services/auth.service';
 
 type ComponentState =
   | 'checking'

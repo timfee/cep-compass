@@ -9,7 +9,7 @@ import {
   EnrollmentToken,
   CreateTokenRequest,
 } from './enrollment-token.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from './auth.service';
 import { OrgUnitsService, OrgUnit } from './org-units.service';
 
 describe('EnrollmentTokenService', () => {

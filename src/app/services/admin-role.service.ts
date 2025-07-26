@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from './auth.service';
 import {
   CEP_ADMIN_PRIVILEGES,
   GoogleApiUtils,

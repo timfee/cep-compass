@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
-import { AuthService, SelectedRole } from '../auth/auth.service';
+import { AuthService, SelectedRole } from '../services/auth.service';
 import { DirectoryStatsComponent } from '../components/directory-stats/directory-stats.component';
 
 // --- TYPE DEFINITIONS ---

@@ -8,12 +8,12 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AuthService, SelectedRole } from '../auth.service';
+import { AuthService, SelectedRole } from '../../services/auth.service';
 
 @Component({
   selector: 'app-select-role',
-  templateUrl: './select-role.html',
-  styleUrl: './select-role.css',
+  templateUrl: './select-role.component.html',
+  styleUrl: './select-role.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [

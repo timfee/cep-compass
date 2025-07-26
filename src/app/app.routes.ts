@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login';
-import { SelectRoleComponent } from './auth/select-role/select-role';
+import { LoginComponent } from './auth/login/login.component';
+import { SelectRoleComponent } from './auth/select-role/select-role.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {
   AuthGuard,
@@ -8,7 +8,7 @@ import {
   redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
 import { inject } from '@angular/core';
-import { AuthService } from './auth/auth.service';
+import { AuthService } from './services/auth.service';
 
 // A pipe to allow access only if a user is logged in AND has selected a role.
 const canActivate = () => {

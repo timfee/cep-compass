@@ -4,7 +4,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DashboardComponent } from './dashboard.component';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../services/auth.service';
 import { DirectoryService } from '../services/directory.service';
 import { signal } from '@angular/core';
 
