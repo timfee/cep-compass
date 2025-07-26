@@ -12,6 +12,8 @@ import { ProfileEnrollmentComponent } from './features/enrollment/profiles/profi
 import { ProfileEnrollmentDemoComponent } from './features/enrollment/profiles/profile-enrollment-demo.component';
 import { OneClickActivationComponent } from './features/security/one-click/one-click-activation.component';
 import { OneClickActivationDemoComponent } from './features/security/one-click/one-click-activation-demo.component';
+import { DlpConfigurationComponent } from './features/security/dlp/dlp-configuration.component';
+import { DlpConfigurationDemoComponent } from './features/security/dlp/dlp-configuration-demo.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -62,6 +64,7 @@ export const routes: Routes = [
       { path: 'enrollment/browsers', component: BrowserEnrollmentComponent },
       { path: 'enrollment/profiles', component: ProfileEnrollmentComponent },
       { path: 'security/one-click', component: OneClickActivationComponent },
+      { path: 'security/dlp', component: DlpConfigurationComponent },
       { 
         path: 'admin/create-role', 
         component: CreateRoleComponent,
@@ -95,6 +98,11 @@ export const routes: Routes = [
   {
     path: 'one-click-demo',
     component: OneClickActivationDemoComponent,
+    // No auth guard - public demo
+  },
+  {
+    path: 'dlp-demo',
+    component: DlpConfigurationDemoComponent,
     // No auth guard - public demo
   },
   { path: '**', redirectTo: '' },
