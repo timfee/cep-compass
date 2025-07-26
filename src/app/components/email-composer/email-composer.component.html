@@ -5,7 +5,8 @@
       Email Composer
     </mat-card-title>
     <mat-card-subtitle>
-      Create and customize email templates with rich text editing
+      Create and customize email templates with rich text editing powered by
+      Quill
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -167,7 +168,6 @@
           <input
             matInput
             formControlName="subject"
-            [value]="previewSubject()"
             placeholder="Email subject"
           />
           <mat-hint>Variables will be automatically substituted</mat-hint>
@@ -187,63 +187,23 @@
               >
                 Preview Mode
               </mat-slide-toggle>
-
-              @if (!isPreviewMode()) {
-                <div class="formatting-buttons">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="insertFormatting('**', '**')"
-                    matTooltip="Bold"
-                  >
-                    <mat-icon>format_bold</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="insertFormatting('*', '*')"
-                    matTooltip="Italic"
-                  >
-                    <mat-icon>format_italic</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="insertFormatting('<h2>', '</h2>')"
-                    matTooltip="Heading"
-                  >
-                    <mat-icon>title</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="insertFormatting('<p>', '</p>')"
-                    matTooltip="Paragraph"
-                  >
-                    <mat-icon>notes</mat-icon>
-                  </button>
-                </div>
-              }
             </div>
 
             @if (!isPreviewMode()) {
-              <!-- Rich Text Editor (Simple textarea for now) -->
+              <!-- Rich Text Editor using Quill -->
               <div class="editor-container">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Email Content</mat-label>
-                  <textarea
-                    matInput
-                    [value]="editorContent()"
-                    (input)="onTextareaInput($event)"
-                    [placeholder]="editorConfig.placeholder"
-                    [style.min-height]="editorConfig.minHeight"
-                    [style.max-height]="editorConfig.maxHeight"
-                    rows="15"
-                    class="editor-textarea"
-                  >
-                  </textarea>
-                  <mat-hint>Use HTML tags for formatting</mat-hint>
-                </mat-form-field>
+                <quill-editor
+                  #quillEditor
+                  [content]="editorContent()"
+                  (onContentChanged)="onQuillContentChange($event)"
+                  [modules]="editorConfig"
+                  [styles]="editorStyle"
+                  [readOnly]="editorReadOnly()"
+                  placeholder="Enter email content..."
+                  theme="snow"
+                  class="quill-editor"
+                >
+                </quill-editor>
               </div>
             } @else {
               <!-- Preview Mode -->

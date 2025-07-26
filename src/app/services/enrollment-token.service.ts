@@ -83,7 +83,8 @@ export class EnrollmentTokenService {
   private readonly authService = inject(AuthService);
   private readonly orgUnitsService = inject(OrgUnitsService);
 
-  private readonly API_BASE_URL = GOOGLE_API_CONFIG.BASE_URLS.DIRECTORY_V1_1_BETA;
+  private readonly API_BASE_URL =
+    GOOGLE_API_CONFIG.BASE_URLS.DIRECTORY_V1_1_BETA;
 
   // Private state signals
   private readonly _tokens = signal<EnrollmentToken[]>([]);

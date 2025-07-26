@@ -91,6 +91,13 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'email-composer-demo',
+    loadComponent: () =>
+      import('./email-composer-demo/email-composer-demo.component').then(
+        (m) => m.EmailComposerDemoComponent,
+      ),
+  },
+  {
     path: 'login',
     component: LoginComponent,
     canActivate: [AuthGuard],
