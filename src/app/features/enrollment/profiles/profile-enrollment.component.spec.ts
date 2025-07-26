@@ -123,7 +123,9 @@ describe('ProfileEnrollmentComponent', () => {
 
   it('should show error state', () => {
     // Set error state
-    Object.assign(mockDirectoryService, { error: signal('Test error message') });
+    Object.assign(mockDirectoryService, {
+      error: signal('Test error message'),
+    });
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -183,7 +185,9 @@ describe('ProfileEnrollmentComponent', () => {
       href: '',
       download: '',
     };
-    spyOn(document, 'createElement').and.returnValue(mockAnchor as unknown as HTMLAnchorElement);
+    spyOn(document, 'createElement').and.returnValue(
+      mockAnchor as unknown as HTMLAnchorElement,
+    );
     spyOn(document.body, 'appendChild');
     spyOn(document.body, 'removeChild');
 

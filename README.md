@@ -7,7 +7,7 @@ Chrome Enterprise Policy Compass - A comprehensive tool for managing Chrome Ente
 This application has been optimized for production deployment with:
 
 - ✅ **Modern Angular 20+** with standalone components and signals
-- ✅ **Zero lint errors** and strict TypeScript configuration  
+- ✅ **Zero lint errors** and strict TypeScript configuration
 - ✅ **Optimized bundle size** (1.17MB vs 1.40MB) with lazy loading
 - ✅ **Security hardened** with CSP headers and proper configuration
 - ✅ **Error monitoring** and global error handling
@@ -16,7 +16,7 @@ This application has been optimized for production deployment with:
 ## Features
 
 - **Dashboard**: Overview of Chrome Enterprise policies and status
-- **Enrollment Management**: Browser and profile enrollment workflows  
+- **Enrollment Management**: Browser and profile enrollment workflows
 - **Security Configuration**: One-click activation and DLP policies
 - **Admin Tools**: Role management and organization unit controls
 - **Email Templates**: Automated communication workflows
@@ -38,7 +38,7 @@ npm test
 # Lint code
 npm run lint
 
-# Format code  
+# Format code
 npm run format
 ```
 
@@ -65,18 +65,22 @@ Once the server is running, open your browser and navigate to `http://localhost:
 ## Architecture
 
 ### Modern Angular Patterns
+
 - **Standalone Components**: All components are standalone (no NgModules)
 - **Signals**: Reactive state management with Angular signals
 - **Control Flow**: Native `@if`, `@for`, `@switch` syntax
 - **OnPush Change Detection**: Performance-optimized change detection
 
 ### Lazy Loading
+
 Features are lazy-loaded to optimize initial bundle size:
+
 - `/enrollment/*` - Enrollment management features
-- `/security/*` - Security configuration features  
+- `/security/*` - Security configuration features
 - `/admin/*` - Administrative tools
 
 ### State Management
+
 - **Signals**: Component-level reactive state
 - **Services**: Business logic and data access
 - **Firebase**: Authentication and backend services

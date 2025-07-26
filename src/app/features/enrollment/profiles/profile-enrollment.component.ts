@@ -18,7 +18,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 import { DirectoryService } from '../../../services/directory.service';
-import { EmailTemplateService, ComposedEmail } from '../../../services/email-template.service';
+import {
+  EmailTemplateService,
+  ComposedEmail,
+} from '../../../services/email-template.service';
 import { AuthService } from '../../../auth/auth.service';
 import { EmailComposerComponent } from '../../../components/email-composer/email-composer.component';
 

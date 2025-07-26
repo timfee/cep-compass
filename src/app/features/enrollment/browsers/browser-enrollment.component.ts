@@ -31,9 +31,7 @@ import {
   TokenCreationResponse,
 } from '../../../services/enrollment-token.service';
 import { OrgUnitsService, OrgUnit } from '../../../services/org-units.service';
-import {
-  EmailTemplateService,
-} from '../../../services/email-template.service';
+import { EmailTemplateService } from '../../../services/email-template.service';
 
 // Components
 import { EmailComposerComponent } from '../../../components/email-composer/email-composer.component';

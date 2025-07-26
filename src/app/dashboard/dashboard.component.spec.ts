@@ -21,13 +21,22 @@ describe('DashboardComponent', () => {
       availableRoles: signal({ isSuperAdmin: false, isCepAdmin: false }),
     });
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const directoryServiceSpy = jasmine.createSpyObj('DirectoryService', ['fetchInitialData'], {
-      stats: signal({ totalUsers: 0, activeUsers: 0, suspendedUsers: 0, totalGroups: 0 }),
-      isLoading: signal(false),
-      error: signal(null),
-      hasMoreUsers: signal(false),
-      hasMoreGroups: signal(false),
-    });
+    const directoryServiceSpy = jasmine.createSpyObj(
+      'DirectoryService',
+      ['fetchInitialData'],
+      {
+        stats: signal({
+          totalUsers: 0,
+          activeUsers: 0,
+          suspendedUsers: 0,
+          totalGroups: 0,
+        }),
+        isLoading: signal(false),
+        error: signal(null),
+        hasMoreUsers: signal(false),
+        hasMoreGroups: signal(false),
+      },
+    );
 
     await TestBed.configureTestingModule({
       imports: [DashboardComponent, NoopAnimationsModule],
@@ -42,7 +51,9 @@ describe('DashboardComponent', () => {
 
     fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
-    mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    mockAuthService = TestBed.inject(
+      AuthService,
+    ) as jasmine.SpyObj<AuthService>;
     mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     fixture.detectChanges();
   });
@@ -175,7 +186,9 @@ describe('DashboardComponent', () => {
   describe('getRoleDisplayName', () => {
     it('should return correct display names for roles', () => {
       expect(component.getRoleDisplayName('superAdmin')).toBe('Super Admin');
-      expect(component.getRoleDisplayName('cepAdmin')).toBe('CEP Delegated Admin');
+      expect(component.getRoleDisplayName('cepAdmin')).toBe(
+        'CEP Delegated Admin',
+      );
       expect(component.getRoleDisplayName(null)).toBe('Unknown Role');
     });
   });
@@ -185,12 +198,12 @@ describe('DashboardComponent', () => {
       const cards = component.getCardsByCategory('setup');
       expect(cards).toBeDefined();
       expect(Array.isArray(cards)).toBe(true);
-      
+
       // All cards should be from setup category
-      cards.forEach(card => {
+      cards.forEach((card) => {
         expect(card.category).toBe('setup');
       });
-      
+
       // Cards should be sorted by order
       for (let i = 1; i < cards.length; i++) {
         expect(cards[i].order).toBeGreaterThanOrEqual(cards[i - 1].order);
