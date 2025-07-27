@@ -1,329 +1,186 @@
-# Persona
+# Google Gemini Instructions for CEP Compass
 
-You are a dedicated Angular developer who thrives on leveraging the absolute latest features of the framework to build visually appealing, interactive, and cutting-edge applications. You are currently immersed in Angular v20+, passionately adopting signals for reactive state management, embracing standalone components for streamlined architecture, and utilizing the new control flow for more intuitive template logic. Performance is paramount to you, who constantly seeks to optimize change detection and improve user experience through these modern Angular paradigms. When prompted, assume You are familiar with all the newest APIs and best practices, valuing clean, efficient, and maintainable code.
+## Primary Instructions
 
-## When you are provided with a prompt and asked to create an app you will use imagination to come up with a creative plan for implementing the app in phases. Then you will start with phase 1 and continue after verifying the output.
+Please refer to [AI_AGENT_INSTRUCTIONS.md](./AI_AGENT_INSTRUCTIONS.md) for the complete, authoritative instruction set that is shared across all AI agents.
 
-# CEP Compass Code Standards
+## Gemini-Specific Guidelines
 
-## Comments
+### Context for Gemini Code Assist
 
-- Use JSDoc for all exported members
-- Keep descriptions concise (one line preferred)
-- No decorative comment separators (`// ---`, `// ===`, etc.)
-- No section banners
-- Only add @param/@returns tags when TypeScript types are unclear
-
-## File Organization
-
-- Components: `feature-name.component.{ts,html,css,spec.ts}`
-- Services: `service-name.service.{ts,spec.ts}`
-- Use kebab-case for all file names
-- Group imports by: Angular, Material, Third-party, Local (no comment separators)
-- Services go in `/src/app/services/` directory
-- Shared utilities go in `/src/app/shared/` directory
-- Core utilities go in `/src/app/core/` directory
-
-## Import Organization
-
-```typescript
-// Angular imports first
-import { Component, inject } from "@angular/core";
-
-// Angular Material imports
-import { MatCardModule } from "@angular/material/card";
-
-// Third-party imports
-import { SomeLibrary } from "some-library";
-
-// Local imports last
-import { MyService } from "../services/my.service";
-```
-
-## Project Structure
+When using Gemini in your IDE or Google Cloud Console, provide this context:
 
 ```
-src/app/
-├── core/                 # Core utilities, guards, interceptors
-├── services/            # All services
-├── shared/              # Shared utilities, validators, pipes
-├── components/          # Reusable components
-├── features/            # Feature modules
-│   ├── admin/
-│   ├── enrollment/
-│   └── security/
-├── auth/                # Authentication components
-└── app.config.ts        # App configuration
+Working on Angular v20+ DESKTOP-ONLY app with:
+- Standalone components only (no NgModules)
+- Signals for state management
+- OnPush change detection
+- Material Design 3
+- Direct HTTP calls (no googleapis SDK)
+- TypeScript strict mode
+- Desktop Chrome only (no mobile support needed)
 ```
 
-# Critical Rules: Non-Negotiable
+### Gemini Prompting Best Practices
 
-You MUST adhere to these rules at all times. Failure to do so results in a poorly written application.
+1. **For Component Generation**
+   ```
+   Create an Angular v20 standalone component with:
+   - OnPush change detection
+   - Signals for state
+   - New control flow (@if, @for)
+   - Material Design 3 styling
+   - External template and styles
+   ```
 
-1. **ALL COMPONENTS ARE STANDALONE**: Every component, directive, and pipe you generate or write **MUST** be standalone. The `@Component` decorator **MUST NOT** explicitly include the property `standalone: true`, it is set by default.
+2. **For Service Generation**
+   ```
+   Create an Angular service that:
+   - Uses inject() function
+   - Returns Promises with firstValueFrom()
+   - Makes direct HTTP calls to Google APIs
+   - Has proper error handling
+   - Uses signals for state
+   ```
 
-```ts
-// CORRECT
-@Component({
-  selector: "app-example",
-  imports: [CommonModule],
-  template: `...`,
-})
-export class ExampleComponent {}
+3. **For Test Generation**
+   ```
+   Create Jasmine tests that:
+   - Mock all dependencies
+   - Use TestBed.configureTestingModule
+   - Test behavior not implementation
+   - Handle async operations with fakeAsync
+   - Achieve 80%+ coverage
+   ```
+
+### Integration with Google Cloud
+
+Since this project uses Google Workspace APIs:
+
+1. **API Calls Pattern**
+   ```typescript
+   // Tell Gemini: "Direct Google API call, no SDK"
+   const url = `https://admin.googleapis.com/admin/directory/v1/users`;
+   return firstValueFrom(this.http.get<Response>(url));
+   ```
+
+2. **Authentication Pattern**
+   ```typescript
+   // Tell Gemini: "Use existing auth interceptor"
+   // Headers added automatically by auth.interceptor.ts
+   // No manual token handling needed
+   ```
+
+3. **Error Handling Pattern**
+   ```typescript
+   // Tell Gemini: "Use GoogleApiErrorHandler"
+   catch (error) {
+     const message = this.errorHandler.getErrorMessage(error);
+     this.notificationService.showError(message);
+   }
+   ```
+
+### Gemini Studio/Workspace Prompts
+
+Save these as templates in Gemini:
+
+**"Angular Component Template"**
+```
+Generate Angular v20 component:
+- Name: [ComponentName]
+- Standalone with imports array
+- OnPush change detection
+- Signals: loading, data, error
+- Effect for reactive updates
+- Material components imported
+- Template with @if/@for
+- Proper error handling
 ```
 
-```ts
-// INCORRECT
-@Component({
-  selector: "app-example",
-  imports: [CommonModule],
-  template: `...`,
-  standalone: true, // <-- DO NOT USE THIS
-})
-export class ExampleComponent {}
+**"Angular Service Template"**
+```
+Generate Angular service:
+- Name: [ServiceName]
+- Uses inject() for dependencies
+- Methods return Promise<T>
+- Direct HTTP calls to [API]
+- Signal-based state
+- Proper TypeScript types
+- Error transformation
 ```
 
-2. **ALL COMPONENTS SHOULD USE `ChangeDectionStrategy.OnPush`**: Every component you generate **MUST** use `ChangeDetectionStrategy.OnPush`. The `@Component` decorator **MUST** include the property `changeDetection: ChangeDetectionStrategy.OnPush`.
-
-```ts
-// CORRECT
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
-
-@Component({
-  selector: "app-example",
-  templateUrl: "...",
-  changeDetection: ChangeDetectionStrategy.OnPush, // <-- INCLUDE THIS
-})
-export class ExampleComponent {}
+**"Unit Test Template"**
+```
+Generate Jasmine unit tests:
+- For: [Component/Service]
+- Mock all dependencies
+- Test public API only
+- Cover success/error cases
+- Use fakeAsync for timing
+- Descriptive test names
+- AAA pattern
 ```
 
-```ts
-// INCORRECT
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
+### Common Gemini Corrections
 
-@Component({
-  selector: "app-example",
-  templateUrl: "...",
-  // <-- MISSING ChangeDectionStrategy.OnPush
-})
-export class ExampleComponent {}
+If Gemini suggests outdated patterns:
+
+1. **"Update to Angular v20 patterns"**
+2. **"Use signals instead of BehaviorSubject"**
+3. **"Use @if instead of *ngIf"**
+4. **"Remove NgModule, make standalone"**
+5. **"Use inject() not constructor"**
+6. **"Direct HTTP not googleapis SDK"**
+
+### Gemini Code Review Prompts
+
+For code review with Gemini:
+
+```
+Review this Angular code for:
+1. Angular v20 best practices
+2. Signal usage correctness
+3. OnPush compatibility
+4. Error handling completeness
+5. Test coverage gaps
+6. Security vulnerabilities
+7. Performance issues
+8. Accessibility compliance
 ```
 
-3. **USE NATIVE CONTROL FLOW**: You **MUST** use built-in `@` syntax for all control flow in templates.
-   - Use `@if` and `@else` for conditional content.
-   - Use `@for` for loops, including the mandatory `track` expression.
-   - Use `@switch`, `@case`, and `@default` for complex conditional logic.
+### Material Design 3 with Gemini
 
-4. **CHECK YOUR OUTPUT WITH THE ANGULAR COMPILER AND FIX ERRORS**: After you complete the project generation, run the `ng build` command and observe the output to check for errors. Fix any errors you find.
+When asking about styling:
 
-5. **USE BROWSER NATIVE MODERN CSS**: You **MUST** user built-in CSS unless asked to use another styling library by the user.
-
-## FORBIDDEN SYNTAX
-
-Under no circumstances should you ever use the following outdated patterns:
-
-- **DO NOT USE** `NgModules` (`@NgModule`). The application is 100% standalone.
-- **DO NOT USE** `*ngIf`. Use `@if` instead.
-- **DO NOT USE** `*ngFor`. Use `@for` instead.
-- **DO NOT USE** `ng-template`, `ng-container` for control flow logic. Use `@if` and `@switch`.
-- **DO NOT USE** `NgClass` or `[ngClass]`. Use `[class]` bindings.
-- **DO NOT USE** `NgStyle` or `[ngStyle]`. Use `[style]` bindings.
-- **DO NOT USE** `@Input()` or `@Output()` decorators. Use `input()` and `output()` functions.
-- **DO NOT USE** RxJS operators (e.g., `map`, `filter`, `switchMap`). Prefer `async/await` with Promises for asynchronous operations. The only exception is using `toSignal` from `@angular/core/rxjs-interop` to convert AngularFire observables into signals.
-- **DO NOT USE** decorative comment separators like `// ---` or `// ===`
-
----
-
-# Detailed Best Practices
-
-## Visual Design
-
-**Aesthetics:** The AI always makes a great first impression by creating a unique user experience that incorporates modern components, a visually balanced layout with clean spacing, and polished styles that are easy to understand.
-
-1. Build beautiful and intuitive user interfaces that follow modern design guidelines.
-2. Ensure your app is mobile responsive and adapts to different screen sizes, working perfectly on mobile and web.
-3. Propose colors, fonts, typography, iconography, animation, effects, layouts, texture, drop shadows, gradients, etc.
-4. If images are needed, make them relevant and meaningful, with appropriate size, layout, and licensing (e.g., freely available). If real images are not available, provide placeholder images.
-5. If there are multiple pages for the user to interact with, provide an intuitive and easy navigation bar or controls.
-
-**Bold Definition:** The AI uses modern, interactive iconography, images, and UI components like buttons, text fields, animation, effects, gestures, sliders, carousels, navigation, etc.
-
-1. Fonts \- Choose expressive and relevant typography. Stress and emphasize font sizes to ease understanding, e.g., hero text, section headlines, list headlines, keywords in paragraphs, etc.
-2. Color \- Include a wide range of color concentrations and hues in the palette to create a vibrant and energetic look and feel.
-3. Texture \- Apply subtle noise texture to the main background to add a premium, tactile feel.
-4. Visual effects \- Multi-layered drop shadows create a strong sense of depth. Cards have a soft, deep shadow to look "lifted."
-5. Iconography \- Incorporate icons to enhance the user's understanding and the logical navigation of the app.
-6. Interactivity \- Buttons, checkboxes, sliders, lists, charts, graphs, and other interactive elements have a shadow with elegant use of color to create a "glow" effect.
-
-## **Accessibility or A11Y Standards:** Implement accessibility features to empower all users, assuming a wide variety of users with different physical abilities, mental abilities, age groups, education levels, and learning styles.
-
-## Components
-
-- **Change Detection**: Always set `changeDetection: ChangeDetectionStrategy.OnPush`.
-- **Inputs**: Use `input()` signals. `public title = input.required<string>();`
-- **Outputs**: Use the `output()` function. `public search = output<string>();`
-- **State**: Use signals (`signal()`) for all local component state. Use `computed()` for state derived from other signals.
-- **Templates**: Prefer inline templates for simple components (\< 15 lines of HTML). Use template files for larger components.
-- **File Naming**: Use kebab-case with `.component` suffix: `feature-name.component.ts`
-
-## Services
-
-- **Singleton Services**: Use `providedIn: 'root'` for services that should have one instance in the app.
-- **Dependency Injection**: **MUST** use the `inject()` function within constructors or factory functions. Do not use constructor parameter injection.
-- **File Location**: All services go in `/src/app/services/` directory
-- **File Naming**: Use kebab-case with `.service` suffix: `service-name.service.ts`
-
-```ts
-// CORRECT
-import { Injectable, inject } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-
-@Injectable({ providedIn: "root" })
-export class DataService {
-  private http = inject(HttpClient); // <-- Use inject()
-}
+```
+Style this using Material Design 3:
+- Use CSS variables var(--mat-sys-*)
+- Follow 8px grid system
+- Apply proper elevation
+- Use theme tokens only
+- Desktop-only (no mobile breakpoints)
+- Add proper state layers
 ```
 
-## Templates
+### Project-Specific Context
 
-- **Data Binding**: Use the `async` pipe to handle observables directly in the template.
-- **Image Optimization**: Use `NgOptimizedImage` for all static images by adding `provideImgixLoader('https://your-image-host.com/')` or a similar provider to `app.config.ts` and using `<img ngSrc="...">`.
+Always remind Gemini about:
 
-## TypeScript
+1. **No googleapis SDK** - lightweight HTTP only
+2. **Services in /src/app/services/** not shared
+3. **Known issues**: auth race condition, missing tests
+4. **Stub components**: enrollment, security features
+5. **Material Design 3** tokens and patterns
+6. **Desktop-only** - no mobile/responsive requirements
 
-- **Strict Typing**: Always use strict type checking.
-- **Avoid `any`**: Use `unknown` when a type is genuinely unknown and handle it with type guards. Prefer specific types wherever possible.
-- Prefer type inference when the type is obvious
+### Quick Command Reference
 
-## Angular Best Practices
+```bash
+# Gemini can help with these commands
+npm run build          # Verify changes compile
+npm run lint          # Check code standards
+npm test              # Run unit tests
+ng generate component # Use with --standalone
+```
 
-- Always use standalone components over `NgModules`
-- Don't use explicit `standalone: true` (it is implied by default)
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Use `NgOptimizedImage` for all static images.
-- **Use Angular Material** for UI components, leveraging its patterns and modules to reduce custom CSS and HTML.
-- **Organize code by feature** into dedicated folders (e.g., `src/app/auth`, `src/app/users`).
-
-## Angular Material Guidelines
-
-- Use Angular Material components for UI
-- Follow Material Design principles
-- Use Material theme colors, not hardcoded values
-- Use Material spacing (8px grid)
-- Don't override `.mat-mdc-*` classes
-- Use Material elevation system for shadows
-
-## Components
-
-- Keep components small and focused on a single responsibility
-- Use `input()` signal instead of decorators, learn more here [https://angular.dev/guide/components/inputs](https://angular.dev/guide/components/inputs)
-- Use `output()` function instead of decorators, learn more here [https://angular.dev/guide/components/outputs](https://angular.dev/guide/components/outputs)
-- Use `computed()` for derived state learn more about signals here [https://angular.dev/guide/signals](https://angular.dev/guide/signals).
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- **Use external template and style files** (`templateUrl` and `styleUrl`). Avoid inline templates and styles unless the component is trivial (e.g., less than 5 lines of HTML or CSS).
-- Prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead, for context: [https://angular.dev/guide/templates/binding\#css-class-and-style-property-bindings](https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings)
-- DO NOT use `ngStyle`, use `style` bindings instead, for context: [https://angular.dev/guide/templates/binding\#css-class-and-style-property-bindings](https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings)
-
-## State Management
-
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-
-## Templates
-
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Use built in pipes and import pipes when being used in a template, learn more [https://angular.dev/guide/templates/pipes\#](https://angular.dev/guide/templates/pipes#)
-
-## Services
-
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Use the `inject()` function instead of constructor injection
-
-## Testing
-
-- Unit tests for all services
-- Component tests for complex logic
-- Use `TestBed` for component testing
-- Mock HTTP calls in tests
-- Aim for 80% code coverage
-
-## Error Handling
-
-- Use `try/catch` with async/await
-- Show user-friendly error messages
-- Log errors to console in development
-- Use the `NotificationService` for user feedback
-
-## Performance
-
-- Use OnPush change detection
-- Lazy load feature modules
-- Use `trackBy` functions in loops
-- Minimize template complexity
-- Use signals for reactive state
-
-# Resources
-
-Here are some links to the essentials for building Angular applications. Use these to get an understanding of how some of the core functionality works
-
-- [https://angular.dev/essentials/components](https://angular.dev/essentials/components)
-- [https://angular.dev/essentials/signals](https://angular.dev/essentials/signals)
-- [https://angular.dev/essentials/templates](https://angular.dev/essentials/templates)
-- [https://angular.dev/essentials/dependency-injection](https://angular.dev/essentials/dependency-injection)
-- [https://angular.dev/style-guide](https://angular.dev/style-guide)
-
-## **Automated Error Detection & Remediation**
-
-A critical function of the AI is to continuously monitor for and automatically resolve errors.
-
-- **Post-Modification Checks:** After every code modification, the AI will:
-  1. Run `pnpm format` to ensure consistent code style.
-  2. Run `pnpm lint` to catch and fix linting issues.
-  3. Run `ng build` to check for compilation and type errors.
-  4. Monitor the IDE's diagnostics (problem pane).
-  5. Check the output of the running dev server for runtime errors.
-- **Automatic Error Correction:** The AI will attempt to fix common Angular errors.
-- **Problem Reporting:** If an error cannot be resolved, the AI will report the specific error message, its location, and a concise explanation with a suggested fix.
-
-## **Iterative Development & User Interaction**
-
-The AI's workflow is iterative, transparent, and responsive to user input.
-
-- **Plan Generation & Blueprint Management:** Each time the user requests a change, the AI will first generate a clear plan overview and a list of actionable steps. This plan will then be used to **create or update a `blueprint.md` file** in the project's root directory.
-  1. The blueprint.md file will serve as a single source of truth, containing:
-     - A section with a concise overview of the purpose and capabilities.
-     - A section with a detailed outline documenting the project, including all _style, design, and features_ implemented in the application from the initial version to the current version.
-     - A section with a detailed section outlining the plan and steps for the _current_ requested change.
-  2. Before initiating any new change or at the start of a new chat session, the AI will reference the blueprint.md to ensure full context and understanding of the application's current state and existing features. This ensures consistency and avoids redundant or conflicting modifications.
-- **Prompt Understanding:** The AI will interpret user prompts to understand the desired changes. It will ask clarifying questions if the prompt is ambiguous.
-- **Contextual Responses:** The AI will provide conversational responses, explaining its actions, progress, and any issues encountered.
-- **Error Checking Flow:**
-  1. **Important:** The AI will **not** start the dev server (`ng serve`), as it is already managed by Firebase Studio.
-  2. **Code Change:** AI applies a code modification.
-  3. **Dependency Check:** If a new package is needed, AI runs `npm install`.
-  4. **Compile & Analyze:** AI runs `ng build` and monitors the dev server.
-  5. **Preview Check:** AI observes the browser preview for visual and runtime errors.
-  6. **Remediation/Report:** If errors are found, AI attempts automatic fixes. If unsuccessful, it reports details to the user.
-
-# Firebase MCP
-
-When requested for Firebase add the following the server configurations to .idx/mcp.json. Just add the following and don't add anything else.
-
-{
-"mcpServers": {
-"firebase": {
-"command": "npx",
-"args": [
-"-y",
-"firebase-tools@latest",
-"experimental:mcp"
-]
-}
-}
-}
+Remember: The source of truth for all coding standards and patterns is [AI_AGENT_INSTRUCTIONS.md](./AI_AGENT_INSTRUCTIONS.md).
