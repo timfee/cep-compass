@@ -1,0 +1,36 @@
+@use '@angular/material' as mat;
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 24px;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 400px;
+  @include mat.elevation(3);
+  
+  mat-card-title {
+    font-family: 'Google Sans Text', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+  
+  mat-card-subtitle {
+    font-family: 'Google Sans Text', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    opacity: 0.7;
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 16px;
+}

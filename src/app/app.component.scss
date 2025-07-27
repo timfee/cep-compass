@@ -1,6 +1,16 @@
+@use '@angular/material' as mat;
+
 .main-toolbar {
   display: flex;
   justify-content: space-between;
+  @include mat.elevation(2);
+  
+  span {
+    font-family: 'Google Sans Text', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
+  }
 }
 
 .spacer {

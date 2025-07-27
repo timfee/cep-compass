@@ -3,7 +3,7 @@
 // Include Material core styles
 @include mat.core();
 
-// Define Material 3 theme
+// Define Material 3 theme with proper typography
 $theme: mat.define-theme((
   color: (
     theme-type: light,
@@ -12,7 +12,7 @@ $theme: mat.define-theme((
   ),
   typography: (
     brand-family: 'Google Sans Text',
-    plain-family: 'Roboto',
+    plain-family: 'Google Sans Text',
     bold-weight: 700,
     medium-weight: 500,
     regular-weight: 400,
@@ -36,12 +36,13 @@ html {
 html,
 body {
   height: 100%;
+  font-family: 'Google Sans Text', sans-serif;
 }
 
 body {
   margin: 0;
-  @include mat.typography-hierarchy($theme);
-  background-color: mat.get-theme-color($theme, surface);
+  font-family: 'Google Sans Text', sans-serif;
+  background-color: mat.get-theme-color($theme, surface-container-lowest);
   color: mat.get-theme-color($theme, on-surface);
 }
 
@@ -69,7 +70,7 @@ $spacing-unit: 8px;
 // Global component styling with Material tokens
 mat-card {
   @include mat.elevation(1);
-  margin-bottom: mat.get-theme-color($theme, outline-variant);
+  margin-bottom: 16px;
   
   &:hover {
     @include mat.elevation(2);
