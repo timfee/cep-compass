@@ -323,7 +323,7 @@ export class EmailComposerComponent implements OnInit {
     const validation = this.emailService.validateRequiredVariables();
     if (!validation.isValid) {
       this.notificationService.warning(
-        `Please fill in required variables: ${validation.missingVariables.join(', ')}`
+        `Please fill in required variables: ${validation.missingVariables.join(', ')}`,
       );
       return;
     }
@@ -346,7 +346,7 @@ export class EmailComposerComponent implements OnInit {
       }
     } catch (err) {
       this.notificationService.error(
-        err instanceof Error ? err.message : 'Failed to compose email'
+        err instanceof Error ? err.message : 'Failed to compose email',
       );
     }
   }

@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 .login-container {
   display: flex;
@@ -12,14 +12,14 @@ mat-card {
   width: 100%;
   max-width: 400px;
   @include mat.elevation(3);
-  
+
   mat-card-title {
     font-family: var(--mat-sys-typescale-headline-medium-font);
     font-size: var(--mat-sys-typescale-headline-medium-size);
     font-weight: var(--mat-sys-typescale-headline-medium-weight);
     line-height: var(--mat-sys-typescale-headline-medium-line-height);
   }
-  
+
   mat-card-subtitle {
     font-family: var(--mat-sys-typescale-body-medium-font);
     font-size: var(--mat-sys-typescale-body-medium-size);

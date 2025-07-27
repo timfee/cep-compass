@@ -9,11 +9,14 @@ describe('EmailValidator', () => {
         'user+tag@example.org',
         'admin@sub.domain.com',
         'user123@test-site.com',
-        'a@b.co'
+        'a@b.co',
       ];
 
-      validEmails.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(true, `Expected ${email} to be valid`);
+      validEmails.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          true,
+          `Expected ${email} to be valid`,
+        );
       });
     });
 
@@ -28,11 +31,14 @@ describe('EmailValidator', () => {
         'user name@domain.com',
         'user@domain..com',
         '.user@domain.com',
-        'user.@domain.com'
+        'user.@domain.com',
       ];
 
-      invalidEmails.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(false, `Expected ${email} to be invalid`);
+      invalidEmails.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          false,
+          `Expected ${email} to be invalid`,
+        );
       });
     });
 
@@ -63,21 +69,23 @@ describe('EmailValidator', () => {
     it('should match the original regex pattern', () => {
       // This ensures our EmailValidator produces the same results as the original
       const originalRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      
+
       const testEmails = [
         'test@example.com',
         'invalid@',
         '@invalid.com',
         'test@@example.com',
         'valid.email@domain.co.uk',
-        ''
+        '',
       ];
 
-      testEmails.forEach(email => {
+      testEmails.forEach((email) => {
         const originalResult = originalRegex.test(email);
         const validatorResult = EmailValidator.isValid(email);
-        expect(validatorResult).toBe(originalResult, 
-          `EmailValidator should match original regex for: ${email}`);
+        expect(validatorResult).toBe(
+          originalResult,
+          `EmailValidator should match original regex for: ${email}`,
+        );
       });
     });
   });

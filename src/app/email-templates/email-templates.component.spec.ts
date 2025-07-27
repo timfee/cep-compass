@@ -11,7 +11,9 @@ describe('EmailTemplatesComponent', () => {
   let notificationService: jasmine.SpyObj<NotificationService>;
 
   beforeEach(async () => {
-    const notificationSpy = jasmine.createSpyObj('NotificationService', ['info']);
+    const notificationSpy = jasmine.createSpyObj('NotificationService', [
+      'info',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [EmailTemplatesComponent, NoopAnimationsModule],
@@ -20,7 +22,9 @@ describe('EmailTemplatesComponent', () => {
 
     fixture = TestBed.createComponent(EmailTemplatesComponent);
     component = fixture.componentInstance;
-    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationService = TestBed.inject(
+      NotificationService,
+    ) as jasmine.SpyObj<NotificationService>;
     fixture.detectChanges();
   });
 
@@ -43,7 +47,7 @@ describe('EmailTemplatesComponent', () => {
 
       expect(console.log).toHaveBeenCalledWith('Composed Email:', mockEmail);
       expect(notificationService.info).toHaveBeenCalledWith(
-        'Email composed for 2 recipient(s)'
+        'Email composed for 2 recipient(s)',
       );
     });
 
@@ -58,7 +62,7 @@ describe('EmailTemplatesComponent', () => {
       component.onEmailComposed(mockEmail);
 
       expect(notificationService.info).toHaveBeenCalledWith(
-        'Email composed for 1 recipient(s)'
+        'Email composed for 1 recipient(s)',
       );
     });
 
@@ -73,7 +77,7 @@ describe('EmailTemplatesComponent', () => {
       component.onEmailComposed(mockEmail);
 
       expect(notificationService.info).toHaveBeenCalledWith(
-        'Email composed for 0 recipient(s)'
+        'Email composed for 0 recipient(s)',
       );
     });
   });

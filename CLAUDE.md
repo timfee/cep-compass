@@ -5,6 +5,7 @@ This document defines the coding standards and conventions for the CEP Compass A
 ## Overview
 
 You are developing an Angular v20+ application using the latest features:
+
 - Signals for reactive state management (input/output/model signals)
 - Standalone components (no NgModules)
 - New control flow syntax (@if, @for, @switch, @defer)
@@ -16,6 +17,7 @@ You are developing an Angular v20+ application using the latest features:
 ## Code Standards
 
 ### Comments
+
 - Use JSDoc for all exported members
 - Keep descriptions concise (one line preferred)
 - No decorative comment separators (`// ---`, `// ===`, etc.)
@@ -23,6 +25,7 @@ You are developing an Angular v20+ application using the latest features:
 - Only add @param/@returns tags when TypeScript types are unclear
 
 ### File Organization
+
 - Components: `feature-name.component.{ts,html,css,spec.ts}`
 - Services: `service-name.service.{ts,spec.ts}`
 - Use kebab-case for all file names
@@ -32,21 +35,23 @@ You are developing an Angular v20+ application using the latest features:
 - Core utilities go in `/src/app/core/` directory
 
 ### Import Organization
+
 ```typescript
 // Angular imports first
-import { Component, inject } from '@angular/core';
+import { Component, inject } from "@angular/core";
 
 // Angular Material imports
-import { MatCardModule } from '@angular/material/card';
+import { MatCardModule } from "@angular/material/card";
 
 // Third-party imports
-import { SomeLibrary } from 'some-library';
+import { SomeLibrary } from "some-library";
 
 // Local imports last
-import { MyService } from '../services/my.service';
+import { MyService } from "../services/my.service";
 ```
 
 ### TypeScript Conventions
+
 - Prefer `inject()` over constructor injection
 - Use signals for all state management
 - Implement OnPush change detection strategy
@@ -61,49 +66,50 @@ import { MyService } from '../services/my.service';
 - Implement functional guards and resolvers
 
 ### Component Patterns
+
 ```typescript
 /**
  * Component for managing user profiles
  */
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrl: './user-profile.component.css',
+  selector: "app-user-profile",
+  templateUrl: "./user-profile.component.html",
+  styleUrl: "./user-profile.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCardModule, MatButtonModule]
+  imports: [MatCardModule, MatButtonModule],
 })
 export class UserProfileComponent {
   private readonly userService = inject(UserService);
   private readonly destroyRef = inject(DestroyRef);
-  
+
   /**
    * User ID input signal
    */
   userId = input.required<string>();
-  
+
   /**
    * Emits when user is updated
    */
   userUpdated = output<User>();
-  
+
   /**
    * Current user profile data
    */
   user = signal<User | null>(null);
-  
+
   /**
    * Loading state
    */
   isLoading = signal(false);
-  
+
   /**
    * Computed display name
    */
   displayName = computed(() => {
     const u = this.user();
-    return u ? `${u.firstName} ${u.lastName}` : '';
+    return u ? `${u.firstName} ${u.lastName}` : "";
   });
-  
+
   constructor() {
     // React to userId changes
     effect(() => {
@@ -111,7 +117,7 @@ export class UserProfileComponent {
       this.loadUser(id);
     });
   }
-  
+
   /**
    * Loads user profile from API
    */
@@ -128,26 +134,26 @@ export class UserProfileComponent {
 ```
 
 ### Service Patterns
+
 ```typescript
 /**
  * Service for user operations
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class UserService {
   private readonly http = inject(HttpClient);
-  
+
   /**
    * Fetches current user profile
    */
   async getProfile(): Promise<User> {
-    return firstValueFrom(
-      this.http.get<User>('/api/user/profile')
-    );
+    return firstValueFrom(this.http.get<User>("/api/user/profile"));
   }
 }
 ```
 
 ### Template Conventions
+
 - Use new control flow syntax: `@if`, `@for`, `@switch`, `@defer`
 - No structural directives: `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use `[class]` bindings instead of `ngClass`
@@ -161,6 +167,7 @@ export class UserService {
 ### Angular 20 Modern Patterns
 
 #### Signal-Based Architecture
+
 ```typescript
 // Two-way binding with model signals
 searchTerm = model('');
@@ -177,40 +184,43 @@ constructor() {
     const timer = setTimeout(() => {
       console.log('Delayed operation');
     }, 1000);
-    
+
     onCleanup(() => clearTimeout(timer));
   });
 }
 ```
 
 #### Deferred Loading
+
 ```html
 @defer (on viewport) {
-  <app-heavy-component />
+<app-heavy-component />
 } @loading {
-  <mat-spinner />
+<mat-spinner />
 } @error {
-  <p>Failed to load component</p>
+<p>Failed to load component</p>
 }
 ```
 
 #### Enhanced Forms
+
 ```typescript
 // Typed reactive forms with signals
 form = new FormGroup({
-  email: new FormControl('', [Validators.required, Validators.email]),
-  password: new FormControl('', [Validators.required, Validators.minLength(8)])
+  email: new FormControl("", [Validators.required, Validators.email]),
+  password: new FormControl("", [Validators.required, Validators.minLength(8)]),
 });
 
 // Form value as signal
-formValue = toSignal(this.form.valueChanges, { 
-  initialValue: this.form.value 
+formValue = toSignal(this.form.valueChanges, {
+  initialValue: this.form.value,
 });
 ```
 
 ### Material Design 3 & Angular Material v20
 
 #### Core MD3 Principles
+
 - Use dynamic color system with Material Theme
 - Follow Material 3 shape system (rounded corners: sm=4dp, md=12dp, lg=16dp, xl=28dp)
 - Use M3 typography scale (display, headline, title, body, label)
@@ -218,6 +228,7 @@ formValue = toSignal(this.form.valueChanges, {
 - Use Material motion principles (duration and easing tokens)
 
 #### Angular Material v20 Components
+
 - Use MDC-based components exclusively (all prefixed with `mat-mdc-`)
 - Prefer Material 3 components: `mat-card`, `mat-button`, `mat-form-field`
 - Use `appearance="outline"` for form fields (M3 default)
@@ -226,6 +237,7 @@ formValue = toSignal(this.form.valueChanges, {
 - Implement responsive layouts with `@angular/cdk/layout`
 
 #### Theming Best Practices
+
 ```scss
 // Use CSS custom properties for M3 tokens
 .my-component {
@@ -236,46 +248,35 @@ formValue = toSignal(this.form.valueChanges, {
 ```
 
 #### Material 3 Color System
+
 ```scss
 // Primary surfaces and content
---mat-sys-primary: /* Dynamic primary color */
---mat-sys-on-primary: /* Text/icons on primary */
---mat-sys-primary-container: /* Light primary surface */
---mat-sys-on-primary-container: /* Content on primary container */
-
-// Surface hierarchy (elevation via tint, not shadow)
---mat-sys-surface: /* Base surface */
---mat-sys-surface-container-lowest: /* Lowest elevation */
---mat-sys-surface-container-low:
---mat-sys-surface-container:
---mat-sys-surface-container-high:
---mat-sys-surface-container-highest: /* Highest elevation */
-
-// Semantic colors
---mat-sys-error: /* Error states */
---mat-sys-tertiary: /* Accent color */
---mat-sys-outline: /* Borders and dividers */
+--mat-sys-primary: /* Dynamic primary color */ --mat-sys-on-primary: /* Text/icons on primary */ --mat-sys-primary-container: /* Light primary surface */ --mat-sys-on-primary-container: /* Content on primary container */ // Surface hierarchy (elevation via tint, not shadow)
+  --mat-sys-surface: /* Base surface */ --mat-sys-surface-container-lowest: /* Lowest elevation */ --mat-sys-surface-container-low: --mat-sys-surface-container: --mat-sys-surface-container-high: --mat-sys-surface-container-highest: /* Highest elevation */ // Semantic colors
+  --mat-sys-error: /* Error states */ --mat-sys-tertiary: /* Accent color */ --mat-sys-outline: /* Borders and dividers */;
 ```
 
 #### Dynamic Theming
+
 ```typescript
 // Configure Material theme in app.config.ts
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideMaterial } from '@angular/material/core';
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { provideMaterial } from "@angular/material/core";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimationsAsync(),
     provideMaterial({
-      colorScheme: 'dynamic', // or 'light', 'dark'
+      colorScheme: "dynamic", // or 'light', 'dark'
       density: 0, // -1, -2 for compact modes
-      motion: 'standard' // or 'reduced'
-    })
-  ]
+      motion: "standard", // or 'reduced'
+    }),
+  ],
 };
 ```
 
 #### Component Styling
+
 - Never override internal Material CSS classes (`.mat-mdc-*`)
 - Use Material Design tokens for all styling
 - Apply surface colors with tonal elevation
@@ -284,6 +285,7 @@ export const appConfig: ApplicationConfig = {
 - Use Material's density system (-2, -1, 0)
 
 ### Testing
+
 - Unit tests for all services
 - Component tests for complex logic
 - Use `TestBed` for component testing
@@ -291,12 +293,14 @@ export const appConfig: ApplicationConfig = {
 - Aim for 80% code coverage
 
 ### Error Handling
+
 - Use `try/catch` with async/await
 - Show user-friendly error messages
 - Log errors to console in development
 - Use the `NotificationService` for user feedback
 
 ### Performance
+
 - Use OnPush change detection strategy always
 - Implement `@defer` for lazy loading components
 - Use `track` expressions in `@for` loops (not trackBy)
@@ -309,6 +313,7 @@ export const appConfig: ApplicationConfig = {
 ### Accessibility (A11y) Best Practices
 
 #### Material 3 Accessibility
+
 - Use semantic HTML elements
 - Implement proper ARIA labels and roles
 - Ensure keyboard navigation for all interactions
@@ -317,49 +322,39 @@ export const appConfig: ApplicationConfig = {
 - Test with screen readers and keyboard only
 
 #### Component Accessibility
+
 ```typescript
 @Component({
   template: `
-    <button 
-      mat-raised-button
-      [attr.aria-label]="buttonLabel()"
-      [attr.aria-pressed]="isPressed()"
-      (click)="toggle()">
+    <button mat-raised-button [attr.aria-label]="buttonLabel()" [attr.aria-pressed]="isPressed()" (click)="toggle()">
       <mat-icon>{{ icon() }}</mat-icon>
       <span class="visually-hidden">{{ screenReaderText() }}</span>
     </button>
-  `
+  `,
 })
 export class AccessibleButtonComponent {
   isPressed = signal(false);
-  buttonLabel = computed(() => 
-    this.isPressed() ? 'Deactivate feature' : 'Activate feature'
-  );
+  buttonLabel = computed(() => (this.isPressed() ? "Deactivate feature" : "Activate feature"));
 }
 ```
 
 ### Component Architecture Best Practices
 
 #### Smart vs Presentational Components
+
 ```typescript
 // Smart Component (Container)
 @Component({
-  selector: 'app-user-list-container',
-  template: `
-    <app-user-list 
-      [users]="users()" 
-      [loading]="loading()"
-      (userSelected)="onUserSelect($event)"
-    />
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  selector: "app-user-list-container",
+  template: ` <app-user-list [users]="users()" [loading]="loading()" (userSelected)="onUserSelect($event)" /> `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListContainer {
   private userService = inject(UserService);
-  
+
   users = toSignal(this.userService.getUsers());
   loading = signal(false);
-  
+
   onUserSelect(user: User) {
     // Handle business logic
   }
@@ -367,10 +362,10 @@ export class UserListContainer {
 
 // Presentational Component
 @Component({
-  selector: 'app-user-list',
-  templateUrl: './user-list.component.html',
+  selector: "app-user-list",
+  templateUrl: "./user-list.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatListModule, MatProgressSpinnerModule]
+  imports: [MatListModule, MatProgressSpinnerModule],
 })
 export class UserListComponent {
   users = input<User[]>([]);
@@ -380,6 +375,7 @@ export class UserListComponent {
 ```
 
 #### Component Communication Patterns
+
 ```typescript
 // Parent to Child: Use input signals
 childData = input.required<string>();
@@ -388,11 +384,11 @@ childData = input.required<string>();
 dataChanged = output<string>();
 
 // Sibling communication: Use services with signals
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class SharedStateService {
   private _sharedData = signal<Data | null>(null);
   sharedData = this._sharedData.asReadonly();
-  
+
   updateData(data: Data) {
     this._sharedData.set(data);
   }
@@ -400,10 +396,11 @@ export class SharedStateService {
 ```
 
 #### Component Composition
+
 ```typescript
 // Prefer composition over inheritance
 @Component({
-  selector: 'app-card-with-actions',
+  selector: "app-card-with-actions",
   template: `
     <mat-card>
       <mat-card-content>
@@ -414,12 +411,13 @@ export class SharedStateService {
       </mat-card-actions>
     </mat-card>
   `,
-  imports: [MatCardModule]
+  imports: [MatCardModule],
 })
 export class CardWithActionsComponent {}
 ```
 
 ## Project Structure
+
 ```
 src/app/
 ├── core/                 # Core utilities, guards, interceptors
@@ -437,6 +435,7 @@ src/app/
 ## Critical Rules
 
 ### MUST DO
+
 1. ALL components are standalone (never use `standalone: true`, it's default)
 2. ALL components use `changeDetection: ChangeDetectionStrategy.OnPush`
 3. Use `input()`, `input.required()`, and `model()` signals instead of `@Input()`
@@ -451,6 +450,7 @@ src/app/
 12. Implement proper error boundaries with `ErrorHandler`
 
 ### MUST NOT DO
+
 - No NgModules (`@NgModule`)
 - No `*ngIf`, `*ngFor`, `*ngSwitch`
 - No `ng-template`, `ng-container` for control flow
@@ -464,6 +464,7 @@ src/app/
 ## Resources
 
 ### Angular v20 Documentation
+
 - [Angular Components](https://angular.dev/essentials/components)
 - [Angular Signals Guide](https://angular.dev/guide/signals)
 - [Angular Control Flow](https://angular.dev/guide/control-flow)
@@ -472,6 +473,7 @@ src/app/
 - [Angular Style Guide](https://angular.dev/style-guide)
 
 ### Material Design 3
+
 - [Material Design 3 Guidelines](https://m3.material.io/)
 - [Material Design 3 Color System](https://m3.material.io/styles/color/overview)
 - [Material Design 3 Components](https://m3.material.io/components)
@@ -479,6 +481,7 @@ src/app/
 - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
 
 ### Performance & Best Practices
+
 - [Angular Performance Checklist](https://angular.dev/guide/performance)
 - [Angular DevTools](https://angular.dev/tools/devtools)
 - [Web.dev Performance](https://web.dev/performance/)
@@ -486,6 +489,7 @@ src/app/
 ## Claude-Specific Instructions
 
 ### When working on this project:
+
 1. Always check existing code patterns before implementing new features
 2. Maintain consistency with the established architecture
 3. Use the TodoWrite tool to track complex tasks
@@ -494,19 +498,25 @@ src/app/
 6. Verify builds with `ng build`
 
 ### Firebase Integration
+
 When requested for Firebase integration, ensure proper configuration in:
+
 - `/src/environments/environment.ts`
 - `/src/environments/environment.prod.ts`
 - `app.config.ts` for providers
 
 ### Google OAuth Integration
+
 This app uses Firebase Auth with Google OAuth for authentication:
+
 - Required scopes are defined in `AuthService`
 - Token management is handled via interceptors
 - Role-based access control is implemented
 
 ### API Integration
+
 All Google Workspace API calls should:
+
 - Use the auth interceptor for token management
 - Handle errors with `GoogleApiErrorHandler`
 - Implement proper typing for responses

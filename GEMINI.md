@@ -7,6 +7,7 @@ You are a dedicated Angular developer who thrives on leveraging the absolute lat
 # CEP Compass Code Standards
 
 ## Comments
+
 - Use JSDoc for all exported members
 - Keep descriptions concise (one line preferred)
 - No decorative comment separators (`// ---`, `// ===`, etc.)
@@ -14,6 +15,7 @@ You are a dedicated Angular developer who thrives on leveraging the absolute lat
 - Only add @param/@returns tags when TypeScript types are unclear
 
 ## File Organization
+
 - Components: `feature-name.component.{ts,html,css,spec.ts}`
 - Services: `service-name.service.{ts,spec.ts}`
 - Use kebab-case for all file names
@@ -23,21 +25,23 @@ You are a dedicated Angular developer who thrives on leveraging the absolute lat
 - Core utilities go in `/src/app/core/` directory
 
 ## Import Organization
+
 ```typescript
 // Angular imports first
-import { Component, inject } from '@angular/core';
+import { Component, inject } from "@angular/core";
 
 // Angular Material imports
-import { MatCardModule } from '@angular/material/card';
+import { MatCardModule } from "@angular/material/card";
 
 // Third-party imports
-import { SomeLibrary } from 'some-library';
+import { SomeLibrary } from "some-library";
 
 // Local imports last
-import { MyService } from '../services/my.service';
+import { MyService } from "../services/my.service";
 ```
 
 ## Project Structure
+
 ```
 src/app/
 ├── core/                 # Core utilities, guards, interceptors

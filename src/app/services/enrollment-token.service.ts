@@ -270,7 +270,6 @@ export class EnrollmentTokenService extends BaseApiService {
           : token,
       );
       this._tokens.set(updatedTokens);
-
     } catch (error) {
       const errorMessage = this.handleApiError(error);
       this.setError(errorMessage);
