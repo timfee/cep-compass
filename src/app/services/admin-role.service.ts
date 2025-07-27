@@ -64,20 +64,10 @@ export class AdminRoleService {
     exists: boolean;
     role?: AdminRole;
   }> {
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('No access token available');
-    }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    });
-
     try {
       // Get all roles and search for CEP Admin
       const response = await this.httpClient
-        .get<RoleListResponse>(this.BASE_URL, { headers })
+        .get<RoleListResponse>(this.BASE_URL)
         .toPromise();
 
       if (response?.items) {
@@ -111,16 +101,6 @@ export class AdminRoleService {
    * Create the CEP Admin role
    */
   async createCepAdminRole(): Promise<RoleCreationResponse> {
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('No access token available');
-    }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    });
-
     const rolePayload: AdminRole = {
       kind: 'admin#directory#role',
       ...CEP_ADMIN_ROLE,
@@ -128,7 +108,7 @@ export class AdminRoleService {
 
     try {
       const response = await this.httpClient
-        .post<RoleCreationResponse>(this.BASE_URL, rolePayload, { headers })
+        .post<RoleCreationResponse>(this.BASE_URL, rolePayload)
         .toPromise();
 
       if (!response) {
@@ -161,19 +141,9 @@ export class AdminRoleService {
    * Get role details by ID
    */
   async getRoleById(roleId: string): Promise<AdminRole> {
-    const accessToken = await this.authService.getAccessToken();
-    if (!accessToken) {
-      throw new Error('No access token available');
-    }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    });
-
     try {
       const response = await this.httpClient
-        .get<AdminRole>(`${this.BASE_URL}/${roleId}`, { headers })
+        .get<AdminRole>(`${this.BASE_URL}/${roleId}`)
         .toPromise();
 
       if (!response) {

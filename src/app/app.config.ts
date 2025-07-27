@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
@@ -20,6 +20,7 @@ import { provideQuillConfig } from 'ngx-quill';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { GlobalErrorHandler } from './core/global-error.handler';
+import { authInterceptor } from './core/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideQuillConfig({
       modules: {

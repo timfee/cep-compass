@@ -124,12 +124,7 @@ export class OrgUnitsService {
     this._error.set(null);
 
     try {
-      const accessToken = await this.authService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Failed to get access token');
-      }
-
-      const orgUnits = await this.fetchAllOrgUnits(accessToken);
+      const orgUnits = await this.fetchAllOrgUnits();
 
       // Always include root organization as first option
       const rootOrgUnit: OrgUnit = {
@@ -154,22 +149,17 @@ export class OrgUnitsService {
   /**
    * Fetches all organizational units from the API, handling pagination
    *
-   * @param accessToken - OAuth access token for API authentication
    * @returns Promise resolving to array of org units
    */
-  private async fetchAllOrgUnits(accessToken: string): Promise<OrgUnit[]> {
+  private async fetchAllOrgUnits(): Promise<OrgUnit[]> {
     const allOrgUnits: OrgUnit[] = [];
     let pageToken: string | undefined;
 
     do {
       const url = this.buildApiUrl(pageToken);
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      };
 
       const response = await this.http
-        .get<OrgUnitsApiResponse>(url, { headers })
+        .get<OrgUnitsApiResponse>(url)
         .toPromise();
 
       if (response?.organizationUnits) {
