@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
@@ -139,9 +140,9 @@ export class OrgUnitsService extends BaseApiService {
     do {
       const url = this.buildApiUrl(pageToken);
 
-      const response = await this.http
-        .get<OrgUnitsApiResponse>(url)
-        .toPromise();
+      const response = await firstValueFrom(
+        this.http.get<OrgUnitsApiResponse>(url),
+      );
 
       if (response?.organizationUnits) {
         const mappedUnits = response.organizationUnits.map(

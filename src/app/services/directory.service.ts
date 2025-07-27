@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
@@ -381,9 +382,9 @@ export class DirectoryService extends BaseApiService {
 
     const url = this.buildUsersApiUrl(undefined, 200, query);
 
-    const response = await this.http
-      .get<UsersApiResponse>(url)
-      .toPromise();
+    const response = await firstValueFrom(
+      this.http.get<UsersApiResponse>(url),
+    );
 
     if (response?.users) {
       return response.users.map(this.mapApiResponseToUser);
@@ -409,9 +410,9 @@ export class DirectoryService extends BaseApiService {
 
     const url = this.buildGroupsApiUrl(undefined, 200, undefined, query);
 
-    const response = await this.http
-      .get<GroupsApiResponse>(url)
-      .toPromise();
+    const response = await firstValueFrom(
+      this.http.get<GroupsApiResponse>(url),
+    );
 
     if (response?.groups) {
       return response.groups.map(this.mapApiResponseToGroup);
@@ -431,9 +432,9 @@ export class DirectoryService extends BaseApiService {
 
     const url = this.buildGroupsApiUrl(undefined, 200, userEmail);
 
-    const response = await this.http
-      .get<GroupsApiResponse>(url)
-      .toPromise();
+    const response = await firstValueFrom(
+      this.http.get<GroupsApiResponse>(url),
+    );
 
     if (response?.groups) {
       return response.groups.map(this.mapApiResponseToGroup);
@@ -457,9 +458,9 @@ export class DirectoryService extends BaseApiService {
     do {
       const url = this.buildGroupMembersApiUrl(groupEmail, pageToken, 200);
 
-      const response = await this.http
-        .get<GroupMembersApiResponse>(url)
-        .toPromise();
+      const response = await firstValueFrom(
+        this.http.get<GroupMembersApiResponse>(url),
+      );
 
       if (response?.members) {
         // Get full user details for each member
@@ -511,9 +512,9 @@ export class DirectoryService extends BaseApiService {
   ): Promise<void> {
     const url = this.buildUsersApiUrl(this.userPageToken, maxResults);
 
-    const response = await this.http
-      .get<UsersApiResponse>(url)
-      .toPromise();
+    const response = await firstValueFrom(
+      this.http.get<UsersApiResponse>(url),
+    );
 
     if (response?.users) {
       const newUsers = response.users.map(this.mapApiResponseToUser);
@@ -530,9 +531,9 @@ export class DirectoryService extends BaseApiService {
   ): Promise<void> {
     const url = this.buildGroupsApiUrl(this.groupPageToken, maxResults);
 
-    const response = await this.http
-      .get<GroupsApiResponse>(url)
-      .toPromise();
+    const response = await firstValueFrom(
+      this.http.get<GroupsApiResponse>(url),
+    );
 
     if (response?.groups) {
       const newGroups = response.groups.map(this.mapApiResponseToGroup);
@@ -550,9 +551,9 @@ export class DirectoryService extends BaseApiService {
     const url = `${this.API_BASE_URL}/users/${encodeURIComponent(email)}`;
 
     try {
-      const response = await this.http
-        .get<unknown>(url)
-        .toPromise();
+      const response = await firstValueFrom(
+        this.http.get<unknown>(url),
+      );
 
       if (response) {
         return this.mapApiResponseToUser(response);
