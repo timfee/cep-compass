@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import {
   CEP_ADMIN_PRIVILEGES,
@@ -66,9 +67,9 @@ export class AdminRoleService {
   }> {
     try {
       // Get all roles and search for CEP Admin
-      const response = await this.httpClient
-        .get<RoleListResponse>(this.BASE_URL)
-        .toPromise();
+      const response = await firstValueFrom(
+        this.httpClient.get<RoleListResponse>(this.BASE_URL),
+      );
 
       if (response?.items) {
         const existingRole = response.items.find(
@@ -107,9 +108,9 @@ export class AdminRoleService {
     };
 
     try {
-      const response = await this.httpClient
-        .post<RoleCreationResponse>(this.BASE_URL, rolePayload)
-        .toPromise();
+      const response = await firstValueFrom(
+        this.httpClient.post<RoleCreationResponse>(this.BASE_URL, rolePayload),
+      );
 
       if (!response) {
         throw new Error('No response received from API');
@@ -142,9 +143,9 @@ export class AdminRoleService {
    */
   async getRoleById(roleId: string): Promise<AdminRole> {
     try {
-      const response = await this.httpClient
-        .get<AdminRole>(`${this.BASE_URL}/${roleId}`)
-        .toPromise();
+      const response = await firstValueFrom(
+        this.httpClient.get<AdminRole>(`${this.BASE_URL}/${roleId}`),
+      );
 
       if (!response) {
         throw new Error('Role not found');
