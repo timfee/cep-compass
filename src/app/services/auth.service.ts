@@ -146,7 +146,7 @@ export class AuthService {
    * Selects a role for the current session
    */
   selectRole(role: SelectedRole): void {
-    // Set the changing role flag when changing roles
+    // Set the changing role flag when the role is explicitly null (indicating no role selected)
     if (role === null) {
       this.isChangingRole = true;
     }
