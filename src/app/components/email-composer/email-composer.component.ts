@@ -37,6 +37,7 @@ import {
   EmailVariable,
 } from '../../services/email-template.service';
 import { NotificationService } from '../../core/notification.service';
+import { EmailValidator } from '../../shared/validators/email.validator';
 
 /**
  * Email composer component with ngx-quill rich text editor integration
@@ -369,8 +370,7 @@ export class EmailComposerComponent implements OnInit {
    * Validates email format
    */
   private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return EmailValidator.isValid(email);
   }
 
   /**

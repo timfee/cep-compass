@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
+import { BaseApiService } from '../core/base-api.service';
 
 /**
  * Represents an Organizational Unit from Google Workspace Admin SDK
@@ -54,7 +55,7 @@ interface OrgUnitsApiResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class OrgUnitsService {
+export class OrgUnitsService extends BaseApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
@@ -62,12 +63,6 @@ export class OrgUnitsService {
 
   // Private state signals
   private readonly _orgUnits = signal<OrgUnit[]>([]);
-  private readonly _isLoading = signal<boolean>(false);
-  private readonly _error = signal<string | null>(null);
-  private readonly _lastFetchTime = signal<number | null>(null);
-
-  // Cache duration in milliseconds (5 minutes)
-  private readonly CACHE_DURATION = 5 * 60 * 1000;
 
   /**
    * Signal containing all organizational units in flat list format
@@ -79,16 +74,6 @@ export class OrgUnitsService {
       a.orgUnitPath.localeCompare(b.orgUnitPath),
     );
   });
-
-  /**
-   * Signal indicating if a fetch operation is currently in progress
-   */
-  public readonly isLoading = this._isLoading.asReadonly();
-
-  /**
-   * Signal containing any error message from the last operation
-   */
-  public readonly error = this._error.asReadonly();
 
   /**
    * Signal providing hierarchical tree structure of organizational units
@@ -107,21 +92,18 @@ export class OrgUnitsService {
    */
   async fetchOrgUnits(): Promise<void> {
     // Check if we have cached data that's still valid
-    const lastFetch = this._lastFetchTime();
-    const now = Date.now();
-    if (lastFetch && now - lastFetch < this.CACHE_DURATION) {
+    if (this.isCacheValid()) {
       return;
     }
 
     // Check if user is authenticated
     const currentUser = this.authService.user();
     if (!currentUser) {
-      this._error.set('User not authenticated');
+      this.setError('User not authenticated');
       return;
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       const orgUnits = await this.fetchAllOrgUnits();
@@ -135,14 +117,13 @@ export class OrgUnitsService {
       };
 
       this._orgUnits.set([rootOrgUnit, ...orgUnits]);
-      this._lastFetchTime.set(now);
-      this._error.set(null);
+      this.updateFetchTime();
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to fetch organizational units:', error);
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -313,8 +294,7 @@ export class OrgUnitsService {
    */
   clearCache(): void {
     this._orgUnits.set([]);
-    this._lastFetchTime.set(null);
-    this._error.set(null);
+    this.clearState();
   }
 
   /**
