@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { OrgUnitsService } from './org-units.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
+import { BaseApiService } from '../core/base-api.service';
 
 /**
  * Represents a Chrome browser enrollment token from Chrome Enterprise API
@@ -78,7 +79,7 @@ interface CreateTokenApiResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class EnrollmentTokenService {
+export class EnrollmentTokenService extends BaseApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly orgUnitsService = inject(OrgUnitsService);
@@ -88,12 +89,6 @@ export class EnrollmentTokenService {
 
   // Private state signals
   private readonly _tokens = signal<EnrollmentToken[]>([]);
-  private readonly _isLoading = signal<boolean>(false);
-  private readonly _error = signal<string | null>(null);
-  private readonly _lastFetchTime = signal<number | null>(null);
-
-  // Cache duration in milliseconds (5 minutes)
-  private readonly CACHE_DURATION = 5 * 60 * 1000;
 
   // Default token expiration (30 days from creation)
   private readonly DEFAULT_EXPIRATION_DAYS = 30;
@@ -127,16 +122,6 @@ export class EnrollmentTokenService {
   });
 
   /**
-   * Signal indicating if a fetch operation is currently in progress
-   */
-  public readonly isLoading = this._isLoading.asReadonly();
-
-  /**
-   * Signal containing any error message from the last operation
-   */
-  public readonly error = this._error.asReadonly();
-
-  /**
    * Lists all enrollment tokens, optionally filtered by organizational unit
    * Uses caching to avoid unnecessary API calls
    *
@@ -145,21 +130,18 @@ export class EnrollmentTokenService {
    */
   async listTokens(orgUnitPath?: string): Promise<EnrollmentToken[]> {
     // Check if we have cached data that's still valid
-    const lastFetch = this._lastFetchTime();
-    const now = Date.now();
-    if (lastFetch && now - lastFetch < this.CACHE_DURATION && !orgUnitPath) {
+    if (this.isCacheValid() && !orgUnitPath) {
       return this.tokens();
     }
 
     // Check if user is authenticated
     const currentUser = this.authService.user();
     if (!currentUser) {
-      this._error.set('User not authenticated');
+      this.setError('User not authenticated');
       throw new Error('User not authenticated');
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       const tokens = await this.fetchAllTokens(orgUnitPath);
@@ -167,18 +149,17 @@ export class EnrollmentTokenService {
       if (!orgUnitPath) {
         // Only cache if we're fetching all tokens
         this._tokens.set(tokens);
-        this._lastFetchTime.set(now);
+        this.updateFetchTime();
       }
 
-      this._error.set(null);
       return tokens;
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to fetch enrollment tokens:', error);
       throw error;
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -203,8 +184,7 @@ export class EnrollmentTokenService {
       throw new Error('User not authenticated');
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       // Set default expiration if not provided
@@ -244,18 +224,17 @@ export class EnrollmentTokenService {
       // Generate enrollment URL
       const enrollmentUrl = this.generateEnrollmentUrl(newToken.token);
 
-      this._error.set(null);
       return {
         token: newToken,
         enrollmentUrl,
       };
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to create enrollment token:', error);
       throw error;
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -272,8 +251,7 @@ export class EnrollmentTokenService {
       throw new Error('User not authenticated');
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       const url = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens/${tokenId}:revoke`;
@@ -293,14 +271,13 @@ export class EnrollmentTokenService {
       );
       this._tokens.set(updatedTokens);
 
-      this._error.set(null);
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to revoke enrollment token:', error);
       throw error;
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -406,8 +383,7 @@ Linux:
    */
   clearCache(): void {
     this._tokens.set([]);
-    this._lastFetchTime.set(null);
-    this._error.set(null);
+    this.clearState();
   }
 
   /**

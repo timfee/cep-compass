@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
+import { BaseApiService } from '../core/base-api.service';
 
 export interface DirectoryUser {
   id: string;
@@ -212,14 +213,11 @@ function isValidGroupApiResponse(
 @Injectable({
   providedIn: 'root',
 })
-export class DirectoryService {
+export class DirectoryService extends BaseApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
   private readonly API_BASE_URL = GOOGLE_API_CONFIG.BASE_URLS.DIRECTORY_V1;
-
-  // Cache duration in milliseconds (5 minutes)
-  private readonly CACHE_DURATION = 5 * 60 * 1000;
 
   // Pagination state
   private userPageToken: string | null = null;
@@ -228,9 +226,6 @@ export class DirectoryService {
   // Private state signals
   private readonly _users = signal<DirectoryUser[]>([]);
   private readonly _groups = signal<DirectoryGroup[]>([]);
-  private readonly _isLoading = signal<boolean>(false);
-  private readonly _error = signal<string | null>(null);
-  private readonly _lastFetchTime = signal<number | null>(null);
   private readonly _hasMoreUsers = signal<boolean>(true);
   private readonly _hasMoreGroups = signal<boolean>(true);
 
@@ -243,16 +238,6 @@ export class DirectoryService {
    * Signal containing all loaded groups
    */
   public readonly groups = this._groups.asReadonly();
-
-  /**
-   * Signal indicating if a fetch operation is currently in progress
-   */
-  public readonly isLoading = this._isLoading.asReadonly();
-
-  /**
-   * Signal containing any error message from the last operation
-   */
-  public readonly error = this._error.asReadonly();
 
   /**
    * Signal indicating if more users can be loaded
@@ -270,7 +255,7 @@ export class DirectoryService {
   public readonly stats = computed<DirectoryStats>(() => {
     const users = this._users();
     const groups = this._groups();
-    const lastFetch = this._lastFetchTime();
+    const lastFetch = this.lastFetchTime();
 
     const activeUsers = users.filter((user) => !user.suspended).length;
     const suspendedUsers = users.filter((user) => user.suspended).length;
@@ -289,21 +274,18 @@ export class DirectoryService {
    */
   async fetchInitialData(): Promise<void> {
     // Check if we have cached data that's still valid
-    const lastFetch = this._lastFetchTime();
-    const now = Date.now();
-    if (lastFetch && now - lastFetch < this.CACHE_DURATION) {
+    if (this.isCacheValid()) {
       return;
     }
 
     // Check if user is authenticated
     const currentUser = this.authService.user();
     if (!currentUser) {
-      this._error.set('User not authenticated');
+      this.setError('User not authenticated');
       return;
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       // Reset pagination tokens and data
@@ -320,14 +302,13 @@ export class DirectoryService {
         this.loadGroupsPage(50),
       ]);
 
-      this._lastFetchTime.set(now);
-      this._error.set(null);
+      this.updateFetchTime();
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to fetch initial directory data:', error);
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -335,28 +316,26 @@ export class DirectoryService {
    * Loads more users (pagination)
    */
   async loadMoreUsers(): Promise<void> {
-    if (!this._hasMoreUsers() || this._isLoading()) {
+    if (!this._hasMoreUsers() || this.isLoading()) {
       return;
     }
 
     const currentUser = this.authService.user();
     if (!currentUser) {
-      this._error.set('User not authenticated');
+      this.setError('User not authenticated');
       return;
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       await this.loadUsersPage(100);
-      this._error.set(null);
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to load more users:', error);
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -364,28 +343,26 @@ export class DirectoryService {
    * Loads more groups (pagination)
    */
   async loadMoreGroups(): Promise<void> {
-    if (!this._hasMoreGroups() || this._isLoading()) {
+    if (!this._hasMoreGroups() || this.isLoading()) {
       return;
     }
 
     const currentUser = this.authService.user();
     if (!currentUser) {
-      this._error.set('User not authenticated');
+      this.setError('User not authenticated');
       return;
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
+    this.setLoading(true);
 
     try {
       await this.loadGroupsPage(100);
-      this._error.set(null);
     } catch (error) {
       const errorMessage = this.handleApiError(error);
-      this._error.set(errorMessage);
+      this.setError(errorMessage);
       console.error('Failed to load more groups:', error);
     } finally {
-      this._isLoading.set(false);
+      this.setLoading(false);
     }
   }
 
@@ -512,7 +489,7 @@ export class DirectoryService {
    * Refreshes cached statistics
    */
   async refreshStats(): Promise<void> {
-    this._lastFetchTime.set(null); // Clear cache
+    this.clearState(); // Clear cache
     await this.fetchInitialData();
   }
 
@@ -522,8 +499,7 @@ export class DirectoryService {
   clearCache(): void {
     this._users.set([]);
     this._groups.set([]);
-    this._lastFetchTime.set(null);
-    this._error.set(null);
+    this.clearState();
     this.userPageToken = null;
     this.groupPageToken = null;
     this._hasMoreUsers.set(true);
