@@ -23,6 +23,7 @@ export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
+const REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED';
 
 /**
  * Service for handling authentication and user role management
@@ -33,6 +34,7 @@ const ROLE_STORAGE_KEY = 'cep_selected_role';
 export class AuthService {
   private auth: Auth = inject(Auth);
   private accessToken: string | null = null;
+  private isChangingRole = false;
 
   public readonly user = toSignal(authState(this.auth), { initialValue: null });
 
@@ -53,10 +55,14 @@ export class AuthService {
     effect(async () => {
       const currentUser = this.user();
       if (currentUser) {
-        await this.updateAvailableRoles();
+        // Only update available roles if we're not in the middle of changing roles
+        if (!this.isChangingRole) {
+          await this.updateAvailableRoles();
+        }
       } else {
         // If logged out, reset everything and clear storage.
         this.accessToken = null;
+        this.isChangingRole = false;
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         this.availableRoles.set({
           isSuperAdmin: false,
@@ -73,6 +79,8 @@ export class AuthService {
       const role = this.selectedRole();
       if (role) {
         localStorage.setItem(ROLE_STORAGE_KEY, role);
+        // Reset the changing role flag once a role is selected
+        this.isChangingRole = false;
       } else {
         localStorage.removeItem(ROLE_STORAGE_KEY);
       }
@@ -139,6 +147,11 @@ export class AuthService {
    * Selects a role for the current session
    */
   selectRole(role: SelectedRole): void {
+    // Set the changing role flag when the role is explicitly null (indicating no role selected)
+    if (role === null) {
+      this.isChangingRole = true;
+    }
+    
     if (role === 'superAdmin' && !this.availableRoles().isSuperAdmin) {
       throw new Error('Cannot select Super Admin role: Not available.');
     }
@@ -146,6 +159,13 @@ export class AuthService {
       throw new Error('Cannot select CEP Admin role: Not available.');
     }
     this.selectedRole.set(role);
+  }
+
+  /**
+   * Manually refresh available roles (useful when changing roles)
+   */
+  async refreshAvailableRoles(): Promise<void> {
+    await this.updateAvailableRoles();
   }
 
   /**
@@ -166,8 +186,25 @@ export class AuthService {
     // Check session storage
     const stored = sessionStorage.getItem(TOKEN_STORAGE_KEY);
     if (stored) {
-      this.accessToken = atob(stored);
-      return this.accessToken;
+      try {
+        this.accessToken = atob(stored);
+        return this.accessToken;
+      } catch (error) {
+        console.warn('Failed to decode stored token, removing from storage:', error);
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+      }
+    }
+
+    // If no token is available but user is logged in, try to refresh
+    if (currentUser) {
+      try {
+        const idTokenResult = await currentUser.getIdTokenResult(true);
+        if (idTokenResult?.token) {
+          // Token refreshed but OAuth access token still needed for Google APIs
+        }
+      } catch (error) {
+        console.warn('Failed to refresh Firebase token:', error);
+      }
     }
 
     return null;
@@ -177,7 +214,14 @@ export class AuthService {
     try {
       const token = await this.getAccessToken();
       if (!token) {
-        throw new Error('No access token available');
+        console.warn('No access token available for role enumeration. User may need to re-authenticate.');
+        // Set minimal permissions instead of throwing error
+        this.availableRoles.set({
+          isSuperAdmin: false,
+          isCepAdmin: false,
+          missingPrivileges: [{ privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' }],
+        });
+        return;
       }
 
       const userEmail = this.user()?.email;
