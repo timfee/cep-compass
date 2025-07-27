@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,11 +24,20 @@ import { AuthService, SelectedRole } from '../../services/auth.service';
     MatProgressSpinnerModule,
   ],
 })
-export class SelectRoleComponent {
+export class SelectRoleComponent implements OnInit {
   public authService = inject(AuthService);
 
   // A signal to track the loading state, derived from the user signal.
   public isLoading = computed(() => this.authService.user() === undefined);
+
+  async ngOnInit(): Promise<void> {
+    // Refresh available roles when the component loads
+    try {
+      await this.authService.refreshAvailableRoles();
+    } catch (error) {
+      console.warn('Failed to refresh available roles:', error);
+    }
+  }
 
   selectRole(role: SelectedRole): void {
     if (!role) return;
