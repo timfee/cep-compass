@@ -38,8 +38,8 @@ describe('EmailValidator', () => {
 
     it('should handle empty and null inputs', () => {
       expect(EmailValidator.isValid('')).toBe(false);
-      expect(EmailValidator.isValid(null as any)).toBe(false);
-      expect(EmailValidator.isValid(undefined as any)).toBe(false);
+      expect(EmailValidator.isValid(null)).toBe(false);
+      expect(EmailValidator.isValid(undefined)).toBe(false);
     });
 
     it('should trim whitespace from email before validation', () => {
