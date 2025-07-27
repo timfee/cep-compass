@@ -410,8 +410,6 @@ Linux:
     this._error.set(null);
   }
 
-  // --- PRIVATE METHODS ---
-
   /**
    * Fetches all enrollment tokens from the API, handling pagination
    *

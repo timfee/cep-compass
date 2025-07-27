@@ -15,7 +15,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { AuthService, SelectedRole } from '../services/auth.service';
 import { DirectoryStatsComponent } from '../components/directory-stats/directory-stats.component';
 
-// --- TYPE DEFINITIONS ---
 interface DashboardCard {
   id: string;
   title: string;

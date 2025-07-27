@@ -4,8 +4,6 @@ import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
 
-// --- TYPE DEFINITIONS ---
-
 export interface DirectoryUser {
   id: string;
   primaryEmail: string;
@@ -531,8 +529,6 @@ export class DirectoryService {
     this._hasMoreUsers.set(true);
     this._hasMoreGroups.set(true);
   }
-
-  // --- PRIVATE METHODS ---
 
   private async loadUsersPage(
     maxResults: number,
