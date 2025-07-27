@@ -15,7 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { DirectoryService } from '../../../services/directory.service';
 import {
@@ -24,6 +24,7 @@ import {
 } from '../../../services/email-template.service';
 import { AuthService } from '../../../services/auth.service';
 import { EmailComposerComponent } from '../../../components/email-composer/email-composer.component';
+import { NotificationService } from '../../../core/notification.service';
 
 /**
  * Profile Enrollment Component
@@ -54,7 +55,7 @@ export class ProfileEnrollmentComponent implements OnInit {
   private readonly directoryService = inject(DirectoryService);
   private readonly emailService = inject(EmailTemplateService);
   private readonly authService = inject(AuthService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   // State signals
   public readonly showEmailComposer = signal(false);
@@ -77,13 +78,9 @@ export class ProfileEnrollmentComponent implements OnInit {
   async refreshStats(): Promise<void> {
     try {
       await this.directoryService.refreshStats();
-      this.snackBar.open('Statistics refreshed successfully', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.success('Statistics refreshed successfully');
     } catch (error) {
-      this.snackBar.open('Failed to refresh statistics', 'Close', {
-        duration: 5000,
-      });
+      this.notificationService.error('Failed to refresh statistics');
       console.error('Failed to refresh stats:', error);
     }
   }
@@ -98,9 +95,7 @@ export class ProfileEnrollmentComponent implements OnInit {
       this.bulkEmailMode.set(false);
       this.showEmailComposer.set(true);
     } else {
-      this.snackBar.open('Profile enrollment template not found', 'Close', {
-        duration: 5000,
-      });
+      this.notificationService.error('Profile enrollment template not found');
     }
   }
 
@@ -121,9 +116,7 @@ export class ProfileEnrollmentComponent implements OnInit {
       this.bulkEmailMode.set(true);
       this.showEmailComposer.set(true);
     } else {
-      this.snackBar.open('Profile enrollment template not found', 'Close', {
-        duration: 5000,
-      });
+      this.notificationService.error('Profile enrollment template not found');
     }
   }
 
@@ -133,9 +126,7 @@ export class ProfileEnrollmentComponent implements OnInit {
   exportUserList(): void {
     const users = this.directoryService.users();
     if (users.length === 0) {
-      this.snackBar.open('No users to export', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.warning('No users to export');
       return;
     }
 
@@ -165,9 +156,7 @@ export class ProfileEnrollmentComponent implements OnInit {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 
-    this.snackBar.open('User list exported successfully', 'Close', {
-      duration: 3000,
-    });
+    this.notificationService.success('User list exported successfully');
   }
 
   /**
@@ -191,9 +180,7 @@ export class ProfileEnrollmentComponent implements OnInit {
   onEmailComposed(_email: ComposedEmail): void {
     // Email has been composed and is ready to send
     // In a real application, this might send the email or save it as a draft
-    this.snackBar.open('Email composed successfully', 'Close', {
-      duration: 3000,
-    });
+    this.notificationService.success('Email composed successfully');
     this.showEmailComposer.set(false);
   }
 

@@ -18,7 +18,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -32,6 +31,7 @@ import {
 } from '../../../services/enrollment-token.service';
 import { OrgUnitsService, OrgUnit } from '../../../services/org-units.service';
 import { EmailTemplateService } from '../../../services/email-template.service';
+import { NotificationService } from '../../../core/notification.service';
 
 // Components
 import { EmailComposerComponent } from '../../../components/email-composer/email-composer.component';
@@ -75,7 +75,7 @@ export class BrowserEnrollmentComponent implements OnInit {
   private readonly enrollmentService = inject(EnrollmentTokenService);
   private readonly orgUnitService = inject(OrgUnitsService);
   private readonly emailService = inject(EmailTemplateService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
   private readonly clipboard = inject(Clipboard);
   private readonly dialog = inject(MatDialog);
 
@@ -157,10 +157,7 @@ export class BrowserEnrollmentComponent implements OnInit {
         error: null,
       }));
 
-      this.snackBar.open('Enrollment token created successfully!', 'Close', {
-        duration: 5000,
-        panelClass: ['success-snackbar'],
-      });
+      this.notificationService.success('Enrollment token created successfully!');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to create token';
@@ -171,10 +168,7 @@ export class BrowserEnrollmentComponent implements OnInit {
         isCreating: false,
       }));
 
-      this.snackBar.open(errorMessage, 'Close', {
-        duration: 5000,
-        panelClass: ['error-snackbar'],
-      });
+      this.notificationService.error(errorMessage);
     }
   }
 
@@ -189,13 +183,9 @@ export class BrowserEnrollmentComponent implements OnInit {
 
     try {
       await this.clipboard.copy(token.token);
-      this.snackBar.open('Token copied to clipboard!', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.success('Token copied to clipboard!');
     } catch {
-      this.snackBar.open('Failed to copy token to clipboard', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.error('Failed to copy token to clipboard');
     }
   }
 
@@ -213,9 +203,7 @@ export class BrowserEnrollmentComponent implements OnInit {
   draftEmail(): void {
     const token = this.createdToken();
     if (!token) {
-      this.snackBar.open('Please create a token first', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.warning('Please create a token first');
       return;
     }
 
@@ -247,9 +235,7 @@ export class BrowserEnrollmentComponent implements OnInit {
    * Handles email composition completion
    */
   onEmailComposed(): void {
-    this.snackBar.open('Email composed successfully!', 'Close', {
-      duration: 3000,
-    });
+    this.notificationService.success('Email composed successfully!');
 
     this._state.update((state) => ({
       ...state,
@@ -320,13 +306,9 @@ export class BrowserEnrollmentComponent implements OnInit {
   async refreshTokens(): Promise<void> {
     try {
       await this.enrollmentService.listTokens();
-      this.snackBar.open('Tokens refreshed', 'Close', {
-        duration: 2000,
-      });
+      this.notificationService.info('Tokens refreshed');
     } catch {
-      this.snackBar.open('Failed to refresh tokens', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.error('Failed to refresh tokens');
     }
   }
 
@@ -336,13 +318,9 @@ export class BrowserEnrollmentComponent implements OnInit {
   async refreshOrgUnits(): Promise<void> {
     try {
       await this.orgUnitService.fetchOrgUnits();
-      this.snackBar.open('Organizational units refreshed', 'Close', {
-        duration: 2000,
-      });
+      this.notificationService.info('Organizational units refreshed');
     } catch {
-      this.snackBar.open('Failed to refresh organizational units', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.error('Failed to refresh organizational units');
     }
   }
 

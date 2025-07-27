@@ -15,7 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../core/notification.service';
 
 interface PolicyTemplate {
   id: string;
@@ -48,7 +48,7 @@ interface PolicyTemplate {
   ],
 })
 export class DlpConfigurationComponent {
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   // State signals
   selectedPolicyTemplate = signal<string>('');
@@ -94,9 +94,7 @@ export class DlpConfigurationComponent {
       'https://admin.google.com/ac/chrome/datalossPrevention';
     window.open(dlpConsoleUrl, '_blank', 'noopener,noreferrer');
 
-    this.snackBar.open('DLP Configuration page opened in new tab', 'Close', {
-      duration: 3000,
-    });
+    this.notificationService.info('DLP Configuration page opened in new tab');
   }
 
   /**
@@ -167,15 +165,10 @@ Scope: All users`;
 
     try {
       await navigator.clipboard.writeText(configText);
-      this.snackBar.open('Policy configuration copied to clipboard!', 'Close', {
-        duration: 3000,
-        panelClass: ['success-snackbar'],
-      });
+      this.notificationService.success('Policy configuration copied to clipboard!');
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
-      this.snackBar.open('Failed to copy to clipboard', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.error('Failed to copy to clipboard');
     }
   }
 
@@ -186,10 +179,7 @@ Scope: All users`;
     this.dlpActivated.set(true);
     this.saveActivationState();
 
-    this.snackBar.open('DLP Configuration marked as completed!', 'Close', {
-      duration: 5000,
-      panelClass: ['success-snackbar'],
-    });
+    this.notificationService.success('DLP Configuration marked as completed!');
   }
 
   /**

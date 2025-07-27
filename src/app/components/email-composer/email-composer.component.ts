@@ -25,7 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { QuillModule } from 'ngx-quill';
@@ -36,6 +36,7 @@ import {
   ComposedEmail,
   EmailVariable,
 } from '../../services/email-template.service';
+import { NotificationService } from '../../core/notification.service';
 
 /**
  * Email composer component with ngx-quill rich text editor integration
@@ -67,7 +68,7 @@ import {
 export class EmailComposerComponent implements OnInit {
   // Injected dependencies
   private readonly emailService = inject(EmailTemplateService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -287,13 +288,9 @@ export class EmailComposerComponent implements OnInit {
     try {
       const preview = this.getPreview();
       await this.emailService.copyToClipboard(preview);
-      this.snackBar.open('Email content copied to clipboard', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.success('Email content copied to clipboard');
     } catch {
-      this.snackBar.open('Failed to copy to clipboard', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.error('Failed to copy to clipboard');
     }
   }
 
@@ -306,9 +303,7 @@ export class EmailComposerComponent implements OnInit {
     const body = this.getPreview();
 
     if (recipients.length === 0) {
-      this.snackBar.open('Please add at least one recipient', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.warning('Please add at least one recipient');
       return;
     }
 
@@ -326,19 +321,15 @@ export class EmailComposerComponent implements OnInit {
   composeEmail(): void {
     const validation = this.emailService.validateRequiredVariables();
     if (!validation.isValid) {
-      this.snackBar.open(
-        `Please fill in required variables: ${validation.missingVariables.join(', ')}`,
-        'Close',
-        { duration: 5000 },
+      this.notificationService.warning(
+        `Please fill in required variables: ${validation.missingVariables.join(', ')}`
       );
       return;
     }
 
     const recipients = this.recipientChips();
     if (recipients.length === 0) {
-      this.snackBar.open('Please add at least one recipient', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.warning('Please add at least one recipient');
       return;
     }
 
@@ -350,15 +341,11 @@ export class EmailComposerComponent implements OnInit {
 
       if (composedEmail) {
         this.emailComposed.emit(composedEmail);
-        this.snackBar.open('Email composed successfully', 'Close', {
-          duration: 3000,
-        });
+        this.notificationService.success('Email composed successfully');
       }
     } catch (err) {
-      this.snackBar.open(
-        err instanceof Error ? err.message : 'Failed to compose email',
-        'Close',
-        { duration: 5000 },
+      this.notificationService.error(
+        err instanceof Error ? err.message : 'Failed to compose email'
       );
     }
   }

@@ -14,7 +14,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 import {
@@ -25,6 +24,7 @@ import {
   RolePrivilege,
 } from '../../../services/admin-role.service';
 import { AuthService } from '../../../services/auth.service';
+import { NotificationService } from '../../../core/notification.service';
 
 type ComponentState =
   | 'checking'
@@ -66,7 +66,7 @@ export class CreateRoleComponent {
   private readonly adminRoleService = inject(AdminRoleService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
   private readonly clipboard = inject(Clipboard);
 
   // Component state management with signals
@@ -146,10 +146,7 @@ export class CreateRoleComponent {
         createdRole,
       });
 
-      this.snackBar.open('CEP Admin role created successfully!', 'Close', {
-        duration: 5000,
-        panelClass: ['success-snackbar'],
-      });
+      this.notificationService.success('CEP Admin role created successfully!');
     } catch (error) {
       console.error('Error creating role:', error);
       this.setError(
@@ -172,9 +169,7 @@ export class CreateRoleComponent {
     const roleId = this.existingRole()?.roleId || this.createdRole()?.roleId;
     if (roleId) {
       this.clipboard.copy(roleId);
-      this.snackBar.open('Role ID copied to clipboard!', 'Close', {
-        duration: 3000,
-      });
+      this.notificationService.success('Role ID copied to clipboard!');
     }
   }
 

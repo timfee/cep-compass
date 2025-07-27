@@ -17,11 +17,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 // Services
 import { EnrollmentTokenService } from '../../../services/enrollment-token.service';
 import { DirectoryService } from '../../../services/directory.service';
+import { NotificationService } from '../../../core/notification.service';
 
 interface OneClickState {
   activated: boolean;
@@ -64,7 +64,7 @@ export class OneClickActivationComponent implements OnInit {
   private readonly enrollmentService = inject(EnrollmentTokenService);
   private readonly directoryService = inject(DirectoryService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   // Component state signal
   private readonly _state = signal<OneClickActivationState>({
@@ -205,9 +205,7 @@ export class OneClickActivationComponent implements OnInit {
       'https://admin.google.com/ac/chrome/reports/securityinsights';
     window.open(securityInsightsUrl, '_blank', 'noopener,noreferrer');
 
-    this.snackBar.open('Security Insights page opened in new tab', 'Close', {
-      duration: 3000,
-    });
+    this.notificationService.info('Security Insights page opened in new tab');
   }
 
   /**
@@ -221,10 +219,7 @@ export class OneClickActivationComponent implements OnInit {
 
     this.saveActivationState();
 
-    this.snackBar.open('One-Click Protection marked as activated!', 'Close', {
-      duration: 5000,
-      panelClass: ['success-snackbar'],
-    });
+    this.notificationService.success('One-Click Protection marked as activated!');
   }
 
   /**

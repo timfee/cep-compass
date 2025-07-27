@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { EmailComposerComponent } from '../components/email-composer/email-composer.component';
 import { ComposedEmail } from '../services/email-template.service';
+import { NotificationService } from '../core/notification.service';
 
 /**
  * Email Templates page for managing and composing email templates
@@ -17,17 +17,15 @@ import { ComposedEmail } from '../services/email-template.service';
   imports: [CommonModule, MatCardModule, EmailComposerComponent],
 })
 export class EmailTemplatesComponent {
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   /**
    * Handles the composed email event
    */
   onEmailComposed(email: ComposedEmail): void {
     console.log('Composed Email:', email);
-    this.snackBar.open(
-      `Email composed for ${email.to.length} recipient(s)`,
-      'Close',
-      { duration: 3000 },
+    this.notificationService.info(
+      `Email composed for ${email.to.length} recipient(s)`
     );
   }
 }

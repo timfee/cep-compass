@@ -74,3 +74,28 @@ mat-card {
     @include mat.elevation(2);
   }
 }
+
+// Material 3 compliant snackbar theming
+.success-snackbar {
+  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, tertiary-container)};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-tertiary-container)};
+  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-tertiary-container)};
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, error-container)};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-error-container)};
+  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-error-container)};
+}
+
+.info-snackbar {
+  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, primary-container)};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-primary-container)};
+  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-primary-container)};
+}
+
+.warning-snackbar {
+  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, secondary-container)};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-secondary-container)};
+  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-secondary-container)};
+}
