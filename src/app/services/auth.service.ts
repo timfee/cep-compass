@@ -106,7 +106,7 @@ export class AuthService {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       if (credential && credential.accessToken) {
         this.accessToken = credential.accessToken;
-        // Encrypt and store token
+        // Encode and store token using Base64
         const encrypted = btoa(credential.accessToken);
         sessionStorage.setItem(this.TOKEN_STORAGE_KEY, encrypted);
       }
