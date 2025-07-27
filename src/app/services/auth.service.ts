@@ -195,19 +195,85 @@ export class AuthService {
       }
     }
 
-    // If no token is available but user is logged in, try to refresh
-    if (currentUser) {
-      try {
-        const idTokenResult = await currentUser.getIdTokenResult(true);
-        if (idTokenResult?.token) {
-          // Token refreshed but OAuth access token still needed for Google APIs
-        }
-      } catch (error) {
-        console.warn('Failed to refresh Firebase token:', error);
-      }
+    return null;
+  }
+
+  /**
+   * Attempts to refresh the OAuth access token
+   */
+  async refreshAccessToken(): Promise<string | null> {
+    const currentUser = this.user();
+    if (!currentUser) {
+      return null;
     }
 
-    return null;
+    try {
+      // Force refresh the Firebase ID token first
+      await currentUser.getIdTokenResult(true);
+      
+      // Re-authenticate with Google to get a fresh OAuth access token
+      const provider = new GoogleAuthProvider();
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.user.readonly',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.group.readonly',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.rolemanagement',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
+      );
+      provider.addScope(
+        'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
+      );
+
+      // First attempt: try silent refresh with prompt: 'none'
+      // This may fail due to popup blockers but worth trying
+      provider.setCustomParameters({
+        access_type: 'offline',
+        prompt: 'none', // Silent refresh attempt
+      });
+
+      try {
+        const result = await signInWithPopup(this.auth, provider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        
+        if (credential?.accessToken) {
+          this.accessToken = credential.accessToken;
+          // Encode and store token using Base64
+          const encrypted = btoa(credential.accessToken);
+          sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+          return credential.accessToken;
+        }
+      } catch (silentError) {
+        console.log('Silent refresh failed, this is expected if popup is blocked:', silentError);
+        
+        // Fallback: interactive refresh with user consent
+        // Reset provider to remove prompt: 'none' 
+        provider.setCustomParameters({
+          access_type: 'offline',
+          prompt: 'consent', // Force user interaction
+        });
+        
+        const result = await signInWithPopup(this.auth, provider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        
+        if (credential?.accessToken) {
+          this.accessToken = credential.accessToken;
+          // Encode and store token using Base64
+          const encrypted = btoa(credential.accessToken);
+          sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+          return credential.accessToken;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('Token refresh failed:', error);
+      return null;
+    }
   }
 
   private async updateAvailableRoles(): Promise<void> {
