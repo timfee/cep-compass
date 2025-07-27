@@ -22,8 +22,8 @@ $theme: mat.define-theme((
   )
 ));
 
-// Apply the theme to all Material components
-html {
+// Make theme available to components
+:root {
   @include mat.all-component-themes($theme);
   @include mat.color-variants-backwards-compatibility($theme);
 }
@@ -36,12 +36,10 @@ html {
 html,
 body {
   height: 100%;
-  font-family: 'Google Sans Text', sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: 'Google Sans Text', sans-serif;
   background-color: mat.get-theme-color($theme, surface-container-lowest);
   color: mat.get-theme-color($theme, on-surface);
 }

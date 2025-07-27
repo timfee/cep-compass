@@ -6,10 +6,10 @@
   @include mat.elevation(2);
   
   span {
-    font-family: 'Google Sans Text', sans-serif;
-    font-size: 22px;
-    font-weight: 500;
-    line-height: 28px;
+    font-family: var(--mat-sys-typescale-headline-small-font);
+    font-size: var(--mat-sys-typescale-headline-small-size);
+    font-weight: var(--mat-sys-typescale-headline-small-weight);
+    line-height: var(--mat-sys-typescale-headline-small-line-height);
   }
 }
 
