@@ -8,7 +8,6 @@ import {
   signOut,
 } from '@angular/fire/auth';
 
-// --- TYPE DEFINITIONS ---
 export interface Privilege {
   privilegeName: string;
   serviceId: string;
@@ -25,6 +24,9 @@ export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
 
+/**
+ * Service for handling authentication and user role management
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -77,6 +79,9 @@ export class AuthService {
     });
   }
 
+  /**
+   * Authenticates user with Google OAuth and required admin scopes
+   */
   async loginWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
     provider.addScope(
@@ -121,12 +126,18 @@ export class AuthService {
     }
   }
 
+  /**
+   * Signs out the current user and clears session data
+   */
   async logout(): Promise<void> {
     this.accessToken = null;
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     await signOut(this.auth);
   }
 
+  /**
+   * Selects a role for the current session
+   */
   selectRole(role: SelectedRole): void {
     if (role === 'superAdmin' && !this.availableRoles().isSuperAdmin) {
       throw new Error('Cannot select Super Admin role: Not available.');
@@ -137,6 +148,9 @@ export class AuthService {
     this.selectedRole.set(role);
   }
 
+  /**
+   * Retrieves the current OAuth access token
+   */
   async getAccessToken(): Promise<string | null> {
     const currentUser = this.user();
     if (!currentUser) {

@@ -20,6 +20,9 @@ import {
   DirectoryGroup,
 } from '../../services/directory.service';
 
+/**
+ * Component for displaying directory statistics and search functionality
+ */
 @Component({
   selector: 'app-directory-stats',
   templateUrl: './directory-stats.component.html',
@@ -77,6 +80,9 @@ export class DirectoryStatsComponent implements OnInit {
     await this.directoryService.fetchInitialData();
   }
 
+  /**
+   * Refreshes directory statistics from the API
+   */
   async onRefresh(): Promise<void> {
     await this.directoryService.refreshStats();
   }
@@ -89,6 +95,9 @@ export class DirectoryStatsComponent implements OnInit {
     await this.directoryService.loadMoreGroups();
   }
 
+  /**
+   * Performs search based on current query
+   */
   async onSearch(): Promise<void> {
     const query = this.searchQuery().trim();
 
@@ -136,6 +145,9 @@ export class DirectoryStatsComponent implements OnInit {
     }
   }
 
+  /**
+   * Clears search query and results
+   */
   onClearSearch(): void {
     this.searchQuery.set('');
     this.searchResults.set({ users: [], groups: [] });

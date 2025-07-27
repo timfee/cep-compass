@@ -248,8 +248,6 @@ export class OneClickActivationComponent implements OnInit {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
-  // --- PRIVATE METHODS ---
-
   /**
    * Loads activation state from localStorage
    */

@@ -199,8 +199,6 @@ Scope: All users`;
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
-  // --- PRIVATE METHODS ---
-
   /**
    * Loads activation state from localStorage
    */
