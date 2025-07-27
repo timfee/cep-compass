@@ -23,6 +23,7 @@ export interface UserRoles {
 export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 
 const ROLE_STORAGE_KEY = 'cep_selected_role';
+export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,6 @@ const ROLE_STORAGE_KEY = 'cep_selected_role';
 export class AuthService {
   private auth: Auth = inject(Auth);
   private accessToken: string | null = null;
-  private readonly TOKEN_STORAGE_KEY = 'cep_oauth_token';
 
   public readonly user = toSignal(authState(this.auth), { initialValue: null });
 
@@ -55,7 +55,7 @@ export class AuthService {
       } else {
         // If logged out, reset everything and clear storage.
         this.accessToken = null;
-        sessionStorage.removeItem(this.TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         this.availableRoles.set({
           isSuperAdmin: false,
           isCepAdmin: false,
@@ -108,7 +108,7 @@ export class AuthService {
         this.accessToken = credential.accessToken;
         // Encode and store token using Base64
         const encrypted = btoa(credential.accessToken);
-        sessionStorage.setItem(this.TOKEN_STORAGE_KEY, encrypted);
+        sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -123,7 +123,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     this.accessToken = null;
-    sessionStorage.removeItem(this.TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     await signOut(this.auth);
   }
 
@@ -140,7 +140,7 @@ export class AuthService {
   async getAccessToken(): Promise<string | null> {
     const currentUser = this.user();
     if (!currentUser) {
-      sessionStorage.removeItem(this.TOKEN_STORAGE_KEY);
+      sessionStorage.removeItem(TOKEN_STORAGE_KEY);
       return null;
     }
 
@@ -150,7 +150,7 @@ export class AuthService {
     }
 
     // Check session storage
-    const stored = sessionStorage.getItem(this.TOKEN_STORAGE_KEY);
+    const stored = sessionStorage.getItem(TOKEN_STORAGE_KEY);
     if (stored) {
       this.accessToken = atob(stored);
       return this.accessToken;

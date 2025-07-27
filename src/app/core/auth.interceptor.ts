@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { from, throwError } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { AuthService, TOKEN_STORAGE_KEY } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Only intercept Google API calls
@@ -30,7 +30,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         // Token expired - clear storage and redirect to login
-        sessionStorage.removeItem('cep_oauth_token');
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         authService.logout();
       }
       return throwError(() => error);
