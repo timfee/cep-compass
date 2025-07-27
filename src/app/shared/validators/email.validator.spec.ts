@@ -42,6 +42,14 @@ describe('EmailValidator', () => {
       expect(EmailValidator.isValid(undefined)).toBe(false);
     });
 
+    it('should handle non-string inputs', () => {
+      expect(EmailValidator.isValid(123)).toBe(false);
+      expect(EmailValidator.isValid({})).toBe(false);
+      expect(EmailValidator.isValid([])).toBe(false);
+      expect(EmailValidator.isValid(true)).toBe(false);
+      expect(EmailValidator.isValid(false)).toBe(false);
+    });
+
     it('should trim whitespace from email before validation', () => {
       expect(EmailValidator.isValid('  test@example.com  ')).toBe(true);
       expect(EmailValidator.isValid('\tuser@domain.com\n')).toBe(true);
