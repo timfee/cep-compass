@@ -23,6 +23,7 @@ export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
+const REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED';
 
 /**
  * Service for handling authentication and user role management
@@ -199,7 +200,7 @@ export class AuthService {
       try {
         const idTokenResult = await currentUser.getIdTokenResult(true);
         if (idTokenResult?.token) {
-          console.log('Refreshed Firebase ID token, but need OAuth access token for Google APIs');
+          // Token refreshed but OAuth access token still needed for Google APIs
         }
       } catch (error) {
         console.warn('Failed to refresh Firebase token:', error);
@@ -218,7 +219,7 @@ export class AuthService {
         this.availableRoles.set({
           isSuperAdmin: false,
           isCepAdmin: false,
-          missingPrivileges: [{ privilegeName: 'REAUTHENTICATION_REQUIRED', serviceId: 'auth' }],
+          missingPrivileges: [{ privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' }],
         });
         return;
       }
