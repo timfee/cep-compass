@@ -56,14 +56,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               return throwError(() => new Error('Authentication refresh failed'));
             }
           }),
-          catchError((refreshError: HttpErrorResponse) => {
-            // If the retry also fails, check if it's another 401
-            if (refreshError.status === 401) {
-              console.error('Token refresh succeeded but retry still failed with 401, logging out user');
-              notificationService.error('Session expired. Please sign in again.');
-              sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-              authService.logout();
-              return throwError(() => new Error('Authentication failed after refresh'));
+          catchError((refreshError: unknown) => {
+            // Check if the error is an HttpErrorResponse
+            if (refreshError instanceof HttpErrorResponse) {
+              // If the retry also fails, check if it's another 401
+              if (refreshError.status === 401) {
+                console.error('Token refresh succeeded but retry still failed with 401, logging out user');
+                notificationService.error('Session expired. Please sign in again.');
+                sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+                authService.logout();
+                return throwError(() => new Error('Authentication failed after refresh'));
+              }
             }
             // For other errors, just pass them through
             return throwError(() => refreshError);

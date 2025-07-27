@@ -229,21 +229,44 @@ export class AuthService {
         'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
       );
 
-      // Use reauth with popup for silent refresh
+      // First attempt: try silent refresh with prompt: 'none'
+      // This may fail due to popup blockers but worth trying
       provider.setCustomParameters({
         access_type: 'offline',
         prompt: 'none', // Silent refresh attempt
       });
 
-      const result = await signInWithPopup(this.auth, provider);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      
-      if (credential?.accessToken) {
-        this.accessToken = credential.accessToken;
-        // Encode and store token using Base64
-        const encrypted = btoa(credential.accessToken);
-        sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
-        return credential.accessToken;
+      try {
+        const result = await signInWithPopup(this.auth, provider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        
+        if (credential?.accessToken) {
+          this.accessToken = credential.accessToken;
+          // Encode and store token using Base64
+          const encrypted = btoa(credential.accessToken);
+          sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+          return credential.accessToken;
+        }
+      } catch (silentError) {
+        console.log('Silent refresh failed, this is expected if popup is blocked:', silentError);
+        
+        // Fallback: interactive refresh with user consent
+        // Reset provider to remove prompt: 'none' 
+        provider.setCustomParameters({
+          access_type: 'offline',
+          prompt: 'consent', // Force user interaction
+        });
+        
+        const result = await signInWithPopup(this.auth, provider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        
+        if (credential?.accessToken) {
+          this.accessToken = credential.accessToken;
+          // Encode and store token using Base64
+          const encrypted = btoa(credential.accessToken);
+          sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+          return credential.accessToken;
+        }
       }
       
       return null;
