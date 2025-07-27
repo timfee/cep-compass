@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
     MatMenuModule,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {

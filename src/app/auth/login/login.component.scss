@@ -1,0 +1,36 @@
+@use '@angular/material' as mat;
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 24px;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 400px;
+  @include mat.elevation(3);
+  
+  mat-card-title {
+    font-family: var(--mat-sys-typescale-headline-medium-font);
+    font-size: var(--mat-sys-typescale-headline-medium-size);
+    font-weight: var(--mat-sys-typescale-headline-medium-weight);
+    line-height: var(--mat-sys-typescale-headline-medium-line-height);
+  }
+  
+  mat-card-subtitle {
+    font-family: var(--mat-sys-typescale-body-medium-font);
+    font-size: var(--mat-sys-typescale-body-medium-size);
+    font-weight: var(--mat-sys-typescale-body-medium-weight);
+    line-height: var(--mat-sys-typescale-body-medium-line-height);
+    opacity: 0.7;
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 16px;
+}

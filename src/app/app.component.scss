@@ -1,6 +1,16 @@
+@use '@angular/material' as mat;
+
 .main-toolbar {
   display: flex;
   justify-content: space-between;
+  @include mat.elevation(2);
+  
+  span {
+    font-family: var(--mat-sys-typescale-headline-small-font);
+    font-size: var(--mat-sys-typescale-headline-small-size);
+    font-weight: var(--mat-sys-typescale-headline-small-weight);
+    line-height: var(--mat-sys-typescale-headline-small-line-height);
+  }
 }
 
 .spacer {

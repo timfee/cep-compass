@@ -44,7 +44,7 @@ import {
 @Component({
   selector: 'app-email-composer',
   templateUrl: './email-composer.component.html',
-  styleUrl: './email-composer.component.css',
+  styleUrl: './email-composer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

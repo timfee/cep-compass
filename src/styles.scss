@@ -1,0 +1,76 @@
+@use '@angular/material' as mat;
+
+// Include Material core styles
+@include mat.core();
+
+// Define Material 3 theme with proper typography
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$blue-palette,
+    tertiary: mat.$violet-palette,
+  ),
+  typography: (
+    brand-family: 'Google Sans Text',
+    plain-family: 'Google Sans Text',
+    bold-weight: 700,
+    medium-weight: 500,
+    regular-weight: 400,
+  ),
+  density: (
+    scale: 0
+  )
+));
+
+// Make theme available to components
+:root {
+  @include mat.all-component-themes($theme);
+  @include mat.color-variants-backwards-compatibility($theme);
+}
+
+// Global box-sizing for consistent layout behavior
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: mat.get-theme-color($theme, surface-container-lowest);
+  color: mat.get-theme-color($theme, on-surface);
+}
+
+// Material Design spacing system (8px grid)
+$spacing-unit: 8px;
+@for $i from 1 through 12 {
+  .m3-spacing-#{$i} {
+    margin: #{$i * $spacing-unit};
+  }
+  .m3-padding-#{$i} {
+    padding: #{$i * $spacing-unit};
+  }
+  .m3-gap-#{$i} {
+    gap: #{$i * $spacing-unit};
+  }
+}
+
+// Material 3 elevation classes
+@for $i from 0 through 5 {
+  .mat-elevation-z#{$i} {
+    @include mat.elevation($i);
+  }
+}
+
+// Global component styling with Material tokens
+mat-card {
+  @include mat.elevation(1);
+  margin-bottom: 16px;
+  
+  &:hover {
+    @include mat.elevation(2);
+  }
+}
