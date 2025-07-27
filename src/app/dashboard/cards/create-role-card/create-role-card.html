@@ -1,0 +1,31 @@
+@if (authService.availableRoles().isSuperAdmin) {
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Create Delegated Admin Role</mat-card-title>
+      <mat-card-subtitle>For Super Admins Only</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Click the button below to create a new "CEP Admin" role with all the
+        necessary permissions for managing Chrome Enterprise Plus features.
+      </p>
+      @if (error()) {
+        <p class="error-message">Error: {{ error() }}</p>
+      }
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="createRole()"
+        [disabled]="isCreating()">
+        @if (isCreating()) {
+          <mat-spinner diameter="20" class="in-button-spinner"></mat-spinner>
+          <span>Creating...</span>
+        } @else {
+          <span>Create CEP Admin Role</span>
+        }
+      </button>
+    </mat-card-actions>
+  </mat-card>
+}
