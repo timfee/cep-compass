@@ -22,8 +22,8 @@ export interface UserRoles {
 
 export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 
-const ROLE_STORAGE_KEY = 'cep_selected_role';
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
+const ROLE_STORAGE_KEY = 'cep_selected_role';
 
 @Injectable({
   providedIn: 'root',
