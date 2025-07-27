@@ -37,7 +37,9 @@ export class SelectRoleComponent implements OnInit {
     try {
       await this.authService.refreshAvailableRoles();
     } catch {
-      this.notificationService.error('Failed to refresh available roles. Please try again later.');
+      this.notificationService.error(
+        'Failed to refresh available roles. Please try again later.',
+      );
     }
   }
 

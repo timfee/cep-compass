@@ -1,26 +1,28 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 // Include Material core styles
 @include mat.core();
 
 // Define Material 3 theme with proper typography
-$theme: mat.define-theme((
-  color: (
-    theme-type: light,
-    primary: mat.$blue-palette,
-    tertiary: mat.$violet-palette,
-  ),
-  typography: (
-    brand-family: 'Google Sans Text',
-    plain-family: 'Google Sans Text',
-    bold-weight: 700,
-    medium-weight: 500,
-    regular-weight: 400,
-  ),
-  density: (
-    scale: 0
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+      tertiary: mat.$violet-palette,
+    ),
+    typography: (
+      brand-family: "Google Sans Text",
+      plain-family: "Google Sans Text",
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: (
+      scale: 0,
+    ),
   )
-));
+);
 
 // Make theme available to components
 :root {
@@ -69,7 +71,7 @@ $spacing-unit: 8px;
 mat-card {
   @include mat.elevation(1);
   margin-bottom: 16px;
-  
+
   &:hover {
     @include mat.elevation(2);
   }
@@ -77,25 +79,61 @@ mat-card {
 
 // Material 3 compliant snackbar theming
 .success-snackbar {
-  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, tertiary-container)};
-  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-tertiary-container)};
-  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-tertiary-container)};
+  --mdc-snackbar-container-color: #{mat.get-theme-color(
+      $theme,
+      tertiary-container
+    )};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+      $theme,
+      on-tertiary-container
+    )};
+  --mat-snack-bar-button-color: #{mat.get-theme-color(
+      $theme,
+      on-tertiary-container
+    )};
 }
 
 .error-snackbar {
-  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, error-container)};
-  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-error-container)};
-  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-error-container)};
+  --mdc-snackbar-container-color: #{mat.get-theme-color(
+      $theme,
+      error-container
+    )};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+      $theme,
+      on-error-container
+    )};
+  --mat-snack-bar-button-color: #{mat.get-theme-color(
+      $theme,
+      on-error-container
+    )};
 }
 
 .info-snackbar {
-  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, primary-container)};
-  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-primary-container)};
-  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-primary-container)};
+  --mdc-snackbar-container-color: #{mat.get-theme-color(
+      $theme,
+      primary-container
+    )};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+      $theme,
+      on-primary-container
+    )};
+  --mat-snack-bar-button-color: #{mat.get-theme-color(
+      $theme,
+      on-primary-container
+    )};
 }
 
 .warning-snackbar {
-  --mdc-snackbar-container-color: #{mat.get-theme-color($theme, secondary-container)};
-  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($theme, on-secondary-container)};
-  --mat-snack-bar-button-color: #{mat.get-theme-color($theme, on-secondary-container)};
+  --mdc-snackbar-container-color: #{mat.get-theme-color(
+      $theme,
+      secondary-container
+    )};
+  --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+      $theme,
+      on-secondary-container
+    )};
+  --mat-snack-bar-button-color: #{mat.get-theme-color(
+      $theme,
+      on-secondary-container
+    )};
 }

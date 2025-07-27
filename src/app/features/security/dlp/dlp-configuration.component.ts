@@ -165,7 +165,9 @@ Scope: All users`;
 
     try {
       await navigator.clipboard.writeText(configText);
-      this.notificationService.success('Policy configuration copied to clipboard!');
+      this.notificationService.success(
+        'Policy configuration copied to clipboard!',
+      );
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
       this.notificationService.error('Failed to copy to clipboard');

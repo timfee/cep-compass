@@ -157,7 +157,9 @@ export class BrowserEnrollmentComponent implements OnInit {
         error: null,
       }));
 
-      this.notificationService.success('Enrollment token created successfully!');
+      this.notificationService.success(
+        'Enrollment token created successfully!',
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to create token';

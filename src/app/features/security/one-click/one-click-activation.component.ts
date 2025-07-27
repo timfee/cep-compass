@@ -219,7 +219,9 @@ export class OneClickActivationComponent implements OnInit {
 
     this.saveActivationState();
 
-    this.notificationService.success('One-Click Protection marked as activated!');
+    this.notificationService.success(
+      'One-Click Protection marked as activated!',
+    );
   }
 
   /**

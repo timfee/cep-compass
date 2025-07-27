@@ -151,7 +151,7 @@ export class AuthService {
     if (role === null) {
       this.isChangingRole = true;
     }
-    
+
     if (role === 'superAdmin' && !this.availableRoles().isSuperAdmin) {
       throw new Error('Cannot select Super Admin role: Not available.');
     }
@@ -190,7 +190,10 @@ export class AuthService {
         this.accessToken = atob(stored);
         return this.accessToken;
       } catch (error) {
-        console.warn('Failed to decode stored token, removing from storage:', error);
+        console.warn(
+          'Failed to decode stored token, removing from storage:',
+          error,
+        );
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
       }
     }
@@ -210,7 +213,7 @@ export class AuthService {
     try {
       // Force refresh the Firebase ID token first
       await currentUser.getIdTokenResult(true);
-      
+
       // Re-authenticate with Google to get a fresh OAuth access token
       const provider = new GoogleAuthProvider();
       provider.addScope(
@@ -239,7 +242,7 @@ export class AuthService {
       try {
         const result = await signInWithPopup(this.auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        
+
         if (credential?.accessToken) {
           this.accessToken = credential.accessToken;
           // Encode and store token using Base64
@@ -248,18 +251,21 @@ export class AuthService {
           return credential.accessToken;
         }
       } catch (silentError) {
-        console.log('Silent refresh failed, this is expected if popup is blocked:', silentError);
-        
+        console.log(
+          'Silent refresh failed, this is expected if popup is blocked:',
+          silentError,
+        );
+
         // Fallback: interactive refresh with user consent
-        // Reset provider to remove prompt: 'none' 
+        // Reset provider to remove prompt: 'none'
         provider.setCustomParameters({
           access_type: 'offline',
           prompt: 'consent', // Force user interaction
         });
-        
+
         const result = await signInWithPopup(this.auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        
+
         if (credential?.accessToken) {
           this.accessToken = credential.accessToken;
           // Encode and store token using Base64
@@ -268,7 +274,7 @@ export class AuthService {
           return credential.accessToken;
         }
       }
-      
+
       return null;
     } catch (error) {
       console.warn('Token refresh failed:', error);
@@ -280,12 +286,16 @@ export class AuthService {
     try {
       const token = await this.getAccessToken();
       if (!token) {
-        console.warn('No access token available for role enumeration. User may need to re-authenticate.');
+        console.warn(
+          'No access token available for role enumeration. User may need to re-authenticate.',
+        );
         // Set minimal permissions instead of throwing error
         this.availableRoles.set({
           isSuperAdmin: false,
           isCepAdmin: false,
-          missingPrivileges: [{ privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' }],
+          missingPrivileges: [
+            { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
+          ],
         });
         return;
       }

@@ -6,7 +6,7 @@ You are working on CEP Compass, an Angular v20+ enterprise application for manag
 
 Use Angular v20+ with standalone components, signals for state management, and OnPush change detection.
 Never use NgModules - all components are standalone by default.
-Use the new control flow syntax: @if, @for, @switch instead of *ngIf, *ngFor, *ngSwitch.
+Use the new control flow syntax: @if, @for, @switch instead of *ngIf, *ngFor, \*ngSwitch.
 Prefer inject() function over constructor injection.
 Use input() and output() functions instead of decorators.
 
@@ -30,7 +30,7 @@ Use external template and style files unless the component is trivial (less than
 Use Angular Material components for all UI elements.
 Use Material theme colors - never hardcode colors like #1976d2.
 Follow the 8px spacing grid.
-Never override .mat-mdc-* classes directly.
+Never override .mat-mdc-\* classes directly.
 
 ## TypeScript Patterns
 
@@ -44,16 +44,16 @@ Use the NotificationService for user feedback, not raw MatSnackBar.
 
 ```typescript
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrl: './user-profile.component.css',
+  selector: "app-user-profile",
+  templateUrl: "./user-profile.component.html",
+  styleUrl: "./user-profile.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatCardModule]
+  imports: [CommonModule, MatCardModule],
 })
 export class UserProfileComponent {
   private readonly userService = inject(UserService);
   user = signal<User | null>(null);
-  
+
   async loadUser(): Promise<void> {
     const data = await this.userService.getProfile();
     this.user.set(data);

@@ -12,7 +12,7 @@ export class GlobalErrorHandler implements ErrorHandler {
    */
   handleError(error: Error): void {
     console.error('Application error:', error);
-    
+
     // Show stack trace in development only
     if (!environment.production && error.stack) {
       console.error('Stack trace:', error.stack);

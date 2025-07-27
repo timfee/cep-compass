@@ -16,7 +16,7 @@ export class NotificationService {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: 'success-snackbar'
+      panelClass: 'success-snackbar',
     });
   }
 
@@ -28,7 +28,7 @@ export class NotificationService {
       duration: 5000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: 'error-snackbar'
+      panelClass: 'error-snackbar',
     });
   }
 
@@ -40,7 +40,7 @@ export class NotificationService {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: 'info-snackbar'
+      panelClass: 'info-snackbar',
     });
   }
 
@@ -52,7 +52,7 @@ export class NotificationService {
       duration: 4000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: 'warning-snackbar'
+      panelClass: 'warning-snackbar',
     });
   }
 }

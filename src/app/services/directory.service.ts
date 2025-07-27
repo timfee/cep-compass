@@ -298,10 +298,7 @@ export class DirectoryService extends BaseApiService {
       this._hasMoreGroups.set(true);
 
       // Fetch initial users and groups concurrently
-      await Promise.all([
-        this.loadUsersPage(100),
-        this.loadGroupsPage(50),
-      ]);
+      await Promise.all([this.loadUsersPage(100), this.loadGroupsPage(50)]);
 
       this.updateFetchTime();
     } catch (error) {
@@ -531,9 +528,7 @@ export class DirectoryService extends BaseApiService {
     this._hasMoreGroups.set(true);
   }
 
-  private async loadUsersPage(
-    maxResults: number,
-  ): Promise<void> {
+  private async loadUsersPage(maxResults: number): Promise<void> {
     const url = this.buildUsersApiUrl(this.userPageToken, maxResults);
 
     try {
@@ -555,9 +550,7 @@ export class DirectoryService extends BaseApiService {
     }
   }
 
-  private async loadGroupsPage(
-    maxResults: number,
-  ): Promise<void> {
+  private async loadGroupsPage(maxResults: number): Promise<void> {
     const url = this.buildGroupsApiUrl(this.groupPageToken, maxResults);
 
     try {
@@ -579,15 +572,11 @@ export class DirectoryService extends BaseApiService {
     }
   }
 
-  private async getUserByEmail(
-    email: string,
-  ): Promise<DirectoryUser | null> {
+  private async getUserByEmail(email: string): Promise<DirectoryUser | null> {
     const url = `${this.API_BASE_URL}/users/${encodeURIComponent(email)}`;
 
     try {
-      const response = await firstValueFrom(
-        this.http.get<unknown>(url),
-      );
+      const response = await firstValueFrom(this.http.get<unknown>(url));
 
       if (response) {
         return this.mapApiResponseToUser(response);

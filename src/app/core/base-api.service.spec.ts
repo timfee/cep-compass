@@ -73,9 +73,9 @@ describe('BaseApiService', () => {
   describe('fetch time and caching', () => {
     it('should update fetch time and clear error', () => {
       service.testSetError('Some error');
-      
+
       service.testUpdateFetchTime();
-      
+
       expect(service.lastFetchTime()).toBeTruthy();
       expect(service.error()).toBeNull();
     });

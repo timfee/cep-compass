@@ -25,7 +25,7 @@ export class EmailTemplatesComponent {
   onEmailComposed(email: ComposedEmail): void {
     console.log('Composed Email:', email);
     this.notificationService.info(
-      `Email composed for ${email.to.length} recipient(s)`
+      `Email composed for ${email.to.length} recipient(s)`,
     );
   }
 }
