@@ -137,26 +137,31 @@ export class OrgUnitsService extends BaseApiService {
     const allOrgUnits: OrgUnit[] = [];
     let pageToken: string | undefined;
 
-    do {
-      const url = this.buildApiUrl(pageToken);
+    try {
+      do {
+        const url = this.buildApiUrl(pageToken);
 
-      const response = await firstValueFrom(
-        this.http.get<OrgUnitsApiResponse>(url),
-      );
-
-      if (response?.organizationUnits) {
-        const mappedUnits = response.organizationUnits.map(
-          this.mapApiResponseToOrgUnit,
+        const response = await firstValueFrom(
+          this.http.get<OrgUnitsApiResponse>(url),
         );
-        allOrgUnits.push(...mappedUnits);
-      }
 
-      // Check for next page (Google Admin SDK uses nextPageToken but not in org units API)
-      // The org units API doesn't typically have pagination, but we handle it for completeness
-      pageToken = undefined;
-    } while (pageToken);
+        if (response?.organizationUnits) {
+          const mappedUnits = response.organizationUnits.map(
+            this.mapApiResponseToOrgUnit,
+          );
+          allOrgUnits.push(...mappedUnits);
+        }
 
-    return allOrgUnits;
+        // Check for next page (Google Admin SDK uses nextPageToken but not in org units API)
+        // The org units API doesn't typically have pagination, but we handle it for completeness
+        pageToken = undefined;
+      } while (pageToken);
+
+      return allOrgUnits;
+    } catch (error: unknown) {
+      console.error('Failed to fetch organizational units from API:', error);
+      throw error; // Re-throw to be handled by caller
+    }
   }
 
   /**

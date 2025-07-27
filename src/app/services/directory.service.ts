@@ -382,15 +382,21 @@ export class DirectoryService extends BaseApiService {
 
     const url = this.buildUsersApiUrl(undefined, 200, query);
 
-    const response = await firstValueFrom(
-      this.http.get<UsersApiResponse>(url),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.get<UsersApiResponse>(url),
+      );
 
-    if (response?.users) {
-      return response.users.map(this.mapApiResponseToUser);
+      if (response?.users) {
+        return response.users.map(this.mapApiResponseToUser);
+      }
+
+      return [];
+    } catch (error: unknown) {
+      const errorMessage = this.handleApiError(error);
+      console.error('Failed to search users:', error);
+      throw new Error(`Failed to search users: ${errorMessage}`);
     }
-
-    return [];
   }
 
   /**
@@ -410,15 +416,21 @@ export class DirectoryService extends BaseApiService {
 
     const url = this.buildGroupsApiUrl(undefined, 200, undefined, query);
 
-    const response = await firstValueFrom(
-      this.http.get<GroupsApiResponse>(url),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.get<GroupsApiResponse>(url),
+      );
 
-    if (response?.groups) {
-      return response.groups.map(this.mapApiResponseToGroup);
+      if (response?.groups) {
+        return response.groups.map(this.mapApiResponseToGroup);
+      }
+
+      return [];
+    } catch (error: unknown) {
+      const errorMessage = this.handleApiError(error);
+      console.error('Failed to search groups:', error);
+      throw new Error(`Failed to search groups: ${errorMessage}`);
     }
-
-    return [];
   }
 
   /**
@@ -432,15 +444,21 @@ export class DirectoryService extends BaseApiService {
 
     const url = this.buildGroupsApiUrl(undefined, 200, userEmail);
 
-    const response = await firstValueFrom(
-      this.http.get<GroupsApiResponse>(url),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.get<GroupsApiResponse>(url),
+      );
 
-    if (response?.groups) {
-      return response.groups.map(this.mapApiResponseToGroup);
+      if (response?.groups) {
+        return response.groups.map(this.mapApiResponseToGroup);
+      }
+
+      return [];
+    } catch (error: unknown) {
+      const errorMessage = this.handleApiError(error);
+      console.error('Failed to get user groups:', error);
+      throw new Error(`Failed to get user groups: ${errorMessage}`);
     }
-
-    return [];
   }
 
   /**
@@ -455,35 +473,41 @@ export class DirectoryService extends BaseApiService {
     const allMembers: DirectoryUser[] = [];
     let pageToken: string | undefined;
 
-    do {
-      const url = this.buildGroupMembersApiUrl(groupEmail, pageToken, 200);
+    try {
+      do {
+        const url = this.buildGroupMembersApiUrl(groupEmail, pageToken, 200);
 
-      const response = await firstValueFrom(
-        this.http.get<GroupMembersApiResponse>(url),
-      );
+        const response = await firstValueFrom(
+          this.http.get<GroupMembersApiResponse>(url),
+        );
 
-      if (response?.members) {
-        // Get full user details for each member
-        const memberEmails = response.members
-          .filter((member) => member.email)
-          .map((member) => member.email!);
+        if (response?.members) {
+          // Get full user details for each member
+          const memberEmails = response.members
+            .filter((member) => member.email)
+            .map((member) => member.email!);
 
-        for (const email of memberEmails) {
-          try {
-            const user = await this.getUserByEmail(email);
-            if (user) {
-              allMembers.push(user);
+          for (const email of memberEmails) {
+            try {
+              const user = await this.getUserByEmail(email);
+              if (user) {
+                allMembers.push(user);
+              }
+            } catch (error) {
+              console.warn(`Failed to get details for user ${email}:`, error);
             }
-          } catch (error) {
-            console.warn(`Failed to get details for user ${email}:`, error);
           }
         }
-      }
 
-      pageToken = response?.nextPageToken;
-    } while (pageToken);
+        pageToken = response?.nextPageToken;
+      } while (pageToken);
 
-    return allMembers;
+      return allMembers;
+    } catch (error: unknown) {
+      const errorMessage = this.handleApiError(error);
+      console.error('Failed to get group members:', error);
+      throw new Error(`Failed to get group members: ${errorMessage}`);
+    }
   }
 
   /**
@@ -512,18 +536,23 @@ export class DirectoryService extends BaseApiService {
   ): Promise<void> {
     const url = this.buildUsersApiUrl(this.userPageToken, maxResults);
 
-    const response = await firstValueFrom(
-      this.http.get<UsersApiResponse>(url),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.get<UsersApiResponse>(url),
+      );
 
-    if (response?.users) {
-      const newUsers = response.users.map(this.mapApiResponseToUser);
-      const currentUsers = this._users();
-      this._users.set([...currentUsers, ...newUsers]);
+      if (response?.users) {
+        const newUsers = response.users.map(this.mapApiResponseToUser);
+        const currentUsers = this._users();
+        this._users.set([...currentUsers, ...newUsers]);
+      }
+
+      this.userPageToken = response?.nextPageToken || null;
+      this._hasMoreUsers.set(!!this.userPageToken);
+    } catch (error: unknown) {
+      console.error('Failed to load users page:', error);
+      throw error; // Re-throw to be handled by caller
     }
-
-    this.userPageToken = response?.nextPageToken || null;
-    this._hasMoreUsers.set(!!this.userPageToken);
   }
 
   private async loadGroupsPage(
@@ -531,18 +560,23 @@ export class DirectoryService extends BaseApiService {
   ): Promise<void> {
     const url = this.buildGroupsApiUrl(this.groupPageToken, maxResults);
 
-    const response = await firstValueFrom(
-      this.http.get<GroupsApiResponse>(url),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.get<GroupsApiResponse>(url),
+      );
 
-    if (response?.groups) {
-      const newGroups = response.groups.map(this.mapApiResponseToGroup);
-      const currentGroups = this._groups();
-      this._groups.set([...currentGroups, ...newGroups]);
+      if (response?.groups) {
+        const newGroups = response.groups.map(this.mapApiResponseToGroup);
+        const currentGroups = this._groups();
+        this._groups.set([...currentGroups, ...newGroups]);
+      }
+
+      this.groupPageToken = response?.nextPageToken || null;
+      this._hasMoreGroups.set(!!this.groupPageToken);
+    } catch (error: unknown) {
+      console.error('Failed to load groups page:', error);
+      throw error; // Re-throw to be handled by caller
     }
-
-    this.groupPageToken = response?.nextPageToken || null;
-    this._hasMoreGroups.set(!!this.groupPageToken);
   }
 
   private async getUserByEmail(
