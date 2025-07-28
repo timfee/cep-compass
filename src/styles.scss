@@ -12,8 +12,8 @@ $theme: mat.define-theme(
       tertiary: mat.$violet-palette,
     ),
     typography: (
-      brand-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif,
-      plain-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif,
+      brand-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      plain-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       bold-weight: 700,
       medium-weight: 500,
       regular-weight: 400,
@@ -35,11 +35,17 @@ $theme: mat.define-theme(
   box-sizing: border-box;
 }
 
+// Modern system font stack for excellent cross-platform typography
+:root {
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
 // Ensure fonts load properly with fallbacks
 @font-face {
-  font-family: "Google Sans Text Fallback";
-  src: local("Google Sans Text"), local("Roboto"), local("Helvetica Neue"), local("Arial");
-  font-display: fallback;
+  font-family: "System Font Stack";
+  src: local(-apple-system), local(BlinkMacSystemFont), local("Segoe UI"), local(Roboto), local("Helvetica Neue"), local(Arial);
+  font-display: swap;
 }
 
 html,
@@ -51,10 +57,12 @@ body {
   margin: 0;
   background-color: mat.get-theme-color($theme, surface-container-lowest);
   color: mat.get-theme-color($theme, on-surface);
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 14px;
   line-height: 1.5;
   font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 // Material Design spacing system (8px grid)
@@ -80,7 +88,7 @@ $spacing-unit: 8px;
 
 // Typography utilities with proper font loading
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-weight: 500;
   margin: 0;
   padding: 0;
@@ -88,63 +96,63 @@ h1, h2, h3, h4, h5, h6 {
 
 // Explicit typography classes for consistent application
 .mat-headline-large {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 32px;
   font-weight: 400;
   line-height: 40px;
 }
 
 .mat-headline-medium {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 28px;
   font-weight: 400;
   line-height: 36px;
 }
 
 .mat-headline-small {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 24px;
   font-weight: 400;
   line-height: 32px;
 }
 
 .mat-title-large {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 22px;
   font-weight: 400;
   line-height: 28px;
 }
 
 .mat-title-medium {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
 }
 
 .mat-title-small {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
 }
 
 .mat-body-large {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
 }
 
 .mat-body-medium {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
 }
 
 .mat-body-small {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
@@ -154,7 +162,7 @@ h1, h2, h3, h4, h5, h6 {
 mat-card {
   @include mat.elevation(1);
   margin-bottom: 16px;
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
 
   &:hover {
     @include mat.elevation(2);
@@ -166,18 +174,18 @@ mat-card {
 .mat-mdc-unelevated-button,
 .mat-mdc-raised-button,
 .mat-mdc-outlined-button {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  font-family: var(--font-family-sans) !important;
   font-weight: 500;
 }
 
 // Ensure Material toolbar uses proper typography
 .mat-toolbar {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
 }
 
 // Ensure Material menu uses proper typography
 .mat-mdc-menu-panel {
-  font-family: "Google Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-sans);
 }
 
 // Material 3 compliant snackbar theming
