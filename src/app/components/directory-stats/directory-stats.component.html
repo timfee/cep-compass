@@ -15,76 +15,85 @@
   }
 
   <!-- Statistics Cards -->
-  <div class="stats-grid">
-    <!-- Total Users Card -->
-    <mat-card class="stat-card">
-      <mat-card-header>
-        <div mat-card-avatar class="user-avatar">
-          <mat-icon>people</mat-icon>
-        </div>
-        <mat-card-title>Total Users</mat-card-title>
-        <mat-card-subtitle>All directory users</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="stat-number">{{ stats().totalUsers }}</div>
-        <div class="stat-breakdown">
-          <div class="breakdown-item active">
-            <span class="indicator"></span>
-            {{ stats().activeUsers }} active ({{ activePercentage() }}%)
+  @if (isInitialLoad()) {
+    <!-- Skeleton cards during initial load -->
+    <div class="stats-grid">
+      @for (item of [1, 2, 3]; track $index) {
+        <app-skeleton-card></app-skeleton-card>
+      }
+    </div>
+  } @else {
+    <div class="stats-grid">
+      <!-- Total Users Card -->
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <div mat-card-avatar class="user-avatar">
+            <mat-icon>people</mat-icon>
           </div>
-          <div class="breakdown-item suspended">
-            <span class="indicator"></span>
-            {{ stats().suspendedUsers }} suspended ({{
-              suspendedPercentage()
-            }}%)
+          <mat-card-title>Total Users</mat-card-title>
+          <mat-card-subtitle>All directory users</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-number">{{ stats().totalUsers }}</div>
+          <div class="stat-breakdown">
+            <div class="breakdown-item active">
+              <span class="indicator"></span>
+              {{ stats().activeUsers }} active ({{ activePercentage() }}%)
+            </div>
+            <div class="breakdown-item suspended">
+              <span class="indicator"></span>
+              {{ stats().suspendedUsers }} suspended ({{
+                suspendedPercentage()
+              }}%)
+            </div>
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+        </mat-card-content>
+      </mat-card>
 
-    <!-- Total Groups Card -->
-    <mat-card class="stat-card">
-      <mat-card-header>
-        <div mat-card-avatar class="group-avatar">
-          <mat-icon>groups</mat-icon>
-        </div>
-        <mat-card-title>Total Groups</mat-card-title>
-        <mat-card-subtitle>All directory groups</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="stat-number">{{ stats().totalGroups }}</div>
-      </mat-card-content>
-    </mat-card>
+      <!-- Total Groups Card -->
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <div mat-card-avatar class="group-avatar">
+            <mat-icon>groups</mat-icon>
+          </div>
+          <mat-card-title>Total Groups</mat-card-title>
+          <mat-card-subtitle>All directory groups</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-number">{{ stats().totalGroups }}</div>
+        </mat-card-content>
+      </mat-card>
 
-    <!-- Last Sync Card -->
-    <mat-card class="stat-card">
-      <mat-card-header>
-        <div mat-card-avatar class="sync-avatar">
-          <mat-icon>sync</mat-icon>
-        </div>
-        <mat-card-title>Last Sync</mat-card-title>
-        <mat-card-subtitle>Directory data freshness</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="stat-time">
-          {{ stats().lastSyncTime | date: "short" }}
-        </div>
-        <button
-          mat-button
-          color="primary"
-          (click)="onRefresh()"
-          [disabled]="isLoading()"
-        >
-          @if (isLoading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            <mat-icon>refresh</mat-icon>
-          }
-          Refresh
-        </button>
-      </mat-card-content>
-    </mat-card>
-  </div>
+      <!-- Last Sync Card -->
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <div mat-card-avatar class="sync-avatar">
+            <mat-icon>sync</mat-icon>
+          </div>
+          <mat-card-title>Last Sync</mat-card-title>
+          <mat-card-subtitle>Directory data freshness</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-time">
+            {{ stats().lastSyncTime | date: "short" }}
+          </div>
+          <button
+            mat-button
+            color="primary"
+            (click)="onRefresh()"
+            [disabled]="isLoading()"
+          >
+            @if (isLoading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <mat-icon>refresh</mat-icon>
+            }
+            Refresh
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
 
   <!-- Search Interface -->
   <mat-card class="search-card">

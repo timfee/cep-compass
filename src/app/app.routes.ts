@@ -68,6 +68,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'demo-loading',
+        loadComponent: () =>
+          import('./demo-loading/demo-loading.component').then(
+            (m) => m.DemoLoadingComponent,
+          ),
+      },
+      {
         path: 'enrollment',
         loadChildren: () =>
           import('./features/enrollment/enrollment.routes').then(
