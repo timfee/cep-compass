@@ -188,7 +188,7 @@ describe('OneClickActivationComponent', () => {
           { provide: EnrollmentTokenService, useValue: enrollmentService },
           { provide: DirectoryService, useValue: suspendedUserService },
           { provide: Router, useValue: router },
-          { provide: MatSnackBar, useValue: snackBar },
+          { provide: NotificationService, useValue: notificationService },
         ],
       });
 
@@ -223,7 +223,7 @@ describe('OneClickActivationComponent', () => {
           { provide: EnrollmentTokenService, useValue: enrollmentService },
           { provide: DirectoryService, useValue: noLoginService },
           { provide: Router, useValue: router },
-          { provide: MatSnackBar, useValue: snackBar },
+          { provide: NotificationService, useValue: notificationService },
         ],
       });
 
@@ -268,10 +268,8 @@ describe('OneClickActivationComponent', () => {
         '_blank',
         'noopener,noreferrer',
       );
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.info).toHaveBeenCalledWith(
         'Security Insights page opened in new tab',
-        'Close',
-        { duration: 3000 },
       );
     });
 
@@ -279,10 +277,8 @@ describe('OneClickActivationComponent', () => {
       component.markAsActivated();
 
       expect(component.isActivated()).toBeTrue();
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.success).toHaveBeenCalledWith(
         'One-Click Protection marked as activated!',
-        'Close',
-        { duration: 5000, panelClass: ['success-snackbar'] },
       );
     });
 
