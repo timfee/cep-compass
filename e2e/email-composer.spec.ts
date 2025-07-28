@@ -4,8 +4,7 @@ import { createSuperAdminUser } from './support/fixtures/test-users';
 test.describe('Email Composer', () => {
   test.beforeEach(async ({ authMock }) => {
     const testUser = createSuperAdminUser();
-    await authMock.setupUserAuth(testUser);
-    await authMock.setupRoleSelection('superAdmin');
+    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
   test('should load email composer', async ({ emailTemplatesPage }) => {

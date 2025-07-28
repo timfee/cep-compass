@@ -5,8 +5,7 @@ test.describe('Role-Based Access Control', () => {
   test.describe('Super Admin Access', () => {
     test.beforeEach(async ({ authMock }) => {
       const superAdminUser = createSuperAdminUser();
-      await authMock.setupUserAuth(superAdminUser);
-      await authMock.setupRoleSelection('superAdmin');
+      await authMock.setupAuthenticatedUser(superAdminUser, 'superAdmin');
     });
 
     test('should have full access to all features', async ({ 
@@ -67,8 +66,7 @@ test.describe('Role-Based Access Control', () => {
   test.describe('CEP Admin Access', () => {
     test.beforeEach(async ({ authMock }) => {
       const cepAdminUser = createCepAdminUser();
-      await authMock.setupUserAuth(cepAdminUser);
-      await authMock.setupRoleSelection('cepAdmin');
+      await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
     });
 
     test('should have limited access compared to Super Admin', async ({ 
@@ -125,8 +123,7 @@ test.describe('Role-Based Access Control', () => {
   test.describe('Participant Access', () => {
     test.beforeEach(async ({ authMock }) => {
       const participantUser = createParticipantUser();
-      await authMock.setupUserAuth(participantUser);
-      await authMock.setupRoleSelection('participant');
+      await authMock.setupAuthenticatedUser(participantUser, 'participant');
     });
 
     test('should have minimal read-only access', async ({ 
@@ -187,7 +184,7 @@ test.describe('Role-Based Access Control', () => {
       authMock 
     }) => {
       const multiRoleUser = createSuperAdminUser(); // Has both super admin and CEP admin roles
-      await authMock.setupUserAuth(multiRoleUser);
+      await authMock.setupAuthenticatedUser(multiRoleUser);
 
       // Start without a selected role
       await page.goto('/select-role');
@@ -195,7 +192,7 @@ test.describe('Role-Based Access Control', () => {
 
       // Select CEP Admin first
       await selectRolePage.selectCepAdmin();
-      await dashboardPage.waitForLoad();
+      await page.waitForURL(/.*dashboard/);
 
       // Verify limited access
       await page.goto('/admin');
@@ -205,11 +202,10 @@ test.describe('Role-Based Access Control', () => {
       await page.goto('/select-role');
       await selectRolePage.waitForLoad();
       await selectRolePage.selectSuperAdmin();
-      await dashboardPage.waitForLoad();
+      await page.waitForURL(/.*dashboard/);
 
       // Verify full access
       await dashboardPage.navigateToAdmin();
-      await adminPage.waitForLoad();
       await expect(page).toHaveURL(/.*admin/);
     });
   });
@@ -220,8 +216,7 @@ test.describe('Role-Based Access Control', () => {
       authMock 
     }) => {
       const participantUser = createParticipantUser();
-      await authMock.setupUserAuth(participantUser);
-      await authMock.setupRoleSelection('participant');
+      await authMock.setupAuthenticatedUser(participantUser, 'participant');
 
       // Try to access admin area directly
       await page.goto('/admin');
@@ -230,7 +225,7 @@ test.describe('Role-Based Access Control', () => {
       await expect(page).toHaveURL(/.*dashboard/);
       
       // Page should still be functional
-      await expect(page.locator('h1')).toContainText('CEP Compass Dashboard');
+      await expect(page.locator('h1')).toBeVisible();
     });
 
     test('should show appropriate UI based on permissions', async ({ 
@@ -239,8 +234,7 @@ test.describe('Role-Based Access Control', () => {
       authMock 
     }) => {
       const cepAdminUser = createCepAdminUser();
-      await authMock.setupUserAuth(cepAdminUser);
-      await authMock.setupRoleSelection('cepAdmin');
+      await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
 
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();

@@ -4,8 +4,7 @@ import { createSuperAdminUser, createCepAdminUser } from '../support/fixtures/te
 test.describe('Email Templates User Journey', () => {
   test.beforeEach(async ({ authMock }) => {
     const testUser = createSuperAdminUser();
-    await authMock.setupUserAuth(testUser);
-    await authMock.setupRoleSelection('superAdmin');
+    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
   test('should complete email composer workflow', async ({ 
@@ -81,8 +80,7 @@ test.describe('Email Templates User Journey', () => {
   }) => {
     // Test with CEP Admin user
     const cepAdminUser = createCepAdminUser();
-    await authMock.setupUserAuth(cepAdminUser);
-    await authMock.setupRoleSelection('cepAdmin');
+    await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
 
     await emailTemplatesPage.goto();
     await emailTemplatesPage.waitForLoad();
@@ -96,8 +94,7 @@ test.describe('Email Templates User Journey', () => {
 test.describe('Dashboard Navigation Journey', () => {
   test.beforeEach(async ({ authMock }) => {
     const testUser = createSuperAdminUser();
-    await authMock.setupUserAuth(testUser);
-    await authMock.setupRoleSelection('superAdmin');
+    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
   test('should navigate through dashboard cards', async ({ 
@@ -155,8 +152,7 @@ test.describe('Dashboard Navigation Journey', () => {
 test.describe('Admin Role Management Journey', () => {
   test.beforeEach(async ({ authMock }) => {
     const superAdminUser = createSuperAdminUser();
-    await authMock.setupUserAuth(superAdminUser);
-    await authMock.setupRoleSelection('superAdmin');
+    await authMock.setupAuthenticatedUser(superAdminUser, 'superAdmin');
   });
 
   test('should access admin role creation (Super Admin only)', async ({ 
@@ -191,8 +187,7 @@ test.describe('Admin Role Management Journey', () => {
   }) => {
     // Test with CEP Admin
     const cepAdminUser = createCepAdminUser();
-    await authMock.setupUserAuth(cepAdminUser);
-    await authMock.setupRoleSelection('cepAdmin');
+    await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
 
     // Try to access admin area directly
     await page.goto('/admin');
@@ -205,8 +200,7 @@ test.describe('Admin Role Management Journey', () => {
 test.describe('Error Recovery Scenarios', () => {
   test.beforeEach(async ({ authMock }) => {
     const testUser = createSuperAdminUser();
-    await authMock.setupUserAuth(testUser);
-    await authMock.setupRoleSelection('superAdmin');
+    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
   test('should handle network errors gracefully', async ({ 

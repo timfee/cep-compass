@@ -4,44 +4,29 @@ import { TestUser } from '../types/test-types';
 export class AuthMock {
   constructor(private page: Page) {}
 
-  /** Setup basic authentication mocks */
-  async setupBasicAuth(): Promise<void> {
-    // Mock Firebase auth state
+  /** Setup basic authentication mocks without user data */
+  async setupBasicMocks(): Promise<void> {
+    // Mock Google API
     await this.page.addInitScript(() => {
-      localStorage.setItem('test-auth', 'true');
-      
-      // Mock Google API
       (window as any).gapi = {
         load: () => {},
         auth2: {
           getAuthInstance: () => ({
-            isSignedIn: { get: () => true },
+            isSignedIn: { get: () => false },
             currentUser: {
-              get: () => ({
-                getBasicProfile: () => ({ 
-                  getEmail: () => 'test@example.com',
-                  getName: () => 'Test User',
-                }),
-                getAuthResponse: () => ({
-                  access_token: 'mock-access-token',
-                }),
-              }),
+              get: () => null,
             },
           }),
         },
       };
     });
 
-    // Mock API routes
+    // Mock API routes with basic responses
     await this.page.route('**/api/**', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          uid: 'test-user',
-          email: 'test@example.com',
-          displayName: 'Test User',
-        }),
+        body: JSON.stringify({}),
       });
     });
 
@@ -55,16 +40,43 @@ export class AuthMock {
     });
   }
 
-  /** Setup authentication for a specific user */
-  async setupUserAuth(user: TestUser): Promise<void> {
-    // First navigate to the page to ensure localStorage is available
-    await this.page.goto('/');
-    
-    await this.page.addInitScript((userData) => {
-      localStorage.setItem('test-auth', 'true');
-      localStorage.setItem('test-user', JSON.stringify(userData));
+  /** Setup authentication state for a specific user using localStorage */
+  async setupAuthenticatedUser(user: TestUser, selectedRole?: string): Promise<void> {
+    // First setup basic mocks
+    await this.setupBasicMocks();
 
-      // Mock Firebase auth state with specific user
+    // Navigate to ensure page context is available
+    await this.page.goto('/');
+
+    // Set up localStorage with auth state
+    await this.page.evaluate(({ userData, role }) => {
+      // Set role selection if provided
+      if (role) {
+        localStorage.setItem('cep_selected_role', role);
+      }
+      
+      // Mock auth token
+      sessionStorage.setItem('cep_oauth_token', 'mock-token');
+      
+      // Store user data for the app to access
+      localStorage.setItem('test-user-data', JSON.stringify(userData));
+    }, { userData: user, role: selectedRole });
+
+    // Mock Firebase user state
+    await this.page.addInitScript((userData) => {
+      // Mock Firebase auth
+      (window as any).mockFirebaseUser = {
+        uid: userData.uid,
+        email: userData.email,
+        displayName: userData.displayName,
+        getIdToken: () => Promise.resolve('mock-id-token'),
+        getIdTokenResult: () => Promise.resolve({ token: 'mock-id-token' }),
+      };
+
+      // Mock Firebase auth state
+      (window as any).authStateChanged = true;
+      
+      // Mock Google API with signed in user
       (window as any).gapi = {
         load: () => {},
         auth2: {
@@ -86,16 +98,7 @@ export class AuthMock {
       };
     }, user);
 
-    // Mock user-specific API responses
-    await this.page.route('**/api/**', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(user),
-      });
-    });
-
-    // Mock admin API responses for role checks
+    // Mock admin API responses based on user roles
     await this.page.route('**/admin.googleapis.com/**', (route) => {
       const url = route.request().url();
       
@@ -123,6 +126,20 @@ export class AuthMock {
             })),
           }),
         });
+      } else if (url.includes('/roles/')) {
+        // Mock individual role details
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            rolePrivileges: user.roles.flatMap(role => 
+              role.permissions.map(permission => ({
+                privilegeName: permission,
+                serviceId: '00haapch16h1ysv',
+              }))
+            ),
+          }),
+        });
       } else {
         route.fulfill({
           status: 200,
@@ -133,42 +150,39 @@ export class AuthMock {
     });
   }
 
-  /** Setup role selection for authenticated user */
-  async setupRoleSelection(selectedRole: string): Promise<void> {
-    // Ensure page is loaded first
-    await this.page.goto('/');
-    
-    await this.page.addInitScript((role) => {
-      localStorage.setItem('cep_selected_role', role);
-    }, selectedRole);
-  }
-
   /** Clear all authentication state */
   async clearAuth(): Promise<void> {
     await this.page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
+      delete (window as any).mockFirebaseUser;
+      delete (window as any).authStateChanged;
     });
   }
 
-  /** Mock OAuth popup flow */
-  async mockOAuthFlow(user: TestUser): Promise<void> {
-    await this.page.route('**/accounts.google.com/**', (route) => {
-      // Instead of actually opening OAuth popup, simulate successful auth
-      route.fulfill({
-        status: 200,
-        contentType: 'text/html',
-        body: `
-          <script>
-            window.opener.postMessage({
-              type: 'oauth-success',
-              user: ${JSON.stringify(user)},
-              accessToken: 'mock-access-token'
-            }, '*');
-            window.close();
-          </script>
-        `,
-      });
-    });
+  /** Mock a successful OAuth login flow */
+  async mockSuccessfulLogin(user: TestUser): Promise<void> {
+    await this.page.addInitScript((userData) => {
+      // Override the loginWithGoogle method to simulate successful login
+      if ((window as any).mockAuthService) {
+        (window as any).mockAuthService.loginWithGoogle = async () => {
+          // Simulate successful login
+          (window as any).mockFirebaseUser = {
+            uid: userData.uid,
+            email: userData.email,
+            displayName: userData.displayName,
+            getIdToken: () => Promise.resolve('mock-id-token'),
+            getIdTokenResult: () => Promise.resolve({ token: 'mock-id-token' }),
+          };
+          
+          sessionStorage.setItem('cep_oauth_token', 'mock-access-token');
+          
+          // Trigger auth state change
+          (window as any).authStateChanged = true;
+          
+          return Promise.resolve();
+        };
+      }
+    }, user);
   }
 }
