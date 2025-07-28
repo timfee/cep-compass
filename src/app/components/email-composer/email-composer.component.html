@@ -11,7 +11,28 @@
   </mat-card-header>
 
   <mat-card-content>
-    <form [formGroup]="emailForm" class="email-composer-form">
+    <!-- Error Display -->
+    @if (error()) {
+      <app-error-display
+        [message]="error()!"
+        title="Email Composer Error"
+        icon="email_off"
+        [retryDisabled]="isLoading()"
+        retryButtonText="Retry"
+        (retry)="retry()"
+      />
+    }
+
+    <!-- Loading Indicator -->
+    @if (isLoading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Processing...</p>
+      </div>
+    }
+
+    <form [formGroup]="emailForm" class="email-composer-form"
+          [class.disabled]="isLoading()">
       <!-- Template Selection -->
       <div class="template-selection-section">
         <mat-form-field appearance="outline" class="full-width">
@@ -240,8 +261,13 @@
       mat-button
       (click)="copyToClipboard()"
       matTooltip="Copy email content to clipboard"
+      [disabled]="isLoading()"
     >
-      <mat-icon>content_copy</mat-icon>
+      @if (isLoading()) {
+        <mat-spinner diameter="16"></mat-spinner>
+      } @else {
+        <mat-icon>content_copy</mat-icon>
+      }
       Copy to Clipboard
     </button>
 
@@ -250,6 +276,7 @@
       (click)="openInGmail()"
       matTooltip="Open in Gmail compose"
       color="accent"
+      [disabled]="isLoading()"
     >
       <mat-icon>open_in_new</mat-icon>
       Open in Gmail
@@ -259,9 +286,13 @@
       mat-raised-button
       (click)="composeEmail()"
       color="primary"
-      [disabled]="!selectedTemplate() || recipientChips().length === 0"
+      [disabled]="!selectedTemplate() || recipientChips().length === 0 || isLoading()"
     >
-      <mat-icon>send</mat-icon>
+      @if (isLoading()) {
+        <mat-spinner diameter="16"></mat-spinner>
+      } @else {
+        <mat-icon>send</mat-icon>
+      }
       Compose Email
     </button>
   </mat-card-actions>

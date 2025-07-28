@@ -19,6 +19,7 @@ import {
   DirectoryUser,
   DirectoryGroup,
 } from '../../services/directory.service';
+import { ErrorDisplayComponent } from '../../shared/components';
 
 /**
  * Component for displaying directory statistics and search functionality
@@ -37,6 +38,7 @@ import {
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    ErrorDisplayComponent,
   ],
 })
 export class DirectoryStatsComponent implements OnInit {

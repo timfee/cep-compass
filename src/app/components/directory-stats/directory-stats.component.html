@@ -1,17 +1,14 @@
 <div class="directory-stats-container">
   <!-- Error Display -->
   @if (error()) {
-    <mat-card class="error-card">
-      <mat-card-content>
-        <div class="error-content">
-          <mat-icon color="warn">error</mat-icon>
-          <span>{{ error() }}</span>
-          <button mat-button color="primary" (click)="onRefresh()">
-            Retry
-          </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <app-error-display
+      [message]="error()!"
+      title="Directory Loading Failed"
+      icon="people_off"
+      [retryDisabled]="isLoading()"
+      retryButtonText="Refresh Directory"
+      (retry)="onRefresh()"
+    />
   }
 
   <!-- Statistics Cards -->

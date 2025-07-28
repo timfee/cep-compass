@@ -28,6 +28,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { QuillModule } from 'ngx-quill';
 
 import {
@@ -38,6 +39,7 @@ import {
 } from '../../services/email-template.service';
 import { NotificationService } from '../../core/notification.service';
 import { EmailValidator } from '../../shared/validators/email.validator';
+import { ErrorDisplayComponent } from '../../shared/components';
 
 /**
  * Email composer component with ngx-quill rich text editor integration
@@ -63,7 +65,9 @@ import { EmailValidator } from '../../shared/validators/email.validator';
     MatSnackBarModule,
     MatTooltipModule,
     MatSlideToggleModule,
+    MatProgressSpinnerModule,
     QuillModule,
+    ErrorDisplayComponent,
   ],
 })
 export class EmailComposerComponent implements OnInit {
@@ -82,6 +86,8 @@ export class EmailComposerComponent implements OnInit {
 
   // Component state signals
   private readonly _isPreviewMode = signal(false);
+  private readonly _isLoading = signal(false);
+  private readonly _error = signal<string | null>(null);
   public editorContent = signal('');
 
   // Form and editor state
@@ -96,6 +102,8 @@ export class EmailComposerComponent implements OnInit {
   public readonly previewHtml = this.emailService.previewHtml;
   public readonly previewSubject = this.emailService.previewSubject;
   public readonly isPreviewMode = this._isPreviewMode.asReadonly();
+  public readonly isLoading = this._isLoading.asReadonly();
+  public readonly error = this._error.asReadonly();
 
   // Editor configuration for Quill rich text editing
   public readonly editorConfig = {
@@ -142,32 +150,46 @@ export class EmailComposerComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Watch for template changes and update form
     const templateInput = this.template();
     if (templateInput) {
-      this.loadTemplate(templateInput.id);
+      await this.loadTemplate(templateInput.id);
     }
   }
 
   /**
    * Loads a template by ID
    */
-  loadTemplate(templateId: string): void {
-    this.emailService.selectTemplate(templateId);
-    const template = this.selectedTemplate();
+  async loadTemplate(templateId: string): Promise<void> {
+    try {
+      this._isLoading.set(true);
+      this._error.set(null);
+      
+      this.emailService.selectTemplate(templateId);
+      const template = this.selectedTemplate();
 
-    if (template) {
-      this.emailForm.patchValue(
-        {
-          templateId: template.id,
-          subject: template.subject,
-        },
-        { emitEvent: false },
-      );
+      if (template) {
+        this.emailForm.patchValue(
+          {
+            templateId: template.id,
+            subject: template.subject,
+          },
+          { emitEvent: false },
+        );
 
-      // Update editor content
-      this.editorContent.set(template.body);
+        // Update editor content
+        this.editorContent.set(template.body);
+      } else {
+        throw new Error('Template not found');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load template';
+      this._error.set(errorMessage);
+      this.notificationService.error(errorMessage);
+      console.error('Template loading error:', error);
+    } finally {
+      this._isLoading.set(false);
     }
   }
 
@@ -287,11 +309,19 @@ export class EmailComposerComponent implements OnInit {
    */
   async copyToClipboard(): Promise<void> {
     try {
+      this._isLoading.set(true);
+      this._error.set(null);
+      
       const preview = this.getPreview();
       await this.emailService.copyToClipboard(preview);
       this.notificationService.success('Email content copied to clipboard');
-    } catch {
-      this.notificationService.error('Failed to copy to clipboard');
+    } catch (error) {
+      const errorMessage = 'Failed to copy to clipboard';
+      this._error.set(errorMessage);
+      this.notificationService.error(errorMessage);
+      console.error('Clipboard error:', error);
+    } finally {
+      this._isLoading.set(false);
     }
   }
 
@@ -299,42 +329,54 @@ export class EmailComposerComponent implements OnInit {
    * Opens email in Gmail compose
    */
   openInGmail(): void {
-    const recipients = this.recipientChips();
-    const subject = this.previewSubject();
-    const body = this.getPreview();
+    try {
+      this._error.set(null);
+      
+      const recipients = this.recipientChips();
+      const subject = this.previewSubject();
+      const body = this.getPreview();
 
-    if (recipients.length === 0) {
-      this.notificationService.warning('Please add at least one recipient');
-      return;
+      if (recipients.length === 0) {
+        this.notificationService.warning('Please add at least one recipient');
+        return;
+      }
+
+      const gmailUrl = this.emailService.getGmailComposeUrl(
+        recipients,
+        subject,
+        body,
+      );
+      window.open(gmailUrl, '_blank');
+    } catch (error) {
+      const errorMessage = 'Failed to open Gmail composer';
+      this._error.set(errorMessage);
+      this.notificationService.error(errorMessage);
+      console.error('Gmail compose error:', error);
     }
-
-    const gmailUrl = this.emailService.getGmailComposeUrl(
-      recipients,
-      subject,
-      body,
-    );
-    window.open(gmailUrl, '_blank');
   }
 
   /**
    * Composes and emits the final email
    */
-  composeEmail(): void {
-    const validation = this.emailService.validateRequiredVariables();
-    if (!validation.isValid) {
-      this.notificationService.warning(
-        `Please fill in required variables: ${validation.missingVariables.join(', ')}`,
-      );
-      return;
-    }
-
-    const recipients = this.recipientChips();
-    if (recipients.length === 0) {
-      this.notificationService.warning('Please add at least one recipient');
-      return;
-    }
-
+  async composeEmail(): Promise<void> {
     try {
+      this._isLoading.set(true);
+      this._error.set(null);
+      
+      const validation = this.emailService.validateRequiredVariables();
+      if (!validation.isValid) {
+        this.notificationService.warning(
+          `Please fill in required variables: ${validation.missingVariables.join(', ')}`,
+        );
+        return;
+      }
+
+      const recipients = this.recipientChips();
+      if (recipients.length === 0) {
+        this.notificationService.warning('Please add at least one recipient');
+        return;
+      }
+
       const composedEmail = this.emailService.composeEmail(
         recipients,
         this.ccChips().length > 0 ? this.ccChips() : undefined,
@@ -343,11 +385,16 @@ export class EmailComposerComponent implements OnInit {
       if (composedEmail) {
         this.emailComposed.emit(composedEmail);
         this.notificationService.success('Email composed successfully');
+      } else {
+        throw new Error('Failed to compose email');
       }
-    } catch (err) {
-      this.notificationService.error(
-        err instanceof Error ? err.message : 'Failed to compose email',
-      );
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to compose email';
+      this._error.set(errorMessage);
+      this.notificationService.error(errorMessage);
+      console.error('Email composition error:', error);
+    } finally {
+      this._isLoading.set(false);
     }
   }
 
@@ -386,6 +433,17 @@ export class EmailComposerComponent implements OnInit {
       result = result.replace(regex, value || `{{${key}}}`);
     });
     return result;
+  }
+
+  /**
+   * Retries the last failed operation
+   */
+  async retry(): Promise<void> {
+    this._error.set(null);
+    const templateInput = this.template();
+    if (templateInput) {
+      await this.loadTemplate(templateInput.id);
+    }
   }
 
   /**
