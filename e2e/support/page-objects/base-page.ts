@@ -40,7 +40,9 @@ export abstract class BasePage {
 
   /** Wait for an element to be visible */
   async waitForSelector(selector: string, timeout = 5000): Promise<Locator> {
-    return await this.page.locator(selector).waitFor({ state: 'visible', timeout });
+    const locator = this.page.locator(selector);
+    await locator.waitFor({ state: 'visible', timeout });
+    return locator;
   }
 
   /** Click an element with retry logic */

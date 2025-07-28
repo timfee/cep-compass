@@ -21,13 +21,37 @@ export class AuthMock {
       };
     });
 
-    // Mock API routes with basic responses
+    // Mock API routes with specific endpoint handling
     await this.page.route('**/api/**', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({}),
-      });
+      const url = route.request().url();
+      
+      // Handle specific API endpoints
+      if (url.includes('/api/user')) {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ id: 1, name: 'Test User' }),
+        });
+      } else if (url.includes('/api/settings')) {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ theme: 'dark', notifications: true }),
+        });
+      } else if (url.includes('/api/templates')) {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ templates: [] }),
+        });
+      } else {
+        // Default response for unhandled API endpoints
+        route.fulfill({
+          status: 404,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Not Found' }),
+        });
+      }
     });
 
     // Mock Google API routes

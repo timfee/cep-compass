@@ -48,12 +48,13 @@ export class EmailTemplatesPage extends BasePage {
 
   async getRecipientChips(): Promise<string[]> {
     const chips = await this.recipientChips.all();
-    const chipTexts: string[] = [];
-    for (const chip of chips) {
-      const text = await chip.textContent();
-      if (text) chipTexts.push(text.trim());
-    }
-    return chipTexts;
+    const chipTexts = await Promise.all(
+      chips.map(async (chip) => {
+        const text = await chip.textContent();
+        return text ? text.trim() : null;
+      })
+    );
+    return chipTexts.filter((text): text is string => text !== null);
   }
 
   /** Check if we're on the email templates page */

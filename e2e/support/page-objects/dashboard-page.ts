@@ -44,12 +44,13 @@ export class DashboardPage extends BasePage {
 
   async getVisibleCards(): Promise<string[]> {
     const cards = await this.dashboardCards.all();
-    const cardTexts: string[] = [];
-    for (const card of cards) {
-      const text = await card.textContent();
-      if (text) cardTexts.push(text.trim());
-    }
-    return cardTexts;
+    const cardTexts = await Promise.all(
+      cards.map(async (card) => {
+        const text = await card.textContent();
+        return text ? text.trim() : null;
+      })
+    );
+    return cardTexts.filter((text): text is string => text !== null);
   }
 
   async openSideNav(): Promise<void> {
