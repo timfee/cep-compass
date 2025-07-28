@@ -40,17 +40,7 @@ import {
 import { NotificationService } from '../../core/notification.service';
 import { ErrorDisplayComponent } from '../../shared/components';
 import { copyToClipboard } from '../../shared/clipboard.utils';
-
-/** Email validation utilities */
-class EmailValidator {
-  private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  static isValid(email: unknown): boolean {
-    if (typeof email !== 'string') return false;
-    if (!email) return false;
-    return this.EMAIL_REGEX.test(email.trim());
-  }
-}
+import { EmailValidator } from '../../shared/email-validator.utils';
 
 /**
  * Email composer component with ngx-quill rich text editor integration

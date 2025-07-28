@@ -286,12 +286,9 @@ describe('AuthService', () => {
       service['accessToken'] = mockToken;
 
       // Mock retryWithBackoff to avoid real retries and timeouts
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
-        try {
-          return await fn();
-        } catch (error) {
-          throw error; // Fail immediately without retries
-        }
+        return await fn();
       });
 
       const mockErrorResponse = createMockResponse({
@@ -323,12 +320,9 @@ describe('AuthService', () => {
       service['accessToken'] = mockToken;
 
       // Mock retryWithBackoff to avoid real retries and timeouts
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
-        try {
-          return await fn();
-        } catch (error) {
-          throw error; // Fail immediately without retries
-        }
+        return await fn();
       });
 
       await service['updateAvailableRoles']();
