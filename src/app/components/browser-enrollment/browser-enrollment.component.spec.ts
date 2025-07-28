@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { BrowserEnrollmentComponent } from './browser-enrollment.component';
@@ -16,7 +15,6 @@ describe('BrowserEnrollmentComponent', () => {
   let mockOrgUnitService: jasmine.SpyObj<OrgUnitsService>;
   let mockEmailService: jasmine.SpyObj<EmailTemplateService>;
   let mockNotificationService: jasmine.SpyObj<NotificationService>;
-  let mockClipboard: jasmine.SpyObj<Clipboard>;
 
   beforeEach(async () => {
     // Create spies for services
@@ -54,7 +52,6 @@ describe('BrowserEnrollmentComponent', () => {
     );
 
     mockNotificationService = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
-    mockClipboard = jasmine.createSpyObj('Clipboard', ['copy']);
 
     await TestBed.configureTestingModule({
       imports: [BrowserEnrollmentComponent, NoopAnimationsModule],
@@ -63,7 +60,6 @@ describe('BrowserEnrollmentComponent', () => {
         { provide: OrgUnitsService, useValue: mockOrgUnitService },
         { provide: EmailTemplateService, useValue: mockEmailService },
         { provide: NotificationService, useValue: mockNotificationService },
-        { provide: Clipboard, useValue: mockClipboard },
       ],
     }).compileComponents();
 
@@ -156,11 +152,16 @@ describe('BrowserEnrollmentComponent', () => {
       createdToken: mockToken,
     }));
 
-    mockClipboard.copy.and.returnValue(true);
+    // Mock the navigator clipboard API
+    const writeTextSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: writeTextSpy },
+      configurable: true
+    });
 
     await component.copyToken();
 
-    expect(mockClipboard.copy).toHaveBeenCalledWith('test-token-value');
+    expect(writeTextSpy).toHaveBeenCalledWith('test-token-value');
     expect(mockNotificationService.success).toHaveBeenCalledWith(
       'Token copied to clipboard!',
     );

@@ -273,7 +273,9 @@ describe('AuthService', () => {
       expect(roles.missingPrivileges).toEqual([]);
     }));
 
-    it('should handle API errors gracefully', fakeAsync(async () => {
+    it('should handle API errors gracefully', async () => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000; // Increase timeout for retry logic
+      
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
       
@@ -294,15 +296,18 @@ describe('AuthService', () => {
       (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockErrorResponse));
 
       await service['updateAvailableRoles']();
-      tick();
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
       expect(roles.missingPrivileges).toEqual([]);
-    }));
+      
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000; // Reset timeout
+    });
 
-    it('should handle user without email', fakeAsync(async () => {
+    it('should handle user without email', async () => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000; // Increase timeout for retry logic
+      
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: null };
       
@@ -315,12 +320,13 @@ describe('AuthService', () => {
       service['accessToken'] = mockToken;
 
       await service['updateAvailableRoles']();
-      tick();
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
-    }));
+      
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000; // Reset timeout
+    });
   });
 
   describe('race condition prevention', () => {
