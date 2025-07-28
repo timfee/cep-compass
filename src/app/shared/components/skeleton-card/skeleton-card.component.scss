@@ -1,0 +1,91 @@
+@use "@angular/material" as mat;
+
+// Use the theme variable from global styles
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+      tertiary: mat.$violet-palette,
+    )
+  )
+);
+
+.skeleton-card {
+  background-color: mat.get-theme-color($theme, surface);
+  border-radius: 12px; // Material 3 container radius
+  padding: 16px; // 8px grid: 2 units
+  @include mat.elevation(1);
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px; // 8px grid: 2 units
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    mat.get-theme-color($theme, surface-container-high) 25%,
+    mat.get-theme-color($theme, surface-container-highest) 50%,
+    mat.get-theme-color($theme, surface-container-high) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  flex-shrink: 0;
+}
+
+.skeleton-header-content {
+  flex: 1;
+  margin-left: 16px; // 8px grid: 2 units
+}
+
+.skeleton-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; // 8px grid: 1 unit
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    mat.get-theme-color($theme, surface-container-high) 25%,
+    mat.get-theme-color($theme, surface-container-highest) 50%,
+    mat.get-theme-color($theme, surface-container-high) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-line-title {
+  width: 60%;
+  height: 16px;
+}
+
+.skeleton-line-subtitle {
+  width: 40%;
+  height: 12px;
+}
+
+.skeleton-line-full {
+  width: 100%;
+}
+
+.skeleton-line-partial {
+  width: 75%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
