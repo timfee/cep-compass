@@ -36,6 +36,14 @@ export class AuthService {
   private accessToken: string | null = null;
   private isChangingRole = false;
 
+  private readonly REQUIRED_OAUTH_SCOPES = [
+    'https://www.googleapis.com/auth/admin.directory.user.readonly',
+    'https://www.googleapis.com/auth/admin.directory.group.readonly',
+    'https://www.googleapis.com/auth/admin.directory.rolemanagement',
+    'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
+    'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
+  ];
+
   public readonly user = toSignal(authState(this.auth), { initialValue: null });
 
   // This signal holds the roles the user is *allowed* to assume.
@@ -92,21 +100,7 @@ export class AuthService {
    */
   async loginWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.user.readonly',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.group.readonly',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.rolemanagement',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
-    );
+    this.REQUIRED_OAUTH_SCOPES.forEach(scope => provider.addScope(scope));
 
     // Add custom parameters to ensure we get a refresh token
     provider.setCustomParameters({
@@ -208,21 +202,7 @@ export class AuthService {
 
       // Re-authenticate with Google to get a fresh OAuth access token
       const provider = new GoogleAuthProvider();
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.user.readonly',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.group.readonly',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.rolemanagement',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
-      );
+      this.REQUIRED_OAUTH_SCOPES.forEach(scope => provider.addScope(scope));
 
       // First attempt: try silent refresh with prompt: 'none'
       // This may fail due to popup blockers but worth trying
@@ -254,6 +234,7 @@ export class AuthService {
           access_type: 'offline',
           prompt: 'consent', // Force user interaction
         });
+        this.REQUIRED_OAUTH_SCOPES.forEach(scope => provider.addScope(scope));
 
         const result = await signInWithPopup(this.auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
