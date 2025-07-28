@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService, SelectedRole } from '../../services/auth.service';
 import { NotificationService } from '../../core/notification.service';
+import { LoadingSpinnerComponent } from '../../shared/components';
 
 @Component({
   selector: 'app-select-role',
@@ -23,6 +24,7 @@ import { NotificationService } from '../../core/notification.service';
     MatButtonModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    LoadingSpinnerComponent,
   ],
 })
 export class SelectRoleComponent implements OnInit {

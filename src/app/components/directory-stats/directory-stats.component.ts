@@ -20,6 +20,7 @@ import {
   DirectoryGroup,
 } from '../../services/directory.service';
 import { ErrorDisplayComponent } from '../../shared/components';
+import { SkeletonCardComponent } from '../../shared/components';
 
 /**
  * Component for displaying directory statistics and search functionality
@@ -39,6 +40,7 @@ import { ErrorDisplayComponent } from '../../shared/components';
     MatInputModule,
     FormsModule,
     ErrorDisplayComponent,
+    SkeletonCardComponent,
   ],
 })
 export class DirectoryStatsComponent implements OnInit {
@@ -75,6 +77,10 @@ export class DirectoryStatsComponent implements OnInit {
   public readonly hasResults = computed(() => {
     const results = this.searchResults();
     return results.users.length > 0 || results.groups.length > 0;
+  });
+
+  public readonly isInitialLoad = computed(() => {
+    return this.isLoading() && this.stats().totalUsers === 0;
   });
 
   async ngOnInit(): Promise<void> {
