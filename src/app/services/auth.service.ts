@@ -24,6 +24,7 @@ export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
 const REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED';
+const ENCRYPTION_KEY_STORAGE = 'cep_encrypt_key';
 
 /**
  * Service for handling authentication and user role management
@@ -64,6 +65,7 @@ export class AuthService {
         this.accessToken = null;
         this.isChangingRole = false;
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(ENCRYPTION_KEY_STORAGE);
         this.availableRoles.set({
           isSuperAdmin: false,
           isCepAdmin: false,
@@ -119,8 +121,8 @@ export class AuthService {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       if (credential && credential.accessToken) {
         this.accessToken = credential.accessToken;
-        // Encode and store token using Base64
-        const encrypted = btoa(credential.accessToken);
+        // Encrypt and store token using AES-GCM
+        const encrypted = await this.encryptToken(credential.accessToken);
         sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
       }
     } catch (error) {
@@ -140,6 +142,7 @@ export class AuthService {
   async logout(): Promise<void> {
     this.accessToken = null;
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(ENCRYPTION_KEY_STORAGE);
     await signOut(this.auth);
   }
 
@@ -187,13 +190,21 @@ export class AuthService {
     const stored = sessionStorage.getItem(TOKEN_STORAGE_KEY);
     if (stored) {
       try {
-        this.accessToken = atob(stored);
+        // First try to decrypt as encrypted token
+        this.accessToken = await this.decryptToken(stored);
         return this.accessToken;
       } catch (error) {
-        console.warn(
-          'Failed to decode stored token, removing from storage:',
-          error,
-        );
+        console.warn('Failed to decrypt stored token, attempting migration:', error);
+        
+        // Try to migrate from Base64 format
+        const migrated = await this.migrateBase64Token(stored);
+        if (migrated) {
+          this.accessToken = migrated;
+          return this.accessToken;
+        }
+        
+        // If both fail, remove invalid token
+        console.warn('Failed to decrypt or migrate token, removing from storage');
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
       }
     }
@@ -245,8 +256,8 @@ export class AuthService {
 
         if (credential?.accessToken) {
           this.accessToken = credential.accessToken;
-          // Encode and store token using Base64
-          const encrypted = btoa(credential.accessToken);
+          // Encrypt and store token using AES-GCM
+          const encrypted = await this.encryptToken(credential.accessToken);
           sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
           return credential.accessToken;
         }
@@ -268,8 +279,8 @@ export class AuthService {
 
         if (credential?.accessToken) {
           this.accessToken = credential.accessToken;
-          // Encode and store token using Base64
-          const encrypted = btoa(credential.accessToken);
+          // Encrypt and store token using AES-GCM
+          const encrypted = await this.encryptToken(credential.accessToken);
           sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
           return credential.accessToken;
         }
@@ -280,6 +291,114 @@ export class AuthService {
       console.warn('Token refresh failed:', error);
       return null;
     }
+  }
+
+  /**
+   * Generates or retrieves the encryption key for token storage
+   */
+  private async getOrCreateEncryptionKey(): Promise<CryptoKey> {
+    const stored = sessionStorage.getItem(ENCRYPTION_KEY_STORAGE);
+    
+    if (stored) {
+      try {
+        const keyData = new Uint8Array(atob(stored).split('').map(c => c.charCodeAt(0)));
+        return await crypto.subtle.importKey(
+          'raw',
+          keyData,
+          { name: 'AES-GCM' },
+          false,
+          ['encrypt', 'decrypt']
+        );
+      } catch (error) {
+        console.warn('Failed to import stored encryption key, generating new one:', error);
+      }
+    }
+
+    // Generate new key
+    const key = await crypto.subtle.generateKey(
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt', 'decrypt']
+    );
+
+    // Export and store the key
+    const exported = await crypto.subtle.exportKey('raw', key);
+    const keyString = btoa(String.fromCharCode(...new Uint8Array(exported)));
+    sessionStorage.setItem(ENCRYPTION_KEY_STORAGE, keyString);
+
+    return key;
+  }
+
+  /**
+   * Encrypts a token using AES-GCM encryption
+   */
+  private async encryptToken(token: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(token);
+    
+    const key = await this.getOrCreateEncryptionKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      data
+    );
+    
+    // Combine IV and encrypted data
+    const combined = new Uint8Array(iv.length + encrypted.byteLength);
+    combined.set(iv);
+    combined.set(new Uint8Array(encrypted), iv.length);
+    
+    return btoa(String.fromCharCode(...combined));
+  }
+
+  /**
+   * Decrypts a token that was encrypted with encryptToken
+   */
+  private async decryptToken(encryptedToken: string): Promise<string> {
+    try {
+      const combined = new Uint8Array(atob(encryptedToken).split('').map(c => c.charCodeAt(0)));
+      
+      // Extract IV and encrypted data
+      const iv = combined.slice(0, 12);
+      const encrypted = combined.slice(12);
+      
+      const key = await this.getOrCreateEncryptionKey();
+      
+      const decrypted = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        encrypted
+      );
+      
+      const decoder = new TextDecoder();
+      return decoder.decode(decrypted);
+    } catch (error) {
+      console.warn('Failed to decrypt token:', error);
+      throw new Error('Invalid or corrupted token');
+    }
+  }
+
+  /**
+   * Attempts to migrate a Base64-encoded token to encrypted format
+   */
+  private async migrateBase64Token(stored: string): Promise<string | null> {
+    try {
+      // Try to decode as Base64 first
+      const decoded = atob(stored);
+      
+      // Simple heuristic: OAuth tokens are typically long and contain specific patterns
+      if (decoded.length > 50 && (decoded.startsWith('ya29.') || decoded.includes('.'))) {
+        console.log('Migrating Base64-encoded token to encrypted format');
+        const encrypted = await this.encryptToken(decoded);
+        sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+        return decoded;
+      }
+    } catch {
+      // Not a valid Base64 string, might already be encrypted
+    }
+    return null;
   }
 
   private async updateAvailableRoles(): Promise<void> {
