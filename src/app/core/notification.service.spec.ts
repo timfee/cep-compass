@@ -258,53 +258,92 @@ describe('NotificationService', () => {
       expect(mockSnackBar.open).toHaveBeenCalledWith('   ', 'Close', jasmine.any(Object));
     });
 
-    it('should handle string representations of null-like values', () => {
+    it('should handle string representation of null', () => {
       service.info('null');
       expect(mockSnackBar.open).toHaveBeenCalledWith('null', 'Close', jasmine.any(Object));
-      
+    });
+
+    it('should handle string representation of undefined', () => {
       service.warning('undefined');
       expect(mockSnackBar.open).toHaveBeenCalledWith('undefined', 'Close', jasmine.any(Object));
     });
 
-    it('should handle numeric string representations', () => {
+    it('should handle numeric string "123"', () => {
       service.success('123');
-      service.error('0');
-      service.info('-1');
-      
       expect(mockSnackBar.open).toHaveBeenCalledWith('123', 'Close', jasmine.any(Object));
+    });
+
+    it('should handle numeric string "0"', () => {
+      service.error('0');
       expect(mockSnackBar.open).toHaveBeenCalledWith('0', 'Close', jasmine.any(Object));
+    });
+
+    it('should handle numeric string "-1"', () => {
+      service.info('-1');
       expect(mockSnackBar.open).toHaveBeenCalledWith('-1', 'Close', jasmine.any(Object));
     });
 
-    it('should handle boolean string representations', () => {
+    it('should handle boolean string "true"', () => {
       service.warning('true');
-      service.success('false');
-      
       expect(mockSnackBar.open).toHaveBeenCalledWith('true', 'Close', jasmine.any(Object));
+    });
+
+    it('should handle boolean string "false"', () => {
+      service.success('false');
       expect(mockSnackBar.open).toHaveBeenCalledWith('false', 'Close', jasmine.any(Object));
     });
 
-    it('should handle real-world edge cases with valid string inputs', () => {
-      // Test with various string edge cases that could realistically occur
-      const edgeCases = [
-        '', // empty string
-        '   ', // whitespace only
-        'null', // string representation of null
-        'undefined', // string representation of undefined
-        '0', // string zero
-        'false', // string boolean
-        'NaN', // string NaN
-        'Error: Something went wrong', // typical error message
-        'Operation completed successfully!', // typical success message
-        JSON.stringify({ error: 'test' }) // JSON string
-      ];
-
-      edgeCases.forEach(testCase => {
-        service.success(testCase);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(testCase, 'Close', jasmine.any(Object));
+    describe('real-world edge cases', () => {
+      it('should handle empty string', () => {
+        service.success('');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('', 'Close', jasmine.any(Object));
       });
 
-      expect(mockSnackBar.open).toHaveBeenCalledTimes(edgeCases.length);
+      it('should handle whitespace only string', () => {
+        service.success('   ');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('   ', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle string representation of null value', () => {
+        service.success('null');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('null', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle string representation of undefined value', () => {
+        service.success('undefined');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('undefined', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle string zero', () => {
+        service.success('0');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('0', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle string boolean false', () => {
+        service.success('false');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('false', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle string NaN', () => {
+        service.success('NaN');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('NaN', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle typical error message format', () => {
+        service.success('Error: Something went wrong');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('Error: Something went wrong', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle typical success message format', () => {
+        service.success('Operation completed successfully!');
+        expect(mockSnackBar.open).toHaveBeenCalledWith('Operation completed successfully!', 'Close', jasmine.any(Object));
+      });
+
+      it('should handle JSON string input', () => {
+        const jsonString = JSON.stringify({ error: 'test' });
+        service.success(jsonString);
+        expect(mockSnackBar.open).toHaveBeenCalledWith(jsonString, 'Close', jasmine.any(Object));
+      });
     });
   });
 
