@@ -46,6 +46,7 @@ Thumbs.db
 
 # Firebase
 .firebase
+playwright-*
 *-debug.log
 .runtimeconfig.json
 
