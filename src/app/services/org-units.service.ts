@@ -197,8 +197,16 @@ export class OrgUnitsService extends BaseApiService {
     parentOrgUnitId?: string;
   }): OrgUnit {
     // Handle missing required fields gracefully with defaults
-    if (!apiUnit.orgUnitPath || !apiUnit.orgUnitId || !apiUnit.name) {
-      console.warn('Missing required fields in API response:', apiUnit);
+    const missingFields = [];
+    if (!apiUnit.orgUnitPath) missingFields.push('orgUnitPath');
+    if (!apiUnit.orgUnitId) missingFields.push('orgUnitId');
+    if (!apiUnit.name) missingFields.push('name');
+
+    if (missingFields.length > 0) {
+      console.warn(
+        `Missing required fields in API response: ${missingFields.join(', ')}`,
+        apiUnit
+      );
     }
 
     return {
