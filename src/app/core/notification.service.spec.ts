@@ -293,37 +293,7 @@ describe('NotificationService', () => {
       expect(mockSnackBar.open).toHaveBeenCalledWith('false', 'Close', jasmine.any(Object));
     });
 
-    describe('real-world edge cases', () => {
-      it('should handle empty string', () => {
-        service.success('');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('', 'Close', jasmine.any(Object));
-      });
-
-      it('should handle whitespace only string', () => {
-        service.success('   ');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('   ', 'Close', jasmine.any(Object));
-      });
-
-      it('should handle string representation of null value', () => {
-        service.success('null');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('null', 'Close', jasmine.any(Object));
-      });
-
-      it('should handle string representation of undefined value', () => {
-        service.success('undefined');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('undefined', 'Close', jasmine.any(Object));
-      });
-
-      it('should handle string zero', () => {
-        service.success('0');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('0', 'Close', jasmine.any(Object));
-      });
-
-      it('should handle string boolean false', () => {
-        service.success('false');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('false', 'Close', jasmine.any(Object));
-      });
-
+    describe('additional edge cases', () => {
       it('should handle string NaN', () => {
         service.success('NaN');
         expect(mockSnackBar.open).toHaveBeenCalledWith('NaN', 'Close', jasmine.any(Object));
