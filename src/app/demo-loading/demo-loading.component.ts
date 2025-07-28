@@ -115,7 +115,7 @@ import { SkeletonCardComponent, SkeletonListComponent, LoadingSpinnerComponent }
       }
 
       .demo-section p {
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--mat-sys-color-on-surface-variant);
         margin-bottom: 16px;
       }
 

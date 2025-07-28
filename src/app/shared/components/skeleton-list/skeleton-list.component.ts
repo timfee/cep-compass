@@ -23,8 +23,8 @@ import { CommonModule } from '@angular/common';
       .skeleton-list-item {
         display: flex;
         align-items: center;
-        padding: 12px 16px;
-        border-bottom: 1px solid #e0e0e0;
+        padding: 16px;
+        border-bottom: 1px solid var(--mat-sys-color-outline-variant);
       }
 
       .skeleton-list-item:last-child {
@@ -35,7 +35,7 @@ import { CommonModule } from '@angular/common';
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         flex-shrink: 0;
@@ -43,12 +43,12 @@ import { CommonModule } from '@angular/common';
 
       .skeleton-content {
         flex: 1;
-        margin-left: 12px;
+        margin-left: 16px;
       }
 
       .skeleton-line {
         height: 16px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         border-radius: 4px;
@@ -73,7 +73,7 @@ import { CommonModule } from '@angular/common';
         width: 24px;
         height: 24px;
         border-radius: 4px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         flex-shrink: 0;

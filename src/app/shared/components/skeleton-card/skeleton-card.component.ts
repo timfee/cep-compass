@@ -45,7 +45,7 @@ import { MatCardModule } from '@angular/material/card';
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
       }
@@ -59,7 +59,7 @@ import { MatCardModule } from '@angular/material/card';
         height: 20px;
         width: 60%;
         margin-bottom: 8px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         border-radius: 4px;
@@ -68,7 +68,7 @@ import { MatCardModule } from '@angular/material/card';
       .skeleton-subtitle {
         height: 16px;
         width: 40%;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         border-radius: 4px;
@@ -81,7 +81,7 @@ import { MatCardModule } from '@angular/material/card';
       .skeleton-line {
         height: 16px;
         margin-bottom: 8px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         border-radius: 4px;
@@ -106,7 +106,7 @@ import { MatCardModule } from '@angular/material/card';
       .skeleton-button {
         height: 36px;
         width: 120px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, var(--mat-sys-color-surface-variant) 25%, var(--mat-sys-color-outline-variant) 50%, var(--mat-sys-color-surface-variant) 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
         border-radius: 4px;
