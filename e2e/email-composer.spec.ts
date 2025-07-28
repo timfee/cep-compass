@@ -1,94 +1,59 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/fixtures';
+import { createSuperAdminUser } from './support/fixtures/test-users';
 
 test.describe('Email Composer', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock authentication
-    await page.addInitScript(() => {
-      localStorage.setItem('test-auth', 'true');
-      // Mock Firebase auth state
-      window.gapi = {
-        load: () => {},
-        auth2: {
-          getAuthInstance: () => ({
-            isSignedIn: { get: () => true },
-            currentUser: {
-              get: () => ({
-                getBasicProfile: () => ({ getEmail: () => 'test@example.com' }),
-              }),
-            },
-          }),
-        },
-      };
-    });
-
-    // Mock API responses
-    await page.route('**/api/**', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({}),
-      });
-    });
-
-    // Mock Google API routes
-    await page.route('**/googleapis.com/**', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({}),
-      });
-    });
+  test.beforeEach(async ({ authMock }) => {
+    const testUser = createSuperAdminUser();
+    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
-  test('should load email composer', async ({ page }) => {
-    await page.goto('/email-templates');
+  test('should load email composer', async ({ emailTemplatesPage }) => {
+    await emailTemplatesPage.goto();
+    await emailTemplatesPage.waitForLoad();
 
-    await expect(page.locator('.templates-card mat-card-title')).toContainText(
-      'Email Templates',
-    );
-    await expect(page.locator('app-email-composer')).toBeVisible();
+    await expect(emailTemplatesPage.pageTitle).toContainText('Email Templates');
+    await expect(emailTemplatesPage.emailComposer).toBeVisible();
   });
 
-  test('should allow template selection', async ({ page }) => {
-    await page.goto('/email-templates');
+  test('should allow template selection', async ({ page, emailTemplatesPage }) => {
+    await emailTemplatesPage.goto();
+    await emailTemplatesPage.waitForLoad();
 
-    // Wait for component to load with longer timeout
-    await page.waitForSelector('mat-select[formControlName="templateId"]', {
-      timeout: 10000,
-    });
+    // Wait for template select to be available
+    await emailTemplatesPage.templateSelect.waitFor({ state: 'visible' });
 
     // Open template dropdown
-    await page.click('mat-select[formControlName="templateId"]');
+    await emailTemplatesPage.templateSelect.click();
 
     // Check if template options are available
     const options = page.locator('mat-option');
     await expect(options.first()).toBeVisible();
   });
 
-  test('should allow recipient input', async ({ page }) => {
-    await page.goto('/email-templates');
+  test('should allow recipient input', async ({ emailTemplatesPage }) => {
+    await emailTemplatesPage.goto();
+    await emailTemplatesPage.waitForLoad();
 
     // Find recipient input field
-    const recipientInput = page.locator('input[placeholder*="recipient"]');
-    if (await recipientInput.isVisible()) {
-      await recipientInput.fill('test@example.com');
-      await recipientInput.press('Enter');
+    if (await emailTemplatesPage.recipientInput.isVisible()) {
+      await emailTemplatesPage.addRecipient('test@example.com');
 
       // Check if recipient chip was added
-      await expect(page.locator('mat-chip')).toContainText('test@example.com');
+      const recipients = await emailTemplatesPage.getRecipientChips();
+      expect(recipients).toContain('test@example.com');
     }
   });
 
-  test('should show preview mode', async ({ page }) => {
-    await page.goto('/email-templates');
+  test('should show preview mode', async ({ emailTemplatesPage }) => {
+    await emailTemplatesPage.goto();
+    await emailTemplatesPage.waitForLoad();
 
-    // Find and click preview button
-    const previewButton = page.locator('button:has-text("Preview")');
-    if (await previewButton.isVisible()) {
-      await previewButton.click();
+    // Find and click preview button if available
+    if (await emailTemplatesPage.previewButton.isVisible()) {
+      await emailTemplatesPage.clickPreview();
 
       // Check if preview content is shown
-      await expect(page.locator('.preview-content')).toBeVisible();
+      await expect(emailTemplatesPage.previewContent).toBeVisible();
     }
   });
 });
