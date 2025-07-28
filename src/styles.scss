@@ -12,8 +12,8 @@ $theme: mat.define-theme(
       tertiary: mat.$violet-palette,
     ),
     typography: (
-      brand-family: "Google Sans Text",
-      plain-family: "Google Sans Text",
+      brand-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      plain-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       bold-weight: 700,
       medium-weight: 500,
       regular-weight: 400,
@@ -35,6 +35,11 @@ $theme: mat.define-theme(
   box-sizing: border-box;
 }
 
+// System font variables for consistency
+:root {
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 html,
 body {
   height: 100%;
@@ -44,6 +49,8 @@ body {
   margin: 0;
   background-color: mat.get-theme-color($theme, surface-container-lowest);
   color: mat.get-theme-color($theme, on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 // Material Design spacing system (8px grid)
@@ -67,6 +74,19 @@ $spacing-unit: 8px;
   }
 }
 
+// Base typography mixin to reduce duplication
+@mixin typography-base {
+  font-family: var(--font-family-sans);
+}
+
+// Typography utilities with Material Design tokens
+h1, h2, h3, h4, h5, h6 {
+  @include typography-base;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+
 // Global component styling with Material tokens
 mat-card {
   @include mat.elevation(1);
@@ -75,6 +95,15 @@ mat-card {
   &:hover {
     @include mat.elevation(2);
   }
+}
+
+// Ensure Material components use system fonts with proper specificity
+.mat-mdc-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  @include typography-base;
+  font-weight: 500;
 }
 
 // Material 3 compliant snackbar theming

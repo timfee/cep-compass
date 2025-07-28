@@ -18,6 +18,7 @@ mat-card {
     font-size: var(--mat-sys-typescale-headline-medium-size);
     font-weight: var(--mat-sys-typescale-headline-medium-weight);
     line-height: var(--mat-sys-typescale-headline-medium-line-height);
+    margin-bottom: 8px;
   }
 
   mat-card-subtitle {
@@ -26,6 +27,7 @@ mat-card {
     font-weight: var(--mat-sys-typescale-body-medium-weight);
     line-height: var(--mat-sys-typescale-body-medium-line-height);
     opacity: 0.7;
+    margin-bottom: 16px;
   }
 }
 
