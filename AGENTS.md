@@ -1,6 +1,6 @@
 # AI Agent Instructions for CEP Compass
 
-This document contains the complete, de-duplicated instruction set for all AI agents (Claude, GitHub Copilot, Google Gemini) working on the CEP Compass project.
+This document contains the complete, de-duplicated instruction set for all AI agents (Claude, GitHub Copilot, Google Gemini, and others) working on the CEP Compass project.
 
 ## Project Overview
 
@@ -65,7 +65,7 @@ src/app/
 
 ## Key Features Implementation
 
-### Card 1: Create CEP Admin Role
+### Card 1: Create CEP Admin Role (Super Admins Only)
 - Create delegated admin role with Chrome management permissions
 - Direct admin to role assignment URL: `https://admin.google.com/ac/roles/{RoleID}/admins`
 - Only visible to Super Admins
@@ -128,6 +128,7 @@ POST https://admin.googleapis.com/admin/directory/v1/customer/my_customer/roles
 4. **Enrollment Token Service**: Create and list Chrome enrollment tokens
 
 ## Component Template
+
 ```typescript
 @Component({
   selector: 'app-feature-name',
@@ -195,6 +196,23 @@ export class FeatureNameComponent {
 3. **API Security**: Proper scopes for Google APIs
 4. **Token Security**: Encrypt sensitive tokens
 5. **Audit Logging**: Track all administrative actions
+
+## Agent-Specific Guidelines
+
+### For GitHub Copilot
+- Automatically reads from `.github/copilot-instructions.md`
+- Use descriptive comments to guide suggestions
+- Always use Angular v20+ patterns in generated code
+
+### For Claude
+- Use TodoWrite tool for complex multi-step tasks
+- Batch tool calls when possible for performance
+- Run build/lint after making changes
+
+### For Google Gemini
+- Provide explicit context about Angular v20+ patterns
+- Use project-specific prompts for component/service generation
+- Remind about no googleapis SDK usage
 
 ## Before Submitting Code
 

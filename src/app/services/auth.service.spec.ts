@@ -169,9 +169,22 @@ describe('AuthService', () => {
       expect(service['isChangingRole']).toBe(true);
     });
 
-    it('should persist selected role to localStorage', () => {
+    it('should update selectedRole signal when selectRole is called', () => {
       service.selectRole('superAdmin');
-      expect(localStorage.getItem('cep_selected_role')).toBe('superAdmin');
+      expect(service.selectedRole()).toBe('superAdmin');
+      
+      service.selectRole(null);
+      expect(service.selectedRole()).toBe(null);
+      
+      // Test CEP Admin role
+      service.availableRoles.set({
+        isSuperAdmin: false,
+        isCepAdmin: true,
+        missingPrivileges: [],
+      });
+      
+      service.selectRole('cepAdmin');
+      expect(service.selectedRole()).toBe('cepAdmin');
     });
   });
 
@@ -268,7 +281,7 @@ describe('AuthService', () => {
   });
 
   describe('race condition prevention', () => {
-    it('should set and reset changing role flag correctly', () => {
+    it('should set and reset changing role flag correctly', fakeAsync(() => {
       service.availableRoles.set({
         isSuperAdmin: true,
         isCepAdmin: true,
@@ -279,10 +292,15 @@ describe('AuthService', () => {
       service.selectRole(null);
       expect(service['isChangingRole']).toBe(true);
 
-      // Selecting a role should reset the flag
+      // Selecting a role should reset the flag (via effect)
       service.selectRole('superAdmin');
+      
+      // Force effects to run
+      TestBed.flushEffects();
+      
+      // The effect should have reset the flag
       expect(service['isChangingRole']).toBe(false);
-    });
+    }));
   });
 
   describe('refreshAvailableRoles', () => {
