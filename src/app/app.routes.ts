@@ -56,8 +56,8 @@ export const routes: Routes = [
       {
         path: 'email-templates',
         loadComponent: () =>
-          import('./components/email-templates/email-templates.component').then(
-            (m) => m.EmailTemplatesComponent,
+          import('./components/email-composer/email-composer.component').then(
+            (m) => m.EmailComposerComponent,
           ),
       },
       {

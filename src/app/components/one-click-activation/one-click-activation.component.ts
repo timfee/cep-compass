@@ -46,7 +46,217 @@ interface OneClickActivationState {
 @Component({
   selector: 'app-one-click-activation',
   templateUrl: './one-click-activation.component.html',
-  styleUrl: './one-click-activation.component.css',
+  styles: [`
+    .one-click-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .prerequisites-section {
+      margin-bottom: 24px;
+    }
+
+    .refresh-button {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .last-checked {
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .error-card {
+      margin: 16px 0;
+      background-color: #ffebee;
+    }
+
+    .error-card mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .error-card mat-icon {
+      font-size: 32px;
+      height: 32px;
+      width: 32px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .feature-card {
+      text-align: center;
+    }
+
+    .feature-card mat-icon {
+      font-size: 48px;
+      height: 48px;
+      width: 48px;
+      margin: 0 auto 16px;
+      display: block;
+    }
+
+    .feature-card h4 {
+      margin: 8px 0;
+      font-weight: 500;
+    }
+
+    .feature-card p {
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .warning-card,
+    .success-card {
+      margin: 16px 0;
+    }
+
+    .warning-card {
+      background-color: #fff3e0;
+    }
+
+    .success-card {
+      background-color: #e8f5e8;
+    }
+
+    .warning-card mat-card-content,
+    .success-card mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .warning-card mat-icon,
+    .success-card mat-icon {
+      font-size: 32px;
+      height: 32px;
+      width: 32px;
+      flex-shrink: 0;
+    }
+
+    .success-content {
+      flex: 1;
+    }
+
+    .success-content h4 {
+      margin: 0 0 8px 0;
+      font-weight: 500;
+    }
+
+    .success-content p {
+      margin: 0 0 16px 0;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .step-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .resources-section {
+      margin-top: 32px;
+    }
+
+    .resource-link {
+      text-decoration: none;
+      color: var(--primary-color);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      width: 100%;
+      text-align: left;
+    }
+
+    .resource-link:hover {
+      text-decoration: underline;
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .one-click-container {
+        padding: 16px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .warning-card mat-card-content,
+      .success-card mat-card-content {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: center;
+      }
+
+      .success-content {
+        text-align: center;
+      }
+    }
+
+    /* Material list item adjustments */
+    mat-list-item {
+      margin-bottom: 8px;
+    }
+
+    mat-list-item button {
+      margin-left: auto;
+    }
+
+    /* Stepper customization */
+    mat-stepper {
+      margin: 16px 0;
+    }
+
+    .mat-step-header {
+      pointer-events: auto;
+    }
+
+    /* Spinner in button */
+    mat-spinner {
+      margin-right: 8px;
+    }
+
+    /* Card header styling */
+    mat-card-header {
+      margin-bottom: 16px;
+    }
+
+    mat-card-header mat-icon[mat-card-avatar] {
+      background-color: transparent;
+      color: var(--primary-color);
+    }
+
+    /* Section spacing */
+    section {
+      margin: 24px 0;
+    }
+
+    section h3 {
+      margin: 0 0 16px 0;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    /* Divider spacing */
+    mat-divider {
+      margin: 32px 0;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
