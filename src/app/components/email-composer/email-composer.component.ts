@@ -38,8 +38,19 @@ import {
   EmailVariable,
 } from '../../services/email-template.service';
 import { NotificationService } from '../../core/notification.service';
-import { EmailValidator } from '../../shared/components';
 import { ErrorDisplayComponent } from '../../shared/components';
+import { copyToClipboard } from '../../shared/clipboard.utils';
+
+/** Email validation utilities */
+class EmailValidator {
+  private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  static isValid(email: unknown): boolean {
+    if (typeof email !== 'string') return false;
+    if (!email) return false;
+    return this.EMAIL_REGEX.test(email.trim());
+  }
+}
 
 /**
  * Email composer component with ngx-quill rich text editor integration
@@ -313,7 +324,7 @@ export class EmailComposerComponent implements OnInit {
       this._error.set(null);
       
       const preview = this.getPreview();
-      await this.emailService.copyToClipboard(preview);
+      await copyToClipboard(preview);
       this.notificationService.success('Email content copied to clipboard');
     } catch (error) {
       const errorMessage = 'Failed to copy to clipboard';

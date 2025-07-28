@@ -338,30 +338,5 @@ describe('EmailTemplateService', () => {
       expect(url).toContain('subject=Test+Subject');
       expect(url).toContain('body=Test+Body');
     });
-
-    it('should copy to clipboard', async () => {
-      // Mock clipboard API
-      const mockWriteText = jasmine
-        .createSpy('writeText')
-        .and.returnValue(Promise.resolve());
-      
-      // Use defineProperty to mock the clipboard
-      Object.defineProperty(navigator, 'clipboard', {
-        value: {
-          writeText: mockWriteText,
-        },
-        configurable: true
-      });
-      
-      Object.defineProperty(window, 'isSecureContext', {
-        value: true,
-        writable: true,
-      });
-
-      const testText = 'Test text to copy';
-      await service.copyToClipboard(testText);
-
-      expect(mockWriteText).toHaveBeenCalledWith(testText);
-    });
   });
 });

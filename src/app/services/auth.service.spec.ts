@@ -2,7 +2,50 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
-import { createMockResponse } from '../shared/components';
+
+/** Test utility functions for creating mock objects and responses */
+interface MockResponseOptions {
+  data?: unknown;
+  status?: number;
+  headers?: Record<string, string>;
+  ok?: boolean;
+  statusText?: string;
+}
+
+interface MockResponse extends Response {
+  json(): Promise<unknown>;
+}
+
+function createMockResponse(options: MockResponseOptions = {}): MockResponse {
+  const {
+    data = {},
+    status = 200,
+    headers = { 'Content-Type': 'application/json' },
+    ok = status >= 200 && status < 300,
+    statusText = ok ? 'OK' : 'Error'
+  } = options;
+
+  const mockResponse: MockResponse = {
+    json: () => Promise.resolve(data),
+    ok,
+    status,
+    statusText,
+    headers: new Headers(headers),
+    url: '',
+    redirected: false,
+    type: 'basic' as ResponseType,
+    clone: function() { return this; },
+    body: null,
+    bodyUsed: false,
+    arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+    blob: () => Promise.resolve(new Blob()),
+    bytes: () => Promise.resolve(new Uint8Array()),
+    formData: () => Promise.resolve(new FormData()),
+    text: () => Promise.resolve(JSON.stringify(data))
+  };
+
+  return mockResponse;
+}
 
 /**
  * Comprehensive unit tests for AuthService focusing on critical methods and token management

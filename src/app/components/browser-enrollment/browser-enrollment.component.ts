@@ -20,7 +20,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { Clipboard } from '@angular/cdk/clipboard';
 
 // Services
 import {
@@ -32,6 +31,7 @@ import {
 import { OrgUnitsService, OrgUnit } from '../../services/org-units.service';
 import { EmailTemplateService } from '../../services/email-template.service';
 import { NotificationService } from '../../core/notification.service';
+import { copyToClipboard } from '../../shared/clipboard.utils';
 
 // Components
 import { EmailComposerComponent } from '../email-composer/email-composer.component';
@@ -76,7 +76,6 @@ export class BrowserEnrollmentComponent implements OnInit {
   private readonly orgUnitService = inject(OrgUnitsService);
   private readonly emailService = inject(EmailTemplateService);
   private readonly notificationService = inject(NotificationService);
-  private readonly clipboard = inject(Clipboard);
   private readonly dialog = inject(MatDialog);
 
   // Component state signals
@@ -184,7 +183,7 @@ export class BrowserEnrollmentComponent implements OnInit {
     }
 
     try {
-      await this.clipboard.copy(token.token);
+      await copyToClipboard(token.token);
       this.notificationService.success('Token copied to clipboard!');
     } catch {
       this.notificationService.error('Failed to copy token to clipboard');

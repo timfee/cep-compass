@@ -16,6 +16,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
 import { NotificationService } from '../../core/notification.service';
+import { copyToClipboard } from '../../shared/clipboard.utils';
 
 interface PolicyTemplate {
   id: string;
@@ -310,7 +311,7 @@ Scope: All users`;
     }
 
     try {
-      await navigator.clipboard.writeText(configText);
+      await copyToClipboard(configText);
       this.notificationService.success(
         'Policy configuration copied to clipboard!',
       );

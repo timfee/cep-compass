@@ -14,7 +14,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Clipboard } from '@angular/cdk/clipboard';
 
 import {
   AdminRoleService,
@@ -23,6 +22,7 @@ import {
   CEP_ADMIN_ROLE,
   RolePrivilege,
 } from '../../services/admin-role.service';
+import { copyToClipboard } from '../../shared/clipboard.utils';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../core/notification.service';
 
@@ -440,7 +440,6 @@ export class CreateRoleComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly notificationService = inject(NotificationService);
-  private readonly clipboard = inject(Clipboard);
 
   // Component state management with signals
   private readonly componentState = signal<RoleCreationState>({
@@ -538,11 +537,15 @@ export class CreateRoleComponent {
     }
   }
 
-  copyRoleId(): void {
+  async copyRoleId(): Promise<void> {
     const roleId = this.existingRole()?.roleId || this.createdRole()?.roleId;
     if (roleId) {
-      this.clipboard.copy(roleId);
-      this.notificationService.success('Role ID copied to clipboard!');
+      try {
+        await copyToClipboard(roleId);
+        this.notificationService.success('Role ID copied to clipboard!');
+      } catch {
+        this.notificationService.error('Failed to copy role ID to clipboard');
+      }
     }
   }
 

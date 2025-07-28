@@ -31,7 +31,6 @@ describe('EmailComposerComponent', () => {
         'setVariableValue',
         'composeEmail',
         'validateRequiredVariables',
-        'copyToClipboard',
         'getGmailComposeUrl',
       ],
       {
@@ -215,11 +214,12 @@ describe('EmailComposerComponent', () => {
 
   describe('Actions', () => {
     it('should copy to clipboard', async () => {
-      emailService.copyToClipboard.and.returnValue(Promise.resolve());
+      // Mock the clipboard utility
+      const clipboardSpy = spyOn(await import('../../shared/clipboard.utils'), 'copyToClipboard').and.returnValue(Promise.resolve());
 
       await component.copyToClipboard();
 
-      expect(emailService.copyToClipboard).toHaveBeenCalled();
+      expect(clipboardSpy).toHaveBeenCalled();
     });
 
     it('should open in Gmail', () => {
