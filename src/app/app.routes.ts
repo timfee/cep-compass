@@ -87,6 +87,13 @@ export const routes: Routes = [
           import('./features/admin/admin.routes').then((m) => m.adminRoutes),
         canActivate: [superAdminGuard],
       },
+      {
+        path: 'demo-loading',
+        loadComponent: () =>
+          import('./demo-loading/demo-loading.component').then(
+            (m) => m.DemoLoadingComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
