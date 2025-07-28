@@ -119,9 +119,9 @@ export class AuthService {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       if (credential && credential.accessToken) {
         this.accessToken = credential.accessToken;
-        // Encode and store token using Base64
-        const encrypted = btoa(credential.accessToken);
-        sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+        // OAuth tokens are short-lived (1 hour) and stored in sessionStorage
+        // which is cleared when the browser closes. HTTPS protects in transit.
+        sessionStorage.setItem(TOKEN_STORAGE_KEY, credential.accessToken);
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -186,16 +186,8 @@ export class AuthService {
     // Check session storage
     const stored = sessionStorage.getItem(TOKEN_STORAGE_KEY);
     if (stored) {
-      try {
-        this.accessToken = atob(stored);
-        return this.accessToken;
-      } catch (error) {
-        console.warn(
-          'Failed to decode stored token, removing from storage:',
-          error,
-        );
-        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-      }
+      this.accessToken = stored;
+      return this.accessToken;
     }
 
     return null;
@@ -245,9 +237,9 @@ export class AuthService {
 
         if (credential?.accessToken) {
           this.accessToken = credential.accessToken;
-          // Encode and store token using Base64
-          const encrypted = btoa(credential.accessToken);
-          sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+          // OAuth tokens are short-lived (1 hour) and stored in sessionStorage
+          // which is cleared when the browser closes. HTTPS protects in transit.
+          sessionStorage.setItem(TOKEN_STORAGE_KEY, credential.accessToken);
           return credential.accessToken;
         }
       } catch (silentError) {
@@ -268,9 +260,9 @@ export class AuthService {
 
         if (credential?.accessToken) {
           this.accessToken = credential.accessToken;
-          // Encode and store token using Base64
-          const encrypted = btoa(credential.accessToken);
-          sessionStorage.setItem(TOKEN_STORAGE_KEY, encrypted);
+          // OAuth tokens are short-lived (1 hour) and stored in sessionStorage
+          // which is cleared when the browser closes. HTTPS protects in transit.
+          sessionStorage.setItem(TOKEN_STORAGE_KEY, credential.accessToken);
           return credential.accessToken;
         }
       }
