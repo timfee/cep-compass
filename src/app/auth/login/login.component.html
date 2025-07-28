@@ -5,8 +5,12 @@
       <mat-card-subtitle>Please sign in to continue</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <button mat-fab extended (click)="login()">
-        <mat-icon>login</mat-icon>
+      <button mat-fab extended (click)="login()" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>login</mat-icon>
+        }
         Sign in with Google
       </button>
     </mat-card-content>

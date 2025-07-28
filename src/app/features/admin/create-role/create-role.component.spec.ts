@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -11,13 +10,14 @@ import {
   RoleCreationResponse,
 } from '../../../services/admin-role.service';
 import { AuthService } from '../../../services/auth.service';
+import { NotificationService } from '../../../core/notification.service';
 
 describe('CreateRoleComponent', () => {
   let component: CreateRoleComponent;
   let fixture: ComponentFixture<CreateRoleComponent>;
   let adminRoleService: jasmine.SpyObj<AdminRoleService>;
   let authService: jasmine.SpyObj<AuthService>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let notificationService: jasmine.SpyObj<NotificationService>;
   let clipboard: jasmine.SpyObj<Clipboard>;
 
   const mockAdminRole: AdminRole = {
@@ -51,7 +51,7 @@ describe('CreateRoleComponent', () => {
       availableRoles: () => ({ isSuperAdmin: true }),
     });
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error']);
     const clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
 
     await TestBed.configureTestingModule({
@@ -60,7 +60,7 @@ describe('CreateRoleComponent', () => {
         { provide: AdminRoleService, useValue: adminRoleServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: NotificationService, useValue: notificationServiceSpy },
         { provide: Clipboard, useValue: clipboardSpy },
       ],
     }).compileComponents();
@@ -69,7 +69,7 @@ describe('CreateRoleComponent', () => {
       AdminRoleService,
     ) as jasmine.SpyObj<AdminRoleService>;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
+    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     clipboard = TestBed.inject(Clipboard) as jasmine.SpyObj<Clipboard>;
   });
 
@@ -104,10 +104,8 @@ describe('CreateRoleComponent', () => {
       expect(adminRoleService.createCepAdminRole).toHaveBeenCalled();
       expect(component.state()).toBe('success');
       expect(component.success()).toBeTrue();
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.success).toHaveBeenCalledWith(
         'CEP Admin role created successfully!',
-        'Close',
-        { duration: 5000, panelClass: ['success-snackbar'] },
       );
     });
 
@@ -158,10 +156,8 @@ describe('CreateRoleComponent', () => {
       component.copyRoleId();
 
       expect(clipboard.copy).toHaveBeenCalledWith('test-role-id');
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.success).toHaveBeenCalledWith(
         'Role ID copied to clipboard!',
-        'Close',
-        { duration: 3000 },
       );
     });
   });
