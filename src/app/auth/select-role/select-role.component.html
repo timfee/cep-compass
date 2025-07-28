@@ -1,9 +1,10 @@
 <div class="role-selection-container">
   @if (isLoading()) {
-    <app-loading-spinner 
+    <app-loading 
+      type="spinner"
       message="Loading available roles..." 
       [diameter]="50">
-    </app-loading-spinner>
+    </app-loading>
   } @else {
     <mat-card>
       <mat-card-header>

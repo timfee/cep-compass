@@ -16,7 +16,7 @@
     <!-- Skeleton cards during initial load -->
     <div class="stats-grid">
       @for (item of [1, 2, 3]; track $index) {
-        <app-skeleton type="card"></app-skeleton>
+        <app-loading type="skeleton-card"></app-loading>
       }
     </div>
   } @else {

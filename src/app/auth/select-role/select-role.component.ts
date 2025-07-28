@@ -13,12 +13,32 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService, SelectedRole } from '../../services/auth.service';
 import { NotificationService } from '../../core/notification.service';
-import { LoadingSpinnerComponent } from '../../shared/components';
+import { LoadingComponent } from '../../shared/components';
 
 @Component({
   selector: 'app-select-role',
   templateUrl: './select-role.component.html',
-  styleUrl: './select-role.component.css',
+  styles: [
+    `
+      .role-selection-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      mat-card {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .role-options {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        padding-top: 16px;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
@@ -26,7 +46,7 @@ import { LoadingSpinnerComponent } from '../../shared/components';
     MatButtonModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    LoadingSpinnerComponent,
+    LoadingComponent,
   ],
 })
 export class SelectRoleComponent implements OnInit {

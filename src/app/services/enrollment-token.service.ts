@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { OrgUnitsService } from './org-units.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
-import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
+import { GoogleApiErrorHandler } from '../shared/constants/google-api.constants';
 import { BaseApiService } from '../core/base-api.service';
 
 /**

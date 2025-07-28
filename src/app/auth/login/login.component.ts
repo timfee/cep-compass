@@ -9,7 +9,26 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
+  template: `
+    <div class="login-container">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>CEP Compass</mat-card-title>
+          <mat-card-subtitle>Please sign in to continue</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <button mat-fab extended (click)="login()" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <mat-icon>login</mat-icon>
+            }
+            Sign in with Google
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  `,
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,

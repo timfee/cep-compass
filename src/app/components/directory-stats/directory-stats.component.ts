@@ -20,7 +20,7 @@ import {
   DirectoryGroup,
 } from '../../services/directory.service';
 import { ErrorDisplayComponent } from '../../shared/components';
-import { SkeletonComponent } from '../../shared/components';
+import { LoadingComponent } from '../../shared/components';
 
 /**
  * Component for displaying directory statistics and search functionality
@@ -40,7 +40,7 @@ import { SkeletonComponent } from '../../shared/components';
     MatInputModule,
     FormsModule,
     ErrorDisplayComponent,
-    SkeletonComponent,
+    LoadingComponent,
   ],
 })
 export class DirectoryStatsComponent implements OnInit {

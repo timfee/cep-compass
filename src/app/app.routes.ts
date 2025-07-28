@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { SelectRoleComponent } from './auth/select-role/select-role.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -49,14 +49,14 @@ export const routes: Routes = [
       {
         path: 'org-units',
         loadComponent: () =>
-          import('./org-units/org-units.component').then(
+          import('./components/org-units/org-units.component').then(
             (m) => m.OrgUnitsComponent,
           ),
       },
       {
         path: 'email-templates',
         loadComponent: () =>
-          import('./email-templates/email-templates.component').then(
+          import('./components/email-templates/email-templates.component').then(
             (m) => m.EmailTemplatesComponent,
           ),
       },
@@ -70,42 +70,42 @@ export const routes: Routes = [
       {
         path: 'demo-loading',
         loadComponent: () =>
-          import('./demo-loading/demo-loading.component').then(
+          import('./components/demo-loading/demo-loading.component').then(
             (m) => m.DemoLoadingComponent,
           ),
       },
       {
         path: 'enrollment/browsers',
         loadComponent: () =>
-          import('./features/enrollment/browsers/browser-enrollment.component').then(
+          import('./components/browser-enrollment/browser-enrollment.component').then(
             (m) => m.BrowserEnrollmentComponent,
           ),
       },
       {
         path: 'enrollment/profiles',
         loadComponent: () =>
-          import('./features/enrollment/profiles/profile-enrollment.component').then(
+          import('./components/profile-enrollment/profile-enrollment.component').then(
             (m) => m.ProfileEnrollmentComponent,
           ),
       },
       {
         path: 'security/one-click',
         loadComponent: () =>
-          import('./features/security/one-click/one-click-activation.component').then(
+          import('./components/one-click-activation/one-click-activation.component').then(
             (m) => m.OneClickActivationComponent,
           ),
       },
       {
         path: 'security/dlp',
         loadComponent: () =>
-          import('./features/security/dlp/dlp-configuration.component').then(
+          import('./components/dlp-configuration/dlp-configuration.component').then(
             (m) => m.DlpConfigurationComponent,
           ),
       },
       {
         path: 'admin/create-role',
         loadComponent: () =>
-          import('./features/admin/create-role/create-role.component').then(
+          import('./components/create-role/create-role.component').then(
             (m) => m.CreateRoleComponent,
           ),
         canActivate: [superAdminGuard],

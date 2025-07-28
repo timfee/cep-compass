@@ -2,7 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
-import { createMockResponse } from '../shared/utils/test-helpers';
+import { createMockResponse } from '../shared/components';
 
 /**
  * Comprehensive unit tests for AuthService focusing on critical methods and token management
