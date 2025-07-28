@@ -17,17 +17,23 @@
           <button
             mat-flat-button
             color="primary"
-            [disabled]="!authService.availableRoles().isSuperAdmin"
+            [disabled]="!authService.availableRoles().isSuperAdmin || isSelectingRole()"
             (click)="selectRole('superAdmin')"
           >
+            @if (isSelectingRole()) {
+              <mat-spinner diameter="16"></mat-spinner>
+            }
             Super Admin
           </button>
           <button
             mat-flat-button
             color="accent"
-            [disabled]="!authService.availableRoles().isCepAdmin"
+            [disabled]="!authService.availableRoles().isCepAdmin || isSelectingRole()"
             (click)="selectRole('cepAdmin')"
           >
+            @if (isSelectingRole()) {
+              <mat-spinner diameter="16"></mat-spinner>
+            }
             CEP Delegated Admin
           </button>
         </div>

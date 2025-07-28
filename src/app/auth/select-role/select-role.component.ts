@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -32,6 +33,8 @@ export class SelectRoleComponent implements OnInit {
   public authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
+  
+  public isSelectingRole = signal(false);
 
   // A signal to track the loading state, derived from the user signal.
   public isLoading = computed(() => this.authService.user() === undefined);
@@ -48,8 +51,9 @@ export class SelectRoleComponent implements OnInit {
   }
 
   async selectRole(role: SelectedRole): Promise<void> {
-    if (!role) return;
+    if (!role || this.isSelectingRole()) return;
     
+    this.isSelectingRole.set(true);
     try {
       this.authService.selectRole(role);
       // Navigate to dashboard after role selection
@@ -57,6 +61,8 @@ export class SelectRoleComponent implements OnInit {
     } catch (error) {
       console.error('Failed to select role:', error);
       this.notificationService.error('Failed to select role. Please try again.');
+    } finally {
+      this.isSelectingRole.set(false);
     }
   }
 }

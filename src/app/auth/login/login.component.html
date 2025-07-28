@@ -5,9 +5,21 @@
       <mat-card-subtitle>Please sign in to continue</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <button mat-fab extended (click)="login()">
-        <mat-icon>login</mat-icon>
-        Sign in with Google
+      <button 
+        mat-fab 
+        extended 
+        (click)="login()"
+        [disabled]="isLoggingIn()"
+        color="primary">
+        @if (isLoggingIn()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          Signing in...
+        } @else {
+          <ng-container>
+            <mat-icon>login</mat-icon>
+            Sign in with Google
+          </ng-container>
+        }
       </button>
     </mat-card-content>
   </mat-card>
