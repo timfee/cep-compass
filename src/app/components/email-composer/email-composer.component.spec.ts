@@ -214,12 +214,16 @@ describe('EmailComposerComponent', () => {
 
   describe('Actions', () => {
     it('should copy to clipboard', async () => {
-      // Mock the clipboard utility
-      const clipboardSpy = spyOn(await import('../../shared/clipboard.utils'), 'copyToClipboard').and.returnValue(Promise.resolve());
+      // Mock the navigator clipboard API
+      const writeTextSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: writeTextSpy },
+        configurable: true
+      });
 
       await component.copyToClipboard();
 
-      expect(clipboardSpy).toHaveBeenCalled();
+      expect(writeTextSpy).toHaveBeenCalled();
     });
 
     it('should open in Gmail', () => {

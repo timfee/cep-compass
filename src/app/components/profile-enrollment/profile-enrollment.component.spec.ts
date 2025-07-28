@@ -28,10 +28,10 @@ describe('ProfileEnrollmentComponent', () => {
   };
 
   // Create writeable signals for testing
-  let isLoadingSignal = signal(false);
-  let errorSignal = signal<string | null>(null);
-  let statsSignal = signal(mockStats);
-  let usersSignal = signal([
+  const isLoadingSignal = signal(false);
+  const errorSignal = signal<string | null>(null);
+  const statsSignal = signal(mockStats);
+  const usersSignal = signal([
     {
       id: '1',
       primaryEmail: 'user1@example.com',

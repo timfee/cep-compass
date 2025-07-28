@@ -8,7 +8,7 @@ import {
   Privilege,
 } from '../shared/constants/google-api.constants';
 
-export interface RolePrivilege extends Privilege {}
+export type RolePrivilege = Privilege;
 
 export interface AdminRole {
   kind: string;

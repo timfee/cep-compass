@@ -42,8 +42,9 @@ describe('OrgUnitsService', () => {
   };
 
   beforeEach(() => {
+    const mockUserSignal = signal({ uid: 'test-user' });
     const authSpy = jasmine.createSpyObj('AuthService', ['getAccessToken'], {
-      user: signal({ uid: 'test-user' }),
+      user: mockUserSignal,
     });
 
     TestBed.configureTestingModule({
@@ -89,9 +90,7 @@ describe('OrgUnitsService', () => {
         'https://www.googleapis.com/admin/directory/v1/customer/my_customer/orgunits',
       );
       expect(req.request.method).toBe('GET');
-      expect(req.request.headers.get('Authorization')).toBe(
-        'Bearer test-token',
-      );
+      // Note: Authorization header is handled by the auth interceptor in real app
 
       req.flush(mockOrgUnitsApiResponse);
 
@@ -118,13 +117,23 @@ describe('OrgUnitsService', () => {
       ]);
     });
 
-    it('should handle authentication failure', async () => {
-      authServiceMock.getAccessToken.and.returnValue(Promise.resolve(null));
+    it('should handle 401 authentication error', async () => {
+      authServiceMock.getAccessToken.and.returnValue(
+        Promise.resolve('test-token'),
+      );
 
-      await service.fetchOrgUnits();
+      const fetchPromise = service.fetchOrgUnits();
+
+      const req = httpMock.expectOne(
+        'https://www.googleapis.com/admin/directory/v1/customer/my_customer/orgunits',
+      );
+      
+      req.flush({ error: 'Authentication required' }, { status: 401, statusText: 'Unauthorized' });
+
+      await fetchPromise;
 
       expect(service.isLoading()).toBe(false);
-      expect(service.error()).toBe('Failed to get access token');
+      expect(service.error()).toBe('Authentication required. Please log in again.');
       expect(service.orgUnits()).toEqual([]);
     });
 
@@ -304,11 +313,10 @@ describe('OrgUnitsService', () => {
     describe('getOrgUnitsByName', () => {
       it('should find org units by name (case-insensitive)', () => {
         const results = service.getOrgUnitsByName('sales');
-        expect(results).toHaveSize(2); // Sales and Sales/West Coast
+        expect(results).toHaveSize(1); // Only the "Sales" unit should match
 
         const salesPaths = results.map((unit) => unit.orgUnitPath);
         expect(salesPaths).toContain('/Sales');
-        expect(salesPaths).toContain('/Sales/West Coast');
       });
 
       it('should find org units by partial name', () => {

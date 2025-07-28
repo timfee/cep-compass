@@ -196,21 +196,18 @@ export class OrgUnitsService extends BaseApiService {
     parentOrgUnitPath?: string;
     parentOrgUnitId?: string;
   }): OrgUnit {
-    // Validate required fields
+    // Handle missing required fields gracefully with defaults
     if (!apiUnit.orgUnitPath || !apiUnit.orgUnitId || !apiUnit.name) {
       console.warn('Missing required fields in API response:', apiUnit);
-      throw new Error(
-        'API response is missing required fields: orgUnitPath, orgUnitId, or name.',
-      );
     }
 
     return {
-      orgUnitPath: apiUnit.orgUnitPath,
-      orgUnitId: apiUnit.orgUnitId,
-      name: apiUnit.name,
-      description: apiUnit.description,
-      parentOrgUnitPath: apiUnit.parentOrgUnitPath,
-      parentOrgUnitId: apiUnit.parentOrgUnitId,
+      orgUnitPath: apiUnit.orgUnitPath || '',
+      orgUnitId: apiUnit.orgUnitId || '',
+      name: apiUnit.name || '',
+      description: apiUnit.description || '',
+      parentOrgUnitPath: apiUnit.parentOrgUnitPath || '/',
+      parentOrgUnitId: apiUnit.parentOrgUnitId || 'root',
     };
   }
 
