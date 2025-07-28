@@ -8,10 +8,7 @@ import {
   signOut,
 } from '@angular/fire/auth';
 
-export interface Privilege {
-  privilegeName: string;
-  serviceId: string;
-}
+import { Privilege } from '../shared/constants/google-api.constants';
 
 export interface UserRoles {
   isSuperAdmin: boolean;

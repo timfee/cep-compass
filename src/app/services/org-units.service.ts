@@ -120,7 +120,7 @@ export class OrgUnitsService extends BaseApiService {
       this._orgUnits.set([rootOrgUnit, ...orgUnits]);
       this.updateFetchTime();
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleOrgUnitsError(error);
       this.setError(errorMessage);
       console.error('Failed to fetch organizational units:', error);
     } finally {
@@ -282,16 +282,6 @@ export class OrgUnitsService extends BaseApiService {
         this.sortTreeNodes(node.children);
       }
     });
-  }
-
-  /**
-   * Handles API errors and returns user-friendly error messages
-   *
-   * @param error - Error from HTTP request
-   * @returns User-friendly error message
-   */
-  private handleApiError(error: unknown): string {
-    return GoogleApiErrorHandler.handleOrgUnitsError(error);
   }
 
   /**

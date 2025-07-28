@@ -5,12 +5,10 @@ import { AuthService } from './auth.service';
 import {
   CEP_ADMIN_PRIVILEGES,
   GoogleApiUtils,
+  Privilege,
 } from '../shared/constants/google-api.constants';
 
-export interface RolePrivilege {
-  privilegeName: string;
-  serviceId: string;
-}
+export interface RolePrivilege extends Privilege {}
 
 export interface AdminRole {
   kind: string;

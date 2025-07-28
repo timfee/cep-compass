@@ -154,7 +154,7 @@ export class EnrollmentTokenService extends BaseApiService {
 
       return tokens;
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleEnrollmentTokenError(error);
       this.setError(errorMessage);
       console.error('Failed to fetch enrollment tokens:', error);
       throw error;
@@ -229,7 +229,7 @@ export class EnrollmentTokenService extends BaseApiService {
         enrollmentUrl,
       };
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleEnrollmentTokenError(error);
       this.setError(errorMessage);
       console.error('Failed to create enrollment token:', error);
       throw error;
@@ -271,7 +271,7 @@ export class EnrollmentTokenService extends BaseApiService {
       );
       this._tokens.set(updatedTokens);
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleEnrollmentTokenError(error);
       this.setError(errorMessage);
       console.error('Failed to revoke enrollment token:', error);
       throw error;
@@ -489,16 +489,6 @@ Linux:
     // This could be enhanced to point to an internal enrollment guide page
     const encodedToken = encodeURIComponent(token);
     return `chrome://management/enrollment?token=${encodedToken}`;
-  }
-
-  /**
-   * Handles API errors and returns user-friendly error messages
-   *
-   * @param error - Error from HTTP request
-   * @returns User-friendly error message
-   */
-  private handleApiError(error: unknown): string {
-    return GoogleApiErrorHandler.handleEnrollmentTokenError(error);
   }
 
   /**
