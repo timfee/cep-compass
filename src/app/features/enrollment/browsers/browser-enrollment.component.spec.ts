@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -8,6 +7,7 @@ import { BrowserEnrollmentComponent } from './browser-enrollment.component';
 import { EnrollmentTokenService } from '../../../services/enrollment-token.service';
 import { OrgUnitsService } from '../../../services/org-units.service';
 import { EmailTemplateService } from '../../../services/email-template.service';
+import { NotificationService } from '../../../core/notification.service';
 
 describe('BrowserEnrollmentComponent', () => {
   let component: BrowserEnrollmentComponent;
@@ -15,7 +15,7 @@ describe('BrowserEnrollmentComponent', () => {
   let mockEnrollmentService: jasmine.SpyObj<EnrollmentTokenService>;
   let mockOrgUnitService: jasmine.SpyObj<OrgUnitsService>;
   let mockEmailService: jasmine.SpyObj<EmailTemplateService>;
-  let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
+  let mockNotificationService: jasmine.SpyObj<NotificationService>;
   let mockClipboard: jasmine.SpyObj<Clipboard>;
 
   beforeEach(async () => {
@@ -53,7 +53,7 @@ describe('BrowserEnrollmentComponent', () => {
       },
     );
 
-    mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    mockNotificationService = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
     mockClipboard = jasmine.createSpyObj('Clipboard', ['copy']);
 
     await TestBed.configureTestingModule({
@@ -62,7 +62,7 @@ describe('BrowserEnrollmentComponent', () => {
         { provide: EnrollmentTokenService, useValue: mockEnrollmentService },
         { provide: OrgUnitsService, useValue: mockOrgUnitService },
         { provide: EmailTemplateService, useValue: mockEmailService },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: NotificationService, useValue: mockNotificationService },
         { provide: Clipboard, useValue: mockClipboard },
       ],
     }).compileComponents();
@@ -120,10 +120,8 @@ describe('BrowserEnrollmentComponent', () => {
       orgUnitPath: '/test/unit',
     });
     expect(component.createdToken()).toEqual(mockToken);
-    expect(mockSnackBar.open).toHaveBeenCalledWith(
+    expect(mockNotificationService.success).toHaveBeenCalledWith(
       'Enrollment token created successfully!',
-      'Close',
-      jasmine.any(Object),
     );
   });
 
@@ -135,10 +133,8 @@ describe('BrowserEnrollmentComponent', () => {
     await component.createToken();
 
     expect(component.error()).toBe('Token creation failed');
-    expect(mockSnackBar.open).toHaveBeenCalledWith(
+    expect(mockNotificationService.error).toHaveBeenCalledWith(
       'Token creation failed',
-      'Close',
-      jasmine.any(Object),
     );
   });
 
@@ -165,10 +161,8 @@ describe('BrowserEnrollmentComponent', () => {
     await component.copyToken();
 
     expect(mockClipboard.copy).toHaveBeenCalledWith('test-token-value');
-    expect(mockSnackBar.open).toHaveBeenCalledWith(
+    expect(mockNotificationService.success).toHaveBeenCalledWith(
       'Token copied to clipboard!',
-      'Close',
-      jasmine.any(Object),
     );
   });
 
@@ -184,10 +178,8 @@ describe('BrowserEnrollmentComponent', () => {
 
   it('should show error when trying to draft email without token', () => {
     component.draftEmail();
-    expect(mockSnackBar.open).toHaveBeenCalledWith(
+    expect(mockNotificationService.warning).toHaveBeenCalledWith(
       'Please create a token first',
-      'Close',
-      jasmine.any(Object),
     );
   });
 
@@ -221,10 +213,8 @@ describe('BrowserEnrollmentComponent', () => {
   it('should handle email composition completion', () => {
     component.onEmailComposed();
 
-    expect(mockSnackBar.open).toHaveBeenCalledWith(
+    expect(mockNotificationService.success).toHaveBeenCalledWith(
       'Email composed successfully!',
-      'Close',
-      jasmine.any(Object),
     );
     expect(component.showEmailComposer()).toBe(false);
   });

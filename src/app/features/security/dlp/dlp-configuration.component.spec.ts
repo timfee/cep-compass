@@ -1,26 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DlpConfigurationComponent } from './dlp-configuration.component';
+import { NotificationService } from '../../../core/notification.service';
 
 describe('DlpConfigurationComponent', () => {
   let component: DlpConfigurationComponent;
   let fixture: ComponentFixture<DlpConfigurationComponent>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let notificationService: jasmine.SpyObj<NotificationService>;
 
   beforeEach(async () => {
-    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
 
     // Clear localStorage before each test
     localStorage.clear();
 
     await TestBed.configureTestingModule({
       imports: [DlpConfigurationComponent, NoopAnimationsModule],
-      providers: [{ provide: MatSnackBar, useValue: snackBarSpy }],
+      providers: [{ provide: NotificationService, useValue: notificationServiceSpy }],
     }).compileComponents();
 
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
+    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     fixture = TestBed.createComponent(DlpConfigurationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -59,10 +59,8 @@ describe('DlpConfigurationComponent', () => {
         '_blank',
         'noopener,noreferrer',
       );
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.info).toHaveBeenCalledWith(
         'DLP Configuration page opened in new tab',
-        'Close',
-        { duration: 3000 },
       );
     });
   });
@@ -96,10 +94,8 @@ describe('DlpConfigurationComponent', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
         jasmine.stringContaining('Audit Sensitive Data Uploads'),
       );
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.success).toHaveBeenCalledWith(
         'Policy configuration copied to clipboard!',
-        'Close',
-        { duration: 3000, panelClass: ['success-snackbar'] },
       );
     });
 
@@ -131,10 +127,8 @@ describe('DlpConfigurationComponent', () => {
 
       await component.copyPolicyConfig();
 
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.error).toHaveBeenCalledWith(
         'Failed to copy to clipboard',
-        'Close',
-        { duration: 3000 },
       );
     });
 
@@ -150,10 +144,8 @@ describe('DlpConfigurationComponent', () => {
       component.markAsConfigured();
 
       expect(component.dlpActivated()).toBeTrue();
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(notificationService.success).toHaveBeenCalledWith(
         'DLP Configuration marked as completed!',
-        'Close',
-        { duration: 5000, panelClass: ['success-snackbar'] },
       );
     });
 

@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 
@@ -13,6 +12,7 @@ import {
   DirectoryService,
   DirectoryUser,
 } from '../../../services/directory.service';
+import { NotificationService } from '../../../core/notification.service';
 
 describe('OneClickActivationComponent', () => {
   let component: OneClickActivationComponent;
@@ -20,7 +20,7 @@ describe('OneClickActivationComponent', () => {
   let enrollmentService: jasmine.SpyObj<EnrollmentTokenService>;
   let directoryService: jasmine.SpyObj<DirectoryService>;
   let router: jasmine.SpyObj<Router>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let notificationService: jasmine.SpyObj<NotificationService>;
 
   const mockTokens: EnrollmentToken[] = [
     {
@@ -71,7 +71,7 @@ describe('OneClickActivationComponent', () => {
       users: signal(mockUsers),
     };
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
 
     // Clear localStorage before each test
     localStorage.clear();
@@ -82,7 +82,7 @@ describe('OneClickActivationComponent', () => {
         { provide: EnrollmentTokenService, useValue: enrollmentServiceSpy },
         { provide: DirectoryService, useValue: mockDirectoryService },
         { provide: Router, useValue: routerSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: NotificationService, useValue: notificationServiceSpy },
       ],
     }).compileComponents();
 
@@ -93,7 +93,7 @@ describe('OneClickActivationComponent', () => {
       DirectoryService,
     ) as jasmine.SpyObj<DirectoryService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
+    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
 
     // Setup default spy behavior
     enrollmentService.listTokens.and.returnValue(Promise.resolve(mockTokens));
