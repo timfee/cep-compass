@@ -14,18 +14,18 @@ mat-card {
   @include mat.elevation(3);
 
   mat-card-title {
-    font-family: var(--font-family-sans);
-    font-size: 24px;
-    font-weight: 500;
-    line-height: 32px;
+    font-family: var(--mat-sys-typescale-headline-medium-font);
+    font-size: var(--mat-sys-typescale-headline-medium-size);
+    font-weight: var(--mat-sys-typescale-headline-medium-weight);
+    line-height: var(--mat-sys-typescale-headline-medium-line-height);
     margin-bottom: 8px;
   }
 
   mat-card-subtitle {
-    font-family: var(--font-family-sans);
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
+    font-family: var(--mat-sys-typescale-body-medium-font);
+    font-size: var(--mat-sys-typescale-body-medium-size);
+    font-weight: var(--mat-sys-typescale-body-medium-weight);
+    line-height: var(--mat-sys-typescale-body-medium-line-height);
     opacity: 0.7;
     margin-bottom: 16px;
   }
