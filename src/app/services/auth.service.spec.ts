@@ -16,8 +16,11 @@ describe('AuthService', () => {
       currentUser: null,
     });
 
-    // Mock global fetch
-    spyOn(window, 'fetch');
+    // Mock global fetch with default response
+    spyOn(window, 'fetch').and.returnValue(Promise.resolve(new Response(JSON.stringify({}), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    })));
 
     TestBed.configureTestingModule({
       providers: [
