@@ -14,85 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
  */
 @Component({
   selector: 'app-error-display',
-  template: `
-    <mat-card class="error-card">
-      <mat-card-content>
-        <div class="error-content">
-          <mat-icon color="warn" class="error-icon">{{ icon() }}</mat-icon>
-          <div class="error-text">
-            <h3 class="error-title">{{ title() }}</h3>
-            <p class="error-message">{{ message() }}</p>
-          </div>
-          @if (showRetry()) {
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="retry.emit()"
-              [disabled]="retryDisabled()"
-              class="retry-button"
-            >
-              <mat-icon>refresh</mat-icon>
-              {{ retryButtonText() }}
-            </button>
-          }
-        </div>
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: [
-    `
-      .error-card {
-        background-color: #ffebee;
-        border-left: 4px solid #f44336;
-        margin: 16px 0;
-      }
-
-      .error-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .error-icon {
-        font-size: 32px;
-        width: 32px;
-        height: 32px;
-      }
-
-      .error-text {
-        flex: 1;
-      }
-
-      .error-title {
-        margin: 0 0 8px 0;
-        font-size: 16px;
-        font-weight: 500;
-        color: #d32f2f;
-      }
-
-      .error-message {
-        margin: 0;
-        color: #666;
-        line-height: 1.4;
-      }
-
-      .retry-button {
-        flex-shrink: 0;
-      }
-
-      @media (max-width: 600px) {
-        .error-content {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
-        }
-
-        .retry-button {
-          align-self: stretch;
-        }
-      }
-    `,
-  ],
+  templateUrl: './error-display.component.html',
+  styleUrl: './error-display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
 })
