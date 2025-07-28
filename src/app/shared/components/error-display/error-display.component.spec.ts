@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ErrorDisplayComponent } from './error-display.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 describe('ErrorDisplayComponent', () => {

@@ -1,5 +1,5 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { AuthService, TOKEN_STORAGE_KEY, UserRoles } from './auth.service';
+import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
 
@@ -88,7 +88,9 @@ describe('AuthService', () => {
       tick();
 
       expect(result).toBe(mockToken);
-      expect(service['accessToken']).toBe(mockToken as any);
+      // The accessToken should be updated after the operation
+      const actualToken = service['accessToken'] as string | null;
+      expect(actualToken).toBe(mockToken);
     }));
 
     it('should return null when no user is authenticated', fakeAsync(async () => {
@@ -285,12 +287,14 @@ describe('AuthService', () => {
 
   describe('refreshAvailableRoles', () => {
     it('should call updateAvailableRoles', fakeAsync(async () => {
-      spyOn(service as any, 'updateAvailableRoles').and.returnValue(Promise.resolve());
+      // Use type assertion to access private method for testing
+      const serviceWithPrivates = service as unknown as { updateAvailableRoles(): Promise<void> };
+      spyOn(serviceWithPrivates, 'updateAvailableRoles').and.returnValue(Promise.resolve());
 
       await service.refreshAvailableRoles();
       tick();
 
-      expect(service['updateAvailableRoles']).toHaveBeenCalled();
+      expect(serviceWithPrivates.updateAvailableRoles).toHaveBeenCalled();
     }));
   });
 
