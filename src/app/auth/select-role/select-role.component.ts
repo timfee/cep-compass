@@ -17,7 +17,76 @@ import { LoadingComponent } from '../../shared/components';
 
 @Component({
   selector: 'app-select-role',
-  templateUrl: './select-role.component.html',
+  template: `
+    <div class="role-selection-container">
+      @if (isLoading()) {
+        <app-loading 
+          type="spinner"
+          message="Loading available roles..." 
+          [diameter]="50">
+        </app-loading>
+      } @else {
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Select a Role</mat-card-title>
+            <mat-card-subtitle
+              >Choose a role to assume for this session.</mat-card-subtitle
+            >
+          </mat-card-header>
+          <mat-card-content>
+            <div class="role-options">
+              <button
+                mat-flat-button
+                color="primary"
+                [disabled]="!authService.availableRoles().isSuperAdmin || isSelectingRole()"
+                (click)="selectRole('superAdmin')"
+              >
+                @if (isSelectingRole()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                }
+                Super Admin
+              </button>
+              <button
+                mat-flat-button
+                color="accent"
+                [disabled]="!authService.availableRoles().isCepAdmin || isSelectingRole()"
+                (click)="selectRole('cepAdmin')"
+              >
+                @if (isSelectingRole()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                }
+                CEP Delegated Admin
+              </button>
+            </div>
+
+            @if (
+              !authService.availableRoles().isCepAdmin &&
+              authService.availableRoles().missingPrivileges?.length
+            ) {
+              <div class="error-message">
+                <h4>CEP Delegated Admin Role Unavailable</h4>
+                <p>
+                  The CEP Delegated Admin role is not available because your
+                  assigned roles are missing the following required privileges:
+                </p>
+                <ul>
+                  @for (
+                    priv of authService.availableRoles().missingPrivileges;
+                    track priv.privilegeName
+                  ) {
+                    <li>
+                      <strong>{{ priv.privilegeName }}</strong>
+                      <span>(Service ID: {{ priv.serviceId }})</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  `,
   styles: [
     `
       .role-selection-container {

@@ -66,9 +66,20 @@ export class AdminRoleService {
     role?: AdminRole;
   }> {
     try {
+      // Get access token
+      const token = await this.authService.getAccessToken();
+      if (!token) {
+        throw new Error('No access token available');
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
       // Get all roles and search for CEP Admin
       const response = await firstValueFrom(
-        this.httpClient.get<RoleListResponse>(this.BASE_URL),
+        this.httpClient.get<RoleListResponse>(this.BASE_URL, { headers }),
       );
 
       if (response?.items) {
@@ -108,8 +119,19 @@ export class AdminRoleService {
     };
 
     try {
+      // Get access token
+      const token = await this.authService.getAccessToken();
+      if (!token) {
+        throw new Error('No access token available');
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
       const response = await firstValueFrom(
-        this.httpClient.post<RoleCreationResponse>(this.BASE_URL, rolePayload),
+        this.httpClient.post<RoleCreationResponse>(this.BASE_URL, rolePayload, { headers }),
       );
 
       if (!response) {
@@ -143,8 +165,19 @@ export class AdminRoleService {
    */
   async getRoleById(roleId: string): Promise<AdminRole> {
     try {
+      // Get access token
+      const token = await this.authService.getAccessToken();
+      if (!token) {
+        throw new Error('No access token available');
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
       const response = await firstValueFrom(
-        this.httpClient.get<AdminRole>(`${this.BASE_URL}/${roleId}`),
+        this.httpClient.get<AdminRole>(`${this.BASE_URL}/${roleId}`, { headers }),
       );
 
       if (!response) {

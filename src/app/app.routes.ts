@@ -68,13 +68,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'demo-loading',
-        loadComponent: () =>
-          import('./components/demo-loading/demo-loading.component').then(
-            (m) => m.DemoLoadingComponent,
-          ),
-      },
-      {
         path: 'enrollment/browsers',
         loadComponent: () =>
           import('./components/browser-enrollment/browser-enrollment.component').then(
