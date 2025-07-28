@@ -169,10 +169,18 @@ describe('AuthService', () => {
       expect(service['isChangingRole']).toBe(true);
     });
 
-    it('should persist selected role to localStorage', () => {
+    it('should persist selected role to localStorage', fakeAsync(() => {
+      // Set up available roles so that superAdmin can be selected
+      service.availableRoles.set({
+        isSuperAdmin: true,
+        isCepAdmin: true,
+        missingPrivileges: [],
+      });
+      
       service.selectRole('superAdmin');
+      tick(); // Allow effects to run
       expect(localStorage.getItem('cep_selected_role')).toBe('superAdmin');
-    });
+    }));
   });
 
   describe('updateAvailableRoles', () => {
@@ -238,12 +246,14 @@ describe('AuthService', () => {
       (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockErrorResponse));
 
       await service['updateAvailableRoles']();
-      tick();
+      tick(100); // Reduced tick for test environment
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
-      expect(roles.missingPrivileges).toEqual([]);
+      expect(roles.missingPrivileges).toEqual([
+        { privilegeName: 'REAUTHENTICATION_REQUIRED', serviceId: 'auth' }
+      ]);
     }));
 
     it('should handle user without email', fakeAsync(async () => {
@@ -259,16 +269,19 @@ describe('AuthService', () => {
       service['accessToken'] = mockToken;
 
       await service['updateAvailableRoles']();
-      tick();
+      tick(100); // Reduced tick for test environment
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
+      expect(roles.missingPrivileges).toEqual([
+        { privilegeName: 'REAUTHENTICATION_REQUIRED', serviceId: 'auth' }
+      ]);
     }));
   });
 
   describe('race condition prevention', () => {
-    it('should set and reset changing role flag correctly', () => {
+    it('should set and reset changing role flag correctly', fakeAsync(() => {
       service.availableRoles.set({
         isSuperAdmin: true,
         isCepAdmin: true,
@@ -279,10 +292,11 @@ describe('AuthService', () => {
       service.selectRole(null);
       expect(service['isChangingRole']).toBe(true);
 
-      // Selecting a role should reset the flag
+      // Selecting a role should reset the flag (happens in effect)
       service.selectRole('superAdmin');
+      tick(); // Allow effects to run
       expect(service['isChangingRole']).toBe(false);
-    });
+    }));
   });
 
   describe('refreshAvailableRoles', () => {

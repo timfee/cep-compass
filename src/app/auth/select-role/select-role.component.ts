@@ -55,8 +55,9 @@ export class SelectRoleComponent implements OnInit {
     
     this.isSelectingRole.set(true);
     try {
+      // Select role synchronously
       this.authService.selectRole(role);
-      // Navigate to dashboard after role selection
+      // Navigate asynchronously 
       await this.router.navigate(['/dashboard']);
     } catch (error) {
       console.error('Failed to select role:', error);

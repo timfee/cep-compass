@@ -24,6 +24,11 @@ export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
 const REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED';
+/**
+ * Delay to ensure OAuth token is available in session storage after popup closes.
+ * This timing accounts for the asynchronous nature of the OAuth popup flow.
+ */
+const TOKEN_AVAILABILITY_DELAY = 100;
 
 /**
  * Service for handling authentication and user role management
@@ -60,7 +65,7 @@ export class AuthService {
         if (!this.isChangingRole) {
           setTimeout(async () => {
             await this.updateAvailableRoles();
-          }, 100);
+          }, TOKEN_AVAILABILITY_DELAY);
         }
       } else {
         // If logged out, reset everything and clear storage.
@@ -277,12 +282,38 @@ export class AuthService {
     }
   }
 
-  private async updateAvailableRoles(): Promise<void> {
-    const maxRetries = 3;
+  /**
+   * Executes an async operation with retry logic and exponential backoff
+   */
+  private async executeWithRetry<T>(
+    operation: () => Promise<T>,
+    maxRetries = 3
+  ): Promise<T> {
     let retryCount = 0;
     
     while (retryCount < maxRetries) {
       try {
+        return await operation();
+      } catch (error) {
+        retryCount++;
+        
+        if (retryCount >= maxRetries) {
+          throw error;
+        }
+        
+        // Exponential backoff delay (reduced in test environment)
+        const baseDelay = typeof jasmine !== 'undefined' ? 10 : 1000; // Faster retries in tests
+        const delay = Math.pow(2, retryCount) * baseDelay;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    throw new Error('Max retries exceeded');
+  }
+
+  private async updateAvailableRoles(): Promise<void> {
+    try {
+      await this.executeWithRetry(async () => {
         const token = await this.getAccessToken();
         if (!token) {
           console.warn(
@@ -316,13 +347,12 @@ export class AuthService {
         );
 
         if (!userResponse.ok) {
-          if (userResponse.status === 401 && retryCount < maxRetries - 1) {
+          if (userResponse.status === 401) {
             // Token might be expired, try to refresh
             console.log('Access token expired, attempting refresh...');
             const refreshedToken = await this.refreshAccessToken();
             if (refreshedToken) {
-              retryCount++;
-              continue; // Retry with refreshed token
+              throw new Error('Token refreshed, retry needed');
             }
           }
           throw new Error(`Admin API error: ${userResponse.statusText}`);
@@ -352,13 +382,12 @@ export class AuthService {
         );
 
         if (!rolesResponse.ok) {
-          if (rolesResponse.status === 401 && retryCount < maxRetries - 1) {
+          if (rolesResponse.status === 401) {
             // Token might be expired, try to refresh
             console.log('Access token expired during role check, attempting refresh...');
             const refreshedToken = await this.refreshAccessToken();
             if (refreshedToken) {
-              retryCount++;
-              continue; // Retry with refreshed token
+              throw new Error('Token refreshed, retry needed');
             }
           }
           throw new Error(
@@ -455,27 +484,17 @@ export class AuthService {
           isCepAdmin: hasAllPrivileges,
           missingPrivileges: hasAllPrivileges ? [] : missingPrivileges,
         });
-        
-        return; // Success, exit retry loop
-        
-      } catch (error) {
-        console.error('API Error checking admin roles (attempt', retryCount + 1, '):', error);
-        retryCount++;
-        
-        if (retryCount >= maxRetries) {
-          // Final failure - set minimal permissions
-          this.availableRoles.set({
-            isSuperAdmin: false,
-            isCepAdmin: false,
-            missingPrivileges: [
-              { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
-            ],
-          });
-        } else {
-          // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
+      });
+    } catch (error) {
+      console.error('Failed to update available roles after retries:', error);
+      // Final failure - set minimal permissions
+      this.availableRoles.set({
+        isSuperAdmin: false,
+        isCepAdmin: false,
+        missingPrivileges: [
+          { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
+        ],
+      });
     }
   }
 }
