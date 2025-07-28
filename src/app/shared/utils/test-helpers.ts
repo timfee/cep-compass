@@ -16,11 +16,26 @@ export interface MockResponseOptions {
 }
 
 /**
- * Creates a mock Response object for testing fetch calls
- * @param options Configuration options for the mock response
- * @returns A mock Response object that can be used with Promise.resolve()
+ * Mock Response interface that extends the standard Response interface
+ * This represents a test mock object, not a real Response instance
  */
-export function createMockResponse(options: MockResponseOptions = {}): Response {
+export interface MockResponse extends Response {
+  /** Mock implementation that allows multiple json() calls */
+  json(): Promise<unknown>;
+}
+
+/**
+ * Creates a mock Response object for testing fetch calls.
+ * 
+ * ⚠️ **Important**: This creates a mock object that implements the Response interface
+ * but is NOT a real Response instance. It's designed for testing purposes and includes
+ * mock implementations that may behave differently from the real Response API
+ * (e.g., allows multiple json() calls).
+ * 
+ * @param options Configuration options for the mock response
+ * @returns A mock object implementing the Response interface for use in tests
+ */
+export function createMockResponse(options: MockResponseOptions = {}): MockResponse {
   const {
     data = {},
     status = 200,
@@ -29,25 +44,27 @@ export function createMockResponse(options: MockResponseOptions = {}): Response 
     statusText = ok ? 'OK' : 'Error'
   } = options;
 
-  // Create a mock object that behaves like Response but allows multiple json() calls
-  const mockResponse = {
+  // Create a mock object that implements the Response interface for testing
+  // Note: This is not a real Response instance but a mock with similar behavior
+  const mockResponse: MockResponse = {
     json: () => Promise.resolve(data),
     ok,
     status,
     statusText,
     headers: new Headers(headers),
-    // Add other Response properties that might be needed
+    // Standard Response properties
     url: '',
     redirected: false,
     type: 'basic' as ResponseType,
-    clone: () => mockResponse,
+    clone: function() { return this; },
     body: null,
     bodyUsed: false,
     arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     blob: () => Promise.resolve(new Blob()),
+    bytes: () => Promise.resolve(new Uint8Array()),
     formData: () => Promise.resolve(new FormData()),
     text: () => Promise.resolve(JSON.stringify(data))
   };
 
-  return mockResponse as unknown as Response;
+  return mockResponse;
 }
