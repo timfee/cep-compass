@@ -9,6 +9,7 @@ import {
 } from '../../services/directory.service';
 import { EmailTemplateService } from '../../services/email-template.service';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../core/notification.service';
 
 describe('ProfileEnrollmentComponent', () => {
   let component: ProfileEnrollmentComponent;
@@ -16,6 +17,7 @@ describe('ProfileEnrollmentComponent', () => {
   let mockDirectoryService: jasmine.SpyObj<DirectoryService>;
   let mockEmailService: jasmine.SpyObj<EmailTemplateService>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockNotificationService: jasmine.SpyObj<NotificationService>;
 
   const mockStats: DirectoryStats = {
     totalUsers: 100,
@@ -25,41 +27,51 @@ describe('ProfileEnrollmentComponent', () => {
     lastSyncTime: new Date(),
   };
 
+  // Create writeable signals for testing
+  let isLoadingSignal = signal(false);
+  let errorSignal = signal<string | null>(null);
+  let statsSignal = signal(mockStats);
+  let usersSignal = signal([
+    {
+      id: '1',
+      primaryEmail: 'user1@example.com',
+      name: {
+        givenName: 'John',
+        familyName: 'Doe',
+        fullName: 'John Doe',
+      },
+      suspended: false,
+      orgUnitPath: '/',
+      isAdmin: false,
+      isDelegatedAdmin: false,
+      lastLoginTime: '2024-01-01T00:00:00Z',
+      creationTime: '2023-01-01T00:00:00Z',
+      emails: [{ address: 'user1@example.com', primary: true }],
+    },
+  ]);
+
   beforeEach(async () => {
     // Create spy objects for services
     mockDirectoryService = jasmine.createSpyObj(
       'DirectoryService',
       ['fetchInitialData', 'refreshStats'],
       {
-        stats: signal(mockStats),
-        isLoading: signal(false),
-        error: signal(null),
-        users: signal([
-          {
-            id: '1',
-            primaryEmail: 'user1@example.com',
-            name: {
-              givenName: 'John',
-              familyName: 'Doe',
-              fullName: 'John Doe',
-            },
-            suspended: false,
-            orgUnitPath: '/',
-            isAdmin: false,
-            isDelegatedAdmin: false,
-            lastLoginTime: '2024-01-01T00:00:00Z',
-            creationTime: '2023-01-01T00:00:00Z',
-            emails: [{ address: 'user1@example.com', primary: true }],
-          },
-        ]),
+        stats: statsSignal,
+        isLoading: isLoadingSignal,
+        error: errorSignal,
+        users: usersSignal,
       },
     );
 
     // Add additional spy properties for the computed signals
     Object.assign(mockDirectoryService, {
-      isLoading: signal(false),
-      error: signal(null),
+      isLoading: isLoadingSignal,
+      error: errorSignal,
     });
+
+    // Setup spy return values
+    mockDirectoryService.fetchInitialData.and.returnValue(Promise.resolve());
+    mockDirectoryService.refreshStats.and.returnValue(Promise.resolve());
 
     mockEmailService = jasmine.createSpyObj(
       'EmailTemplateService',
@@ -83,12 +95,19 @@ describe('ProfileEnrollmentComponent', () => {
       user: signal(null),
     });
 
+    mockNotificationService = jasmine.createSpyObj('NotificationService', [
+      'success',
+      'warning',
+      'error',
+    ]);
+
     await TestBed.configureTestingModule({
       imports: [ProfileEnrollmentComponent, NoopAnimationsModule],
       providers: [
         { provide: DirectoryService, useValue: mockDirectoryService },
         { provide: EmailTemplateService, useValue: mockEmailService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: NotificationService, useValue: mockNotificationService },
       ],
     }).compileComponents();
 
@@ -113,7 +132,7 @@ describe('ProfileEnrollmentComponent', () => {
 
   it('should show loading state', () => {
     // Set loading state
-    Object.assign(mockDirectoryService, { isLoading: signal(true) });
+    isLoadingSignal.set(true);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -123,9 +142,7 @@ describe('ProfileEnrollmentComponent', () => {
 
   it('should show error state', () => {
     // Set error state
-    Object.assign(mockDirectoryService, {
-      error: signal('Test error message'),
-    });
+    errorSignal.set('Test error message');
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -139,6 +156,10 @@ describe('ProfileEnrollmentComponent', () => {
       '[matTooltip="Refresh"]',
     ) as HTMLButtonElement;
     refreshButton.click();
+    fixture.detectChanges();
+    
+    // Wait for async operation to complete
+    await fixture.whenStable();
 
     expect(mockDirectoryService.refreshStats).toHaveBeenCalled();
   });
