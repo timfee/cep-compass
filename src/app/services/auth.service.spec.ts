@@ -2,6 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
+import { createMockResponse } from '../shared/utils/test-helpers';
 
 /**
  * Comprehensive unit tests for AuthService focusing on critical methods and token management
@@ -17,10 +18,7 @@ describe('AuthService', () => {
     });
 
     // Mock global fetch with default response
-    spyOn(window, 'fetch').and.returnValue(Promise.resolve(new Response(JSON.stringify({}), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    })));
+    spyOn(window, 'fetch').and.returnValue(Promise.resolve(createMockResponse()));
 
     TestBed.configureTestingModule({
       providers: [
@@ -204,10 +202,9 @@ describe('AuthService', () => {
       
       service['accessToken'] = mockToken;
 
-      const mockUserResponse = {
-        json: () => Promise.resolve({ isAdmin: true }),
-        ok: true,
-      };
+      const mockUserResponse = createMockResponse({
+        data: { isAdmin: true }
+      });
 
       (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockUserResponse));
 
@@ -232,11 +229,11 @@ describe('AuthService', () => {
       
       service['accessToken'] = mockToken;
 
-      const mockErrorResponse = {
-        json: () => Promise.resolve({}),
-        ok: false,
-        statusText: 'Forbidden',
-      };
+      const mockErrorResponse = createMockResponse({
+        data: {},
+        status: 403,
+        statusText: 'Forbidden'
+      });
 
       (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockErrorResponse));
 
