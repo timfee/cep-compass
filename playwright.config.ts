@@ -15,6 +15,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
   projects: [
@@ -24,5 +25,11 @@ export default defineConfig({
     },
   ],
 
-  // Remove webServer for now to test manually
+  // Start dev server before running tests
+  webServer: {
+    command: 'npm start',
+    port: 4200,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
 });
