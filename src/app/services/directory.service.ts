@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
-import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
+import { GoogleApiErrorHandler } from '../shared/constants/google-api.constants';
 import { BaseApiService } from '../core/base-api.service';
 
 export interface DirectoryUser {
@@ -302,7 +302,7 @@ export class DirectoryService extends BaseApiService {
 
       this.updateFetchTime();
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       this.setError(errorMessage);
       console.error('Failed to fetch initial directory data:', error);
     } finally {
@@ -329,7 +329,7 @@ export class DirectoryService extends BaseApiService {
     try {
       await this.loadUsersPage(100);
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       this.setError(errorMessage);
       console.error('Failed to load more users:', error);
     } finally {
@@ -356,7 +356,7 @@ export class DirectoryService extends BaseApiService {
     try {
       await this.loadGroupsPage(100);
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       this.setError(errorMessage);
       console.error('Failed to load more groups:', error);
     } finally {
@@ -390,7 +390,7 @@ export class DirectoryService extends BaseApiService {
 
       return [];
     } catch (error: unknown) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       console.error('Failed to search users:', error);
       throw new Error(`Failed to search users: ${errorMessage}`);
     }
@@ -424,7 +424,7 @@ export class DirectoryService extends BaseApiService {
 
       return [];
     } catch (error: unknown) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       console.error('Failed to search groups:', error);
       throw new Error(`Failed to search groups: ${errorMessage}`);
     }
@@ -452,7 +452,7 @@ export class DirectoryService extends BaseApiService {
 
       return [];
     } catch (error: unknown) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       console.error('Failed to get user groups:', error);
       throw new Error(`Failed to get user groups: ${errorMessage}`);
     }
@@ -501,7 +501,7 @@ export class DirectoryService extends BaseApiService {
 
       return allMembers;
     } catch (error: unknown) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleDirectoryError(error);
       console.error('Failed to get group members:', error);
       throw new Error(`Failed to get group members: ${errorMessage}`);
     }
@@ -744,9 +744,5 @@ export class DirectoryService extends BaseApiService {
         ? group.description.toLowerCase().includes(searchTerm)
         : false)
     );
-  }
-
-  private handleApiError(error: unknown): string {
-    return GoogleApiErrorHandler.handleDirectoryError(error);
   }
 }

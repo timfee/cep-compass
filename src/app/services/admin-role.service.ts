@@ -1,16 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { AuthService } from './auth.service';
 import {
   CEP_ADMIN_PRIVILEGES,
   GoogleApiUtils,
+  Privilege,
 } from '../shared/constants/google-api.constants';
 
-export interface RolePrivilege {
-  privilegeName: string;
-  serviceId: string;
-}
+export type RolePrivilege = Privilege;
 
 export interface AdminRole {
   kind: string;
@@ -54,7 +51,6 @@ export const CEP_ADMIN_ROLE: Omit<AdminRole, 'kind'> = {
 })
 export class AdminRoleService {
   private readonly httpClient = inject(HttpClient);
-  private readonly authService = inject(AuthService);
 
   private readonly BASE_URL = GoogleApiUtils.buildCustomerUrl('roles');
 

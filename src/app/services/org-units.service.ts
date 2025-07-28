@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
-import { GoogleApiErrorHandler } from '../shared/utils/google-api-error-handler';
+import { GoogleApiErrorHandler } from '../shared/constants/google-api.constants';
 import { BaseApiService } from '../core/base-api.service';
 
 /**
@@ -120,7 +120,7 @@ export class OrgUnitsService extends BaseApiService {
       this._orgUnits.set([rootOrgUnit, ...orgUnits]);
       this.updateFetchTime();
     } catch (error) {
-      const errorMessage = this.handleApiError(error);
+      const errorMessage = GoogleApiErrorHandler.handleOrgUnitsError(error);
       this.setError(errorMessage);
       console.error('Failed to fetch organizational units:', error);
     } finally {
@@ -196,21 +196,26 @@ export class OrgUnitsService extends BaseApiService {
     parentOrgUnitPath?: string;
     parentOrgUnitId?: string;
   }): OrgUnit {
-    // Validate required fields
-    if (!apiUnit.orgUnitPath || !apiUnit.orgUnitId || !apiUnit.name) {
-      console.warn('Missing required fields in API response:', apiUnit);
-      throw new Error(
-        'API response is missing required fields: orgUnitPath, orgUnitId, or name.',
+    // Handle missing required fields gracefully with defaults
+    const missingFields = [];
+    if (!apiUnit.orgUnitPath) missingFields.push('orgUnitPath');
+    if (!apiUnit.orgUnitId) missingFields.push('orgUnitId');
+    if (!apiUnit.name) missingFields.push('name');
+
+    if (missingFields.length > 0) {
+      console.warn(
+        `Missing required fields in API response: ${missingFields.join(', ')}`,
+        apiUnit
       );
     }
 
     return {
-      orgUnitPath: apiUnit.orgUnitPath,
-      orgUnitId: apiUnit.orgUnitId,
-      name: apiUnit.name,
-      description: apiUnit.description,
-      parentOrgUnitPath: apiUnit.parentOrgUnitPath,
-      parentOrgUnitId: apiUnit.parentOrgUnitId,
+      orgUnitPath: apiUnit.orgUnitPath || '',
+      orgUnitId: apiUnit.orgUnitId || '',
+      name: apiUnit.name || '',
+      description: apiUnit.description || '',
+      parentOrgUnitPath: apiUnit.parentOrgUnitPath || '/',
+      parentOrgUnitId: apiUnit.parentOrgUnitId || 'root',
     };
   }
 
@@ -282,16 +287,6 @@ export class OrgUnitsService extends BaseApiService {
         this.sortTreeNodes(node.children);
       }
     });
-  }
-
-  /**
-   * Handles API errors and returns user-friendly error messages
-   *
-   * @param error - Error from HTTP request
-   * @returns User-friendly error message
-   */
-  private handleApiError(error: unknown): string {
-    return GoogleApiErrorHandler.handleOrgUnitsError(error);
   }
 
   /**

@@ -31,7 +31,6 @@ describe('EmailComposerComponent', () => {
         'setVariableValue',
         'composeEmail',
         'validateRequiredVariables',
-        'copyToClipboard',
         'getGmailComposeUrl',
       ],
       {
@@ -215,11 +214,16 @@ describe('EmailComposerComponent', () => {
 
   describe('Actions', () => {
     it('should copy to clipboard', async () => {
-      emailService.copyToClipboard.and.returnValue(Promise.resolve());
+      // Mock the navigator clipboard API
+      const writeTextSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: writeTextSpy },
+        configurable: true
+      });
 
       await component.copyToClipboard();
 
-      expect(emailService.copyToClipboard).toHaveBeenCalled();
+      expect(writeTextSpy).toHaveBeenCalled();
     });
 
     it('should open in Gmail', () => {

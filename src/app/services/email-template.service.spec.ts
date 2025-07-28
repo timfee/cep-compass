@@ -27,7 +27,7 @@ describe('EmailTemplateService', () => {
 
       // Check for expected pre-built templates
       const templateIds = templates.map((t) => t.id);
-      expect(templateIds).toContain('browser-enrollment-token');
+      expect(templateIds).toContain('browser-enrollment');
       expect(templateIds).toContain('user-chrome-profile-login');
       expect(templateIds).toContain('security-policy-notification');
     });
@@ -335,29 +335,8 @@ describe('EmailTemplateService', () => {
       expect(url).toContain('https://mail.google.com/mail/');
       expect(url).toContain('view=cm');
       expect(url).toContain('to=test%40example.com');
-      expect(url).toContain('subject=Test%20Subject');
-      expect(url).toContain('body=Test%20Body');
-    });
-
-    it('should copy to clipboard', async () => {
-      // Mock clipboard API
-      const mockWriteText = jasmine
-        .createSpy('writeText')
-        .and.returnValue(Promise.resolve());
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: mockWriteText,
-        },
-      });
-      Object.defineProperty(window, 'isSecureContext', {
-        value: true,
-        writable: true,
-      });
-
-      const testText = 'Test text to copy';
-      await service.copyToClipboard(testText);
-
-      expect(mockWriteText).toHaveBeenCalledWith(testText);
+      expect(url).toContain('subject=Test+Subject');
+      expect(url).toContain('body=Test+Body');
     });
   });
 });

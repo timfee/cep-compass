@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { SelectRoleComponent } from './auth/select-role/select-role.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {
   AuthGuard,
   redirectLoggedInTo,
@@ -49,15 +49,15 @@ export const routes: Routes = [
       {
         path: 'org-units',
         loadComponent: () =>
-          import('./org-units/org-units.component').then(
+          import('./components/org-units/org-units.component').then(
             (m) => m.OrgUnitsComponent,
           ),
       },
       {
         path: 'email-templates',
         loadComponent: () =>
-          import('./email-templates/email-templates.component').then(
-            (m) => m.EmailTemplatesComponent,
+          import('./components/email-composer/email-composer.component').then(
+            (m) => m.EmailComposerComponent,
           ),
       },
       {
@@ -68,30 +68,39 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'demo-loading',
+        path: 'enrollment/browsers',
         loadComponent: () =>
-          import('./demo-loading/demo-loading.component').then(
-            (m) => m.DemoLoadingComponent,
+          import('./components/browser-enrollment/browser-enrollment.component').then(
+            (m) => m.BrowserEnrollmentComponent,
           ),
       },
       {
-        path: 'enrollment',
-        loadChildren: () =>
-          import('./features/enrollment/enrollment.routes').then(
-            (m) => m.enrollmentRoutes,
+        path: 'enrollment/profiles',
+        loadComponent: () =>
+          import('./components/profile-enrollment/profile-enrollment.component').then(
+            (m) => m.ProfileEnrollmentComponent,
           ),
       },
       {
-        path: 'security',
-        loadChildren: () =>
-          import('./features/security/security.routes').then(
-            (m) => m.securityRoutes,
+        path: 'security/one-click',
+        loadComponent: () =>
+          import('./components/one-click-activation/one-click-activation.component').then(
+            (m) => m.OneClickActivationComponent,
           ),
       },
       {
-        path: 'admin',
-        loadChildren: () =>
-          import('./features/admin/admin.routes').then((m) => m.adminRoutes),
+        path: 'security/dlp',
+        loadComponent: () =>
+          import('./components/dlp-configuration/dlp-configuration.component').then(
+            (m) => m.DlpConfigurationComponent,
+          ),
+      },
+      {
+        path: 'admin/create-role',
+        loadComponent: () =>
+          import('./components/create-role/create-role.component').then(
+            (m) => m.CreateRoleComponent,
+          ),
         canActivate: [superAdminGuard],
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

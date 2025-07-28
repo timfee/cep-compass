@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { AdminRoleService, CEP_ADMIN_ROLE } from './admin-role.service';
+import { NotificationService } from '../core/notification.service';
 
 describe('AdminRoleService', () => {
   let service: AdminRoleService;
@@ -15,12 +16,19 @@ describe('AdminRoleService', () => {
     const authServiceSpy = jasmine.createSpyObj('AuthService', [
       'getAccessToken',
     ]);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', [
+      'success',
+      'error',
+      'info',
+      'warning',
+    ]);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         AdminRoleService,
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: NotificationService, useValue: notificationServiceSpy },
       ],
     });
 

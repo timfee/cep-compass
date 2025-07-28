@@ -2,7 +2,50 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
-import { createMockResponse } from '../shared/utils/test-helpers';
+
+/** Test utility functions for creating mock objects and responses */
+interface MockResponseOptions {
+  data?: unknown;
+  status?: number;
+  headers?: Record<string, string>;
+  ok?: boolean;
+  statusText?: string;
+}
+
+interface MockResponse extends Response {
+  json(): Promise<unknown>;
+}
+
+function createMockResponse(options: MockResponseOptions = {}): MockResponse {
+  const {
+    data = {},
+    status = 200,
+    headers = { 'Content-Type': 'application/json' },
+    ok = status >= 200 && status < 300,
+    statusText = ok ? 'OK' : 'Error'
+  } = options;
+
+  const mockResponse: MockResponse = {
+    json: () => Promise.resolve(data),
+    ok,
+    status,
+    statusText,
+    headers: new Headers(headers),
+    url: '',
+    redirected: false,
+    type: 'basic' as ResponseType,
+    clone: function() { return this; },
+    body: null,
+    bodyUsed: false,
+    arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+    blob: () => Promise.resolve(new Blob()),
+    bytes: () => Promise.resolve(new Uint8Array()),
+    formData: () => Promise.resolve(new FormData()),
+    text: () => Promise.resolve(JSON.stringify(data))
+  };
+
+  return mockResponse;
+}
 
 /**
  * Comprehensive unit tests for AuthService focusing on critical methods and token management
@@ -230,7 +273,7 @@ describe('AuthService', () => {
       expect(roles.missingPrivileges).toEqual([]);
     }));
 
-    it('should handle API errors gracefully', fakeAsync(async () => {
+    it('should handle API errors gracefully', async () => {
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
       
@@ -242,6 +285,12 @@ describe('AuthService', () => {
       
       service['accessToken'] = mockToken;
 
+      // Mock retryWithBackoff to avoid real retries and timeouts
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
+        return await fn();
+      });
+
       const mockErrorResponse = createMockResponse({
         data: {},
         status: 403,
@@ -251,15 +300,14 @@ describe('AuthService', () => {
       (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockErrorResponse));
 
       await service['updateAvailableRoles']();
-      tick();
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
       expect(roles.missingPrivileges).toEqual([]);
-    }));
+    });
 
-    it('should handle user without email', fakeAsync(async () => {
+    it('should handle user without email', async () => {
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: null };
       
@@ -271,13 +319,18 @@ describe('AuthService', () => {
       
       service['accessToken'] = mockToken;
 
+      // Mock retryWithBackoff to avoid real retries and timeouts
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
+        return await fn();
+      });
+
       await service['updateAvailableRoles']();
-      tick();
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
-    }));
+    });
   });
 
   describe('race condition prevention', () => {
