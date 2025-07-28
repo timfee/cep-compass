@@ -1,0 +1,50 @@
+.error-card {
+  background-color: var(--mdc-snackbar-container-color, #ffdad6);
+  border-left: 4px solid var(--mat-badge-warn-background-color, #ba1a1a);
+  margin: 16px 0;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.error-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.error-text {
+  flex: 1;
+}
+
+.error-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mdc-snackbar-supporting-text-color, #93000a);
+}
+
+.error-message {
+  margin: 0;
+  color: var(--mat-optgroup-label-text-color, #46464f);
+  line-height: 1.4;
+}
+
+.retry-button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .error-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .retry-button {
+    align-self: stretch;
+  }
+}

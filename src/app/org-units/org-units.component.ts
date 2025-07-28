@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
 import { OrgUnitsService } from '../services/org-units.service';
+import { ErrorDisplayComponent } from '../shared/components';
 
 /**
  * Organizational Units management component
@@ -53,12 +54,14 @@ import { OrgUnitsService } from '../services/org-units.service';
         }
 
         @if (orgUnitsService.error()) {
-          <mat-card class="error-card">
-            <mat-card-content>
-              <mat-icon color="warn">error</mat-icon>
-              <p>{{ orgUnitsService.error() }}</p>
-            </mat-card-content>
-          </mat-card>
+          <app-error-display
+            [message]="orgUnitsService.error()!"
+            title="Organizational Units Error"
+            icon="account_tree_off"
+            [retryDisabled]="orgUnitsService.isLoading()"
+            retryButtonText="Retry Loading"
+            (retry)="fetchOrgUnits()"
+          />
         }
 
         @if (
@@ -138,17 +141,6 @@ import { OrgUnitsService } from '../services/org-units.service';
         color: #666;
       }
 
-      .error-card {
-        background-color: #ffebee;
-        margin: 16px 0;
-      }
-
-      .error-card mat-card-content {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
       .results {
         margin-top: 16px;
       }
@@ -203,6 +195,7 @@ import { OrgUnitsService } from '../services/org-units.service';
     MatProgressSpinnerModule,
     MatIconModule,
     MatTreeModule,
+    ErrorDisplayComponent,
   ],
 })
 export class OrgUnitsComponent {

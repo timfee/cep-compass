@@ -19,6 +19,7 @@ import {
   DirectoryUser,
   DirectoryGroup,
 } from '../../services/directory.service';
+import { ErrorDisplayComponent } from '../../shared/components';
 import { SkeletonCardComponent } from '../../shared/components';
 
 /**
@@ -38,6 +39,7 @@ import { SkeletonCardComponent } from '../../shared/components';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    ErrorDisplayComponent,
     SkeletonCardComponent,
   ],
 })

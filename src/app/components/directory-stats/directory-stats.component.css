@@ -7,21 +7,6 @@
   gap: 24px;
 }
 
-.error-card {
-  background-color: #ffebee;
-  border-left: 4px solid #f44336;
-}
-
-.error-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.error-content mat-icon {
-  color: #f44336;
-}
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
