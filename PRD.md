@@ -3,38 +3,38 @@
 ## **Chrome Enterprise Premium onboarding wizard for IT administrators**
 
 Team: Chrome Enterprise  
-Contributors: [PM], [Designer], [Engineer], [Analyst]  
+Contributors: PM, Designer, Engineer, Analyst  
 Resources: [Designs](./designs), [Analytics](./analytics), [Notes](./docs)  
-Status: **Solution Review** / Draft / Problem Review / Launch Review / Launched  
+Status: **Solution Review**  
 Last Updated: Monday, January 28, 2025
 
 ---
 
 # Problem Alignment 
 
-| IT administrators with existing GCP billing relationships cannot easily onboard Chrome Enterprise Premium because the Workspace/GCP admin won't grant them Super Admin privileges. Even when they get access, they don't know where to start - which APIs to enable, what tokens to generate, or how to safely roll out policies without disrupting users. |
+| Phase-1: Account has GCP billing relationship, domain has been verified. Need to get the Citrix admin the right privilege level to login to http://admin.google.com, so they can start their CEP journey (80% of account base). Problems: Citrix admin is disconnected from the GCP/Workspace admin in the account. Why would that team give a Citrix admin superadmin privileges to http://admin.google? Even after the Citrix admin has been provisioned the login privilege - where do they go first, and what do they do. |
 | :---- |
 
 ## High Level Approach
 
-| Build a guided wizard with 5 action cards that walk IT admins through: creating delegated admin roles, generating enrollment tokens, educating users, activating security features, and configuring safe audit-only policies. |
+| Build a guided wizard with 5 action cards that walk IT admins through: creating delegated admin roles, generating enrollment tokens, educating users, activating security features, and configuring safe audit-only policies. Optimize by auto-assigning licenses to the org. |
 | :---- |
 
 ## Goals
 
-1. Enable Chrome management without requiring full Super Admin access
-2. Provide clear next steps after license purchase
-3. Prevent disruptive policy deployments through safe defaults
-4. Show enrollment progress with real metrics
-5. Generate ready-to-send deployment instructions
+1. Enable Chrome management without requiring full Super Admin access (delegated CEP Admin role)
+2. Auto-assign licenses to the organization for streamlined onboarding
+3. Provide clear guidance for post-license assignment workflows
+4. Prevent disruptive policy deployments through safe audit-only defaults
+5. Generate ready-to-send deployment instructions for end users
 
 ## Non-goals
 
-1. Replace Google Admin Console
-2. Automate software deployment to endpoints
-3. Build custom policy editors
-4. Handle license purchasing
-5. Support multi-tenant scenarios
+1. Replace Google Admin Console functionality
+2. Handle multi-tenant scenarios or complex org structures
+3. Automate software deployment to endpoints
+4. Build custom policy editors beyond linking to Google's tools
+5. Handle license purchasing workflow
 
 | 🛑  Do not continue if all contributors are not aligned on the problem.  🟢  Complete the following table with "signatures" from all reviewers to move on.  |
 | :---- |
@@ -54,30 +54,34 @@ Last Updated: Monday, January 28, 2025
 
 Plan of record
 
+## Key Features
+
+Plan of record
+
 1. **Create CEP Admin Role (Card 1 - Super Admins only)**  
-   - One-click creation of delegated admin role
-   - Minimal permissions: Chrome management + read-only directory access
+   - One-click creation of delegated admin role with Chrome management permissions
    - Direct link to assign users: `https://admin.google.com/ac/roles/{RoleID}/admins`
+   - Minimal permissions: CHROME_MANAGEMENT + read-only directory access
 
 2. **Enroll Browsers (Card 2)**  
-   - List existing enrollment tokens
-   - Create new tokens with OU picker
-   - Draft deployment email with token and platform-specific instructions
+   - View existing enrollment tokens at `https://admin.google.com/ac/chrome/browser-tokens?org&hl=en`
+   - Create new enrollment tokens via `GET https://www.googleapis.com/admin/directory/v1.1beta1/customer/my_customer/chrome/enrollmentTokens?pageSize=1&orgUnitPath={LET_USER_PICK}`
+   - Draft email template with token value for IT admin deployment
 
 3. **Enroll Profiles (Card 3)**  
-   - Show directory user count for validation
-   - Draft user education email
-   - Instructions for signing into Chrome
+   - Show directory user count for sync validation
+   - Draft user education email for work account login to Chrome
+   - Guide users through SSO authentication process
 
 4. **One-Click Activation (Card 4)**  
-   - Link to `https://admin.google.com/ac/chrome/reports/securityinsights`
-   - Prerequisite validation (browsers/profiles enrolled)
-   - Explain dashboard population timeline
+   - Direct to `https://admin.google.com/ac/chrome/reports/securityinsights` 
+   - Prerequisite validation (browsers/profiles must be enrolled first)
+   - Enable dashboard data population
 
 5. **DLP Configuration (Card 5)**  
    - Direct to `https://admin.google.com/ac/dp?hl=en`
-   - Recommend audit-only policies first
-   - Avoid blocking actions initially
+   - Recommend audit-only policies to generate logs without user disruption
+   - Safe rollout approach to prevent user complaints or job-threatening incidents
 
 ## Key Flows
 
@@ -155,10 +159,10 @@ Plan of record
 ## Implementation Notes
 
 ### Shared Infrastructure
-1. **OrgUnit Service** - Enumerate OUs for dropdown
-2. **Email Composer** - Rich text editor with templates
-3. **User/Group Service** - Validate directory sync
-4. **Enrollment Token Service** - Create and list tokens
+1. **OrgUnit Service** - Enumerate organizational units starting from root for dropdown selection
+2. **Email Composer** - Rich text editor using `https://www.npmjs.com/package/ngx-editor` with meaningful helpful message templates  
+3. **User/Group Service** - Enumerate users and groups to validate directory sync state
+4. **Enrollment Token Service** - Create and list Chrome browser enrollment tokens
 
 ### API Authentication
 - All calls require OAuth token from AuthService

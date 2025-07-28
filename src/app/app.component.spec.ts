@@ -1,10 +1,18 @@
 import { TestBed } from '@angular/core/testing';
+import { Auth } from '@angular/fire/auth';
 import { App } from './app.component';
 
 describe('App', () => {
   beforeEach(async () => {
+    const mockAuth = jasmine.createSpyObj('Auth', [], {
+      currentUser: null,
+    });
+
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        { provide: Auth, useValue: mockAuth },
+      ],
     }).compileComponents();
   });
 
@@ -18,6 +26,6 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, myapp');
+    expect(compiled.querySelector('mat-toolbar span')?.textContent).toContain('CEP Compass');
   });
 });
