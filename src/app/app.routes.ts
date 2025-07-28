@@ -75,23 +75,39 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'enrollment',
-        loadChildren: () =>
-          import('./features/enrollment/enrollment.routes').then(
-            (m) => m.enrollmentRoutes,
+        path: 'enrollment/browsers',
+        loadComponent: () =>
+          import('./features/enrollment/browsers/browser-enrollment.component').then(
+            (m) => m.BrowserEnrollmentComponent,
           ),
       },
       {
-        path: 'security',
-        loadChildren: () =>
-          import('./features/security/security.routes').then(
-            (m) => m.securityRoutes,
+        path: 'enrollment/profiles',
+        loadComponent: () =>
+          import('./features/enrollment/profiles/profile-enrollment.component').then(
+            (m) => m.ProfileEnrollmentComponent,
           ),
       },
       {
-        path: 'admin',
-        loadChildren: () =>
-          import('./features/admin/admin.routes').then((m) => m.adminRoutes),
+        path: 'security/one-click',
+        loadComponent: () =>
+          import('./features/security/one-click/one-click-activation.component').then(
+            (m) => m.OneClickActivationComponent,
+          ),
+      },
+      {
+        path: 'security/dlp',
+        loadComponent: () =>
+          import('./features/security/dlp/dlp-configuration.component').then(
+            (m) => m.DlpConfigurationComponent,
+          ),
+      },
+      {
+        path: 'admin/create-role',
+        loadComponent: () =>
+          import('./features/admin/create-role/create-role.component').then(
+            (m) => m.CreateRoleComponent,
+          ),
         canActivate: [superAdminGuard],
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

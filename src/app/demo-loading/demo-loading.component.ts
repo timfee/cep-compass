@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
-import { SkeletonCardComponent, SkeletonListComponent, LoadingSpinnerComponent } from '../shared/components';
+import { SkeletonComponent, LoadingSpinnerComponent } from '../shared/components';
 
 /**
  * Demo component to showcase loading states and skeleton screens
@@ -32,7 +32,7 @@ import { SkeletonCardComponent, SkeletonListComponent, LoadingSpinnerComponent }
         <p>Used in Dashboard and Directory Stats during initial data loading</p>
         <div class="cards-grid">
           @for (item of [1, 2, 3]; track $index) {
-            <app-skeleton-card [elevated]="true"></app-skeleton-card>
+            <app-skeleton type="card" [elevated]="true"></app-skeleton>
           }
         </div>
       </div>
@@ -47,7 +47,7 @@ import { SkeletonCardComponent, SkeletonListComponent, LoadingSpinnerComponent }
             <mat-card-title>Directory Results</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <app-skeleton-list [items]="[1, 2, 3, 4, 5]"></app-skeleton-list>
+            <app-skeleton type="list" [items]="[1, 2, 3, 4, 5]"></app-skeleton>
           </mat-card-content>
         </mat-card>
       </div>
@@ -144,8 +144,7 @@ import { SkeletonCardComponent, SkeletonListComponent, LoadingSpinnerComponent }
     MatCardModule,
     MatButtonModule,
     MatDividerModule,
-    SkeletonCardComponent,
-    SkeletonListComponent,
+    SkeletonComponent,
     LoadingSpinnerComponent,
   ],
 })

@@ -38,7 +38,7 @@ import {
   EmailVariable,
 } from '../../services/email-template.service';
 import { NotificationService } from '../../core/notification.service';
-import { EmailValidator } from '../../shared/validators/email.validator';
+import { EmailValidator } from '../../shared/components';
 import { ErrorDisplayComponent } from '../../shared/components';
 
 /**

@@ -19,7 +19,7 @@ import {
 import { provideQuillConfig } from 'ngx-quill';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
-import { GlobalErrorHandler } from './core/global-error.handler';
+import { GlobalErrorHandler } from './core/notification.service';
 import { authInterceptor } from './core/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
