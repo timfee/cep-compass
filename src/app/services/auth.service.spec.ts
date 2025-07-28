@@ -274,8 +274,6 @@ describe('AuthService', () => {
     }));
 
     it('should handle API errors gracefully', async () => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000; // Increase timeout for retry logic
-      
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
       
@@ -286,6 +284,15 @@ describe('AuthService', () => {
       });
       
       service['accessToken'] = mockToken;
+
+      // Mock retryWithBackoff to avoid real retries and timeouts
+      spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
+        try {
+          return await fn();
+        } catch (error) {
+          throw error; // Fail immediately without retries
+        }
+      });
 
       const mockErrorResponse = createMockResponse({
         data: {},
@@ -301,13 +308,9 @@ describe('AuthService', () => {
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
       expect(roles.missingPrivileges).toEqual([]);
-      
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000; // Reset timeout
     });
 
     it('should handle user without email', async () => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000; // Increase timeout for retry logic
-      
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: null };
       
@@ -319,13 +322,20 @@ describe('AuthService', () => {
       
       service['accessToken'] = mockToken;
 
+      // Mock retryWithBackoff to avoid real retries and timeouts
+      spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
+        try {
+          return await fn();
+        } catch (error) {
+          throw error; // Fail immediately without retries
+        }
+      });
+
       await service['updateAvailableRoles']();
 
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
-      
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000; // Reset timeout
     });
   });
 
