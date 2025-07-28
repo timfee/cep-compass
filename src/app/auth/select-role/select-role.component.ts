@@ -6,6 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -30,6 +31,7 @@ import { LoadingSpinnerComponent } from '../../shared/components';
 export class SelectRoleComponent implements OnInit {
   public authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
+  private readonly router = inject(Router);
 
   // A signal to track the loading state, derived from the user signal.
   public isLoading = computed(() => this.authService.user() === undefined);
@@ -45,9 +47,16 @@ export class SelectRoleComponent implements OnInit {
     }
   }
 
-  selectRole(role: SelectedRole): void {
+  async selectRole(role: SelectedRole): Promise<void> {
     if (!role) return;
-    this.authService.selectRole(role);
-    // No need to navigate, the app component will react to the role change.
+    
+    try {
+      this.authService.selectRole(role);
+      // Navigate to dashboard after role selection
+      await this.router.navigate(['/dashboard']);
+    } catch (error) {
+      console.error('Failed to select role:', error);
+      this.notificationService.error('Failed to select role. Please try again.');
+    }
   }
 }

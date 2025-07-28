@@ -56,8 +56,11 @@ export class AuthService {
       const currentUser = this.user();
       if (currentUser) {
         // Only update available roles if we're not in the middle of changing roles
+        // Add a small delay to ensure token is available after popup closes
         if (!this.isChangingRole) {
-          await this.updateAvailableRoles();
+          setTimeout(async () => {
+            await this.updateAvailableRoles();
+          }, 100);
         }
       } else {
         // If logged out, reset everything and clear storage.
@@ -275,123 +278,35 @@ export class AuthService {
   }
 
   private async updateAvailableRoles(): Promise<void> {
-    try {
-      const token = await this.getAccessToken();
-      if (!token) {
-        console.warn(
-          'No access token available for role enumeration. User may need to re-authenticate.',
-        );
-        // Set minimal permissions instead of throwing error
-        this.availableRoles.set({
-          isSuperAdmin: false,
-          isCepAdmin: false,
-          missingPrivileges: [
-            { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
-          ],
-        });
-        return;
-      }
+    const maxRetries = 3;
+    let retryCount = 0;
+    
+    while (retryCount < maxRetries) {
+      try {
+        const token = await this.getAccessToken();
+        if (!token) {
+          console.warn(
+            'No access token available for role enumeration. User may need to re-authenticate.',
+          );
+          // Set minimal permissions instead of throwing error
+          this.availableRoles.set({
+            isSuperAdmin: false,
+            isCepAdmin: false,
+            missingPrivileges: [
+              { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
+            ],
+          });
+          return;
+        }
 
-      const userEmail = this.user()?.email;
-      if (!userEmail) {
-        throw new Error('No user email available');
-      }
+        const userEmail = this.user()?.email;
+        if (!userEmail) {
+          throw new Error('No user email available');
+        }
 
-      // Check if user is super admin
-      const userResponse = await fetch(
-        `https://admin.googleapis.com/admin/directory/v1/users/${encodeURIComponent(userEmail)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!userResponse.ok) {
-        throw new Error(`Admin API error: ${userResponse.statusText}`);
-      }
-
-      const userData = await userResponse.json();
-      const isSuperAdmin = userData.isAdmin ?? false;
-
-      if (isSuperAdmin) {
-        this.availableRoles.set({
-          isSuperAdmin: true,
-          isCepAdmin: true,
-          missingPrivileges: [],
-        });
-        return;
-      }
-
-      // Check role assignments
-      const rolesResponse = await fetch(
-        `https://admin.googleapis.com/admin/directory/v1/roleAssignments?userKey=${encodeURIComponent(userEmail)}&customer=my_customer`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!rolesResponse.ok) {
-        throw new Error(
-          `Role assignments API error: ${rolesResponse.statusText}`,
-        );
-      }
-
-      const rolesData = await rolesResponse.json();
-      const roleAssignments = rolesData.items || [];
-
-      // Check CEP admin privileges
-      let hasAllPrivileges = true;
-      const missingPrivileges: Privilege[] = [];
-
-      // Define required CEP admin privileges
-      const REQUIRED_CEP_ADMIN_PRIVILEGES = [
-        {
-          privilegeName: 'ORGANIZATION_UNITS_RETRIEVE',
-          serviceId: '00haapch16h1ysv',
-        },
-        { privilegeName: 'ACTIVITY_RULES', serviceId: '01egqt2p2p8gvae' },
-        { privilegeName: 'APP_ADMIN', serviceId: '01egqt2p2p8gvae' },
-        { privilegeName: 'MANAGE_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
-        { privilegeName: 'VIEW_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
-        {
-          privilegeName: 'ACCESS_LEVEL_MANAGEMENT',
-          serviceId: '01rvwp1q4axizdr',
-        },
-        {
-          privilegeName: 'MANAGE_DEVICE_SETTINGS',
-          serviceId: '03hv69ve4bjwe54',
-        },
-        {
-          privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS',
-          serviceId: '01x0gk371sq486y',
-        },
-        {
-          privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING',
-          serviceId: '01x0gk371sq486y',
-        },
-        {
-          privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS',
-          serviceId: '01x0gk371sq486y',
-        },
-        { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
-        { privilegeName: 'APP_ADMIN', serviceId: '03hv69ve4bjwe54' },
-        {
-          privilegeName: 'APPS_INCIDENTS_FULL_ACCESS',
-          serviceId: '02pta16n3efhw69',
-        },
-        { privilegeName: 'REPORTS_ACCESS', serviceId: '01fob9te2rj6rw9' },
-      ];
-
-      // Get all privileges from assigned roles
-      const allPrivileges: Privilege[] = [];
-      for (const assignment of roleAssignments) {
-        const roleResponse = await fetch(
-          `https://admin.googleapis.com/admin/directory/v1/roles/${assignment.roleId}?customer=my_customer`,
+        // Check if user is super admin
+        const userResponse = await fetch(
+          `https://admin.googleapis.com/admin/directory/v1/users/${encodeURIComponent(userEmail)}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -400,38 +315,167 @@ export class AuthService {
           },
         );
 
-        if (roleResponse.ok) {
-          const roleData = await roleResponse.json();
-          const privileges = roleData.rolePrivileges || [];
-          allPrivileges.push(...privileges);
+        if (!userResponse.ok) {
+          if (userResponse.status === 401 && retryCount < maxRetries - 1) {
+            // Token might be expired, try to refresh
+            console.log('Access token expired, attempting refresh...');
+            const refreshedToken = await this.refreshAccessToken();
+            if (refreshedToken) {
+              retryCount++;
+              continue; // Retry with refreshed token
+            }
+          }
+          throw new Error(`Admin API error: ${userResponse.statusText}`);
         }
-      }
 
-      // Check for missing privileges
-      for (const required of REQUIRED_CEP_ADMIN_PRIVILEGES) {
-        const hasPrivilege = allPrivileges.some(
-          (p) =>
-            p.privilegeName === required.privilegeName &&
-            p.serviceId === required.serviceId,
+        const userData = await userResponse.json();
+        const isSuperAdmin = userData.isAdmin ?? false;
+
+        if (isSuperAdmin) {
+          this.availableRoles.set({
+            isSuperAdmin: true,
+            isCepAdmin: true,
+            missingPrivileges: [],
+          });
+          return;
+        }
+
+        // Check role assignments
+        const rolesResponse = await fetch(
+          `https://admin.googleapis.com/admin/directory/v1/roleAssignments?userKey=${encodeURIComponent(userEmail)}&customer=my_customer`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
         );
-        if (!hasPrivilege) {
-          hasAllPrivileges = false;
-          missingPrivileges.push(required);
+
+        if (!rolesResponse.ok) {
+          if (rolesResponse.status === 401 && retryCount < maxRetries - 1) {
+            // Token might be expired, try to refresh
+            console.log('Access token expired during role check, attempting refresh...');
+            const refreshedToken = await this.refreshAccessToken();
+            if (refreshedToken) {
+              retryCount++;
+              continue; // Retry with refreshed token
+            }
+          }
+          throw new Error(
+            `Role assignments API error: ${rolesResponse.statusText}`,
+          );
+        }
+
+        const rolesData = await rolesResponse.json();
+        const roleAssignments = rolesData.items || [];
+
+        // Check CEP admin privileges
+        let hasAllPrivileges = true;
+        const missingPrivileges: Privilege[] = [];
+
+        // Define required CEP admin privileges
+        const REQUIRED_CEP_ADMIN_PRIVILEGES = [
+          {
+            privilegeName: 'ORGANIZATION_UNITS_RETRIEVE',
+            serviceId: '00haapch16h1ysv',
+          },
+          { privilegeName: 'ACTIVITY_RULES', serviceId: '01egqt2p2p8gvae' },
+          { privilegeName: 'APP_ADMIN', serviceId: '01egqt2p2p8gvae' },
+          { privilegeName: 'MANAGE_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
+          { privilegeName: 'VIEW_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
+          {
+            privilegeName: 'ACCESS_LEVEL_MANAGEMENT',
+            serviceId: '01rvwp1q4axizdr',
+          },
+          {
+            privilegeName: 'MANAGE_DEVICE_SETTINGS',
+            serviceId: '03hv69ve4bjwe54',
+          },
+          {
+            privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS',
+            serviceId: '01x0gk371sq486y',
+          },
+          {
+            privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING',
+            serviceId: '01x0gk371sq486y',
+          },
+          {
+            privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS',
+            serviceId: '01x0gk371sq486y',
+          },
+          { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
+          { privilegeName: 'APP_ADMIN', serviceId: '03hv69ve4bjwe54' },
+          {
+            privilegeName: 'APPS_INCIDENTS_FULL_ACCESS',
+            serviceId: '02pta16n3efhw69',
+          },
+          { privilegeName: 'REPORTS_ACCESS', serviceId: '01fob9te2rj6rw9' },
+        ];
+
+        // Get all privileges from assigned roles
+        const allPrivileges: Privilege[] = [];
+        for (const assignment of roleAssignments) {
+          try {
+            const roleResponse = await fetch(
+              `https://admin.googleapis.com/admin/directory/v1/roles/${assignment.roleId}?customer=my_customer`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              },
+            );
+
+            if (roleResponse.ok) {
+              const roleData = await roleResponse.json();
+              const privileges = roleData.rolePrivileges || [];
+              allPrivileges.push(...privileges);
+            }
+          } catch (roleError) {
+            console.warn('Failed to fetch role data for', assignment.roleId, roleError);
+            // Continue with other roles
+          }
+        }
+
+        // Check for missing privileges
+        for (const required of REQUIRED_CEP_ADMIN_PRIVILEGES) {
+          const hasPrivilege = allPrivileges.some(
+            (p) =>
+              p.privilegeName === required.privilegeName &&
+              p.serviceId === required.serviceId,
+          );
+          if (!hasPrivilege) {
+            hasAllPrivileges = false;
+            missingPrivileges.push(required);
+          }
+        }
+
+        this.availableRoles.set({
+          isSuperAdmin: false,
+          isCepAdmin: hasAllPrivileges,
+          missingPrivileges: hasAllPrivileges ? [] : missingPrivileges,
+        });
+        
+        return; // Success, exit retry loop
+        
+      } catch (error) {
+        console.error('API Error checking admin roles (attempt', retryCount + 1, '):', error);
+        retryCount++;
+        
+        if (retryCount >= maxRetries) {
+          // Final failure - set minimal permissions
+          this.availableRoles.set({
+            isSuperAdmin: false,
+            isCepAdmin: false,
+            missingPrivileges: [
+              { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
+            ],
+          });
+        } else {
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
         }
       }
-
-      this.availableRoles.set({
-        isSuperAdmin: false,
-        isCepAdmin: hasAllPrivileges,
-        missingPrivileges: hasAllPrivileges ? [] : missingPrivileges,
-      });
-    } catch (error) {
-      console.error('API Error checking admin roles:', error);
-      this.availableRoles.set({
-        isSuperAdmin: false,
-        isCepAdmin: false,
-        missingPrivileges: [],
-      });
     }
   }
 }
