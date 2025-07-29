@@ -109,7 +109,7 @@ describe('DirectoryService', () => {
   let service: DirectoryService;
   let httpMock: HttpTestingController;
   let authServiceMock: jasmine.SpyObj<AuthService>;
-  let userSignal: WritableSignal<any>;
+  let userSignal: WritableSignal<{ uid: string; email: string } | null>;
 
   beforeEach(() => {
     userSignal = signal({ uid: 'test-user', email: 'test@example.com' });
