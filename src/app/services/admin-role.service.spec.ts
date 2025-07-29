@@ -3,9 +3,11 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { AdminRoleService, CEP_ADMIN_ROLE } from './admin-role.service';
 import { NotificationService } from '../core/notification.service';
+import { authInterceptor } from '../core/auth.interceptor';
 
 describe('AdminRoleService', () => {
   let service: AdminRoleService;
@@ -29,6 +31,7 @@ describe('AdminRoleService', () => {
         AdminRoleService,
         { provide: AuthService, useValue: authServiceSpy },
         { provide: NotificationService, useValue: notificationServiceSpy },
+        provideHttpClient(withInterceptors([authInterceptor])),
       ],
     });
 

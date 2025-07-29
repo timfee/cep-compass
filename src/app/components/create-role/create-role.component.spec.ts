@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CreateRoleComponent } from './create-role.component';
@@ -18,7 +17,6 @@ describe('CreateRoleComponent', () => {
   let adminRoleService: jasmine.SpyObj<AdminRoleService>;
   let authService: jasmine.SpyObj<AuthService>;
   let notificationService: jasmine.SpyObj<NotificationService>;
-  let clipboard: jasmine.SpyObj<Clipboard>;
 
   const mockAdminRole: AdminRole = {
     kind: 'admin#directory#role',
@@ -42,6 +40,17 @@ describe('CreateRoleComponent', () => {
   };
 
   beforeEach(async () => {
+    // Mock navigator clipboard for headless browser environment
+    const mockClipboard = {
+      writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
+    };
+    
+    Object.defineProperty(navigator, 'clipboard', {
+      value: mockClipboard,
+      configurable: true,
+      writable: true
+    });
+
     const adminRoleServiceSpy = jasmine.createSpyObj('AdminRoleService', [
       'checkCepAdminRoleExists',
       'createCepAdminRole',
@@ -52,7 +61,6 @@ describe('CreateRoleComponent', () => {
     });
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error']);
-    const clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
 
     await TestBed.configureTestingModule({
       imports: [CreateRoleComponent, NoopAnimationsModule],
@@ -61,7 +69,6 @@ describe('CreateRoleComponent', () => {
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },
         { provide: NotificationService, useValue: notificationServiceSpy },
-        { provide: Clipboard, useValue: clipboardSpy },
       ],
     }).compileComponents();
 
@@ -70,7 +77,6 @@ describe('CreateRoleComponent', () => {
     ) as jasmine.SpyObj<AdminRoleService>;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
-    clipboard = TestBed.inject(Clipboard) as jasmine.SpyObj<Clipboard>;
   });
 
   describe('when user is super admin and role does not exist', () => {
@@ -152,10 +158,10 @@ describe('CreateRoleComponent', () => {
       expect(window.open).toHaveBeenCalledWith(mockUrl, '_blank');
     });
 
-    it('should copy role ID to clipboard', () => {
-      component.copyRoleId();
+    it('should copy role ID to clipboard', async () => {
+      await component.copyRoleId();
 
-      expect(clipboard.copy).toHaveBeenCalledWith('test-role-id');
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('test-role-id');
       expect(notificationService.success).toHaveBeenCalledWith(
         'Role ID copied to clipboard!',
       );
