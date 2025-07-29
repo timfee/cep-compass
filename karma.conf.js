@@ -1,5 +1,4 @@
-// Karma configuration file
-require('./karma-puppeteer-launcher'); // This sets CHROME_BIN
+require('./karma-puppeteer-launcher');
 
 module.exports = function (config) {
   config.set({
@@ -12,37 +11,35 @@ module.exports = function (config) {
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
-    jasmineHtmlReporter: {
-      suppressAll: true // removes the duplicated traces
-    },
-    coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/myapp'),
-      subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'text-summary' },
-        { type: 'lcov' }
-      ]
-    },
-    reporters: ['progress', 'kjhtml'],
-    port: 9876,
-    colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['ChromeHeadless'],
-    singleRun: false,
-    restartOnFileChange: true,
-    
-    // Environment variables for testing
     client: {
+      clearContext: false,
       jasmine: {
         // Jasmine configuration
       },
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
       env: {
         FIREBASE_AUTH_EMULATOR_HOST: process.env.FIREBASE_AUTH_EMULATOR_HOST || 'localhost:9099',
         USE_FIREBASE_EMULATORS: 'true'
       }
-    }
+    },
+    jasmineHtmlReporter: {
+      suppressAll: true
+    },
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/cep-compass'),
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
+    },
+    reporters: ['progress', 'kjhtml'],
+    browsers: ['ChromeHeadless'],
+    // Removed unused customLaunchers.ChromeHeadlessCI definition
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: false,
+    singleRun: true,
+    restartOnFileChange: false
   });
 };
