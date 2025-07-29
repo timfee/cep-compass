@@ -1,4 +1,6 @@
 // Karma configuration file
+require('./karma-puppeteer-launcher'); // This sets CHROME_BIN
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -10,12 +12,6 @@ module.exports = function (config) {
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
-    client: {
-      jasmine: {
-        // Jasmine configuration
-      },
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
-    },
     jasmineHtmlReporter: {
       suppressAll: true // removes the duplicated traces
     },
@@ -33,13 +29,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadlessCI'],
-    customLaunchers: {
-      ChromeHeadlessCI: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox', '--disable-gpu']
-      }
-    },
+    browsers: ['ChromeHeadless'],
     singleRun: false,
     restartOnFileChange: true,
     

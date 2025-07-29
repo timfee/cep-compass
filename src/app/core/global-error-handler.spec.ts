@@ -15,12 +15,12 @@ describe('GlobalErrorHandler', () => {
     consoleErrorSpy = spyOn(console, 'error');
     
     // Store original environment to restore later
-    originalEnvironment = (window as any).environment;
+    originalEnvironment = (window as unknown as Record<string, unknown>)['environment'];
   });
 
   afterEach(() => {
     // Restore original environment
-    (window as any).environment = originalEnvironment;
+    (window as unknown as Record<string, unknown>)['environment'] = originalEnvironment;
   });
 
   describe('handleError', () => {
@@ -33,8 +33,6 @@ describe('GlobalErrorHandler', () => {
     });
 
     it('should log stack trace in development mode', () => {
-      // Mock environment for development
-      const mockEnvironment = { production: false };
       // We need to mock the environment module since it's imported
       // In real scenarios, this would be done through dependency injection
       
@@ -113,7 +111,7 @@ describe('GlobalErrorHandler', () => {
   describe('edge cases', () => {
     it('should handle null error gracefully', () => {
       expect(() => {
-        errorHandler.handleError(null as any);
+        errorHandler.handleError(null as unknown);
       }).not.toThrow();
       
       expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', null);
@@ -121,7 +119,7 @@ describe('GlobalErrorHandler', () => {
 
     it('should handle undefined error gracefully', () => {
       expect(() => {
-        errorHandler.handleError(undefined as any);
+        errorHandler.handleError(undefined as unknown);
       }).not.toThrow();
       
       expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', undefined);
@@ -141,7 +139,7 @@ describe('GlobalErrorHandler', () => {
         consoleErrorSpy.calls.reset();
         
         expect(() => {
-          errorHandler.handleError(obj as any);
+          errorHandler.handleError(obj as unknown);
         }).not.toThrow();
         
         expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', obj);
