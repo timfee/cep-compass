@@ -50,6 +50,12 @@ describe('CreateRoleComponent', () => {
       configurable: true,
       writable: true
     });
+    
+    Object.defineProperty(window, 'isSecureContext', {
+      value: true,
+      configurable: true,
+      writable: true
+    });
 
     const adminRoleServiceSpy = jasmine.createSpyObj('AdminRoleService', [
       'checkCepAdminRoleExists',
