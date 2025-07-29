@@ -34,32 +34,7 @@ module.exports = function (config) {
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['ChromeHeadless'],
-    customLaunchers: {
-      ChromeHeadlessCI: {
-        base: 'Chrome',
-        flags: [
-          '--headless',
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-          '--ozone-platform=headless',
-          '--disable-extensions',
-          '--disable-web-security',
-          '--disable-features=VizDisplayCompositor',
-          '--disable-background-timer-throttling',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-renderer-backgrounding',
-          '--disable-software-rasterizer',
-          '--disable-background-networking',
-          '--disable-default-apps',
-          '--disable-sync',
-          '--metrics-recording-only',
-          '--no-first-run',
-          '--remote-debugging-port=9222'
-        ]
-      }
-    },
+    // Removed unused customLaunchers.ChromeHeadlessCI definition
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
