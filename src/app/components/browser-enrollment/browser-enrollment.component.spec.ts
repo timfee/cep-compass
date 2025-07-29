@@ -152,11 +152,17 @@ describe('BrowserEnrollmentComponent', () => {
       createdToken: mockToken,
     }));
 
-    // Mock the navigator clipboard API
+    // Mock the navigator clipboard API and secure context
     const writeTextSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: writeTextSpy },
       configurable: true
+    });
+    
+    Object.defineProperty(window, 'isSecureContext', {
+      value: true,
+      configurable: true,
+      writable: true
     });
 
     await component.copyToken();

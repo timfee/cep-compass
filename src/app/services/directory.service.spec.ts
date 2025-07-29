@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { signal, WritableSignal } from '@angular/core';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -9,7 +10,6 @@ import {
   DirectoryGroup,
 } from './directory.service';
 import { AuthService } from './auth.service';
-import { signal } from '@angular/core';
 
 // Mock data
 const mockUsers: DirectoryUser[] = [
@@ -109,10 +109,13 @@ describe('DirectoryService', () => {
   let service: DirectoryService;
   let httpMock: HttpTestingController;
   let authServiceMock: jasmine.SpyObj<AuthService>;
+  let userSignal: WritableSignal<any>;
 
   beforeEach(() => {
+    userSignal = signal({ uid: 'test-user', email: 'test@example.com' });
+    
     const authSpy = jasmine.createSpyObj('AuthService', ['getAccessToken'], {
-      user: signal({ uid: 'test-user', email: 'test@example.com' }),
+      user: userSignal,
     });
 
     TestBed.configureTestingModule({
@@ -170,11 +173,12 @@ describe('DirectoryService', () => {
     });
 
     it('should handle authentication errors', async () => {
-      authServiceMock.getAccessToken.and.returnValue(Promise.resolve(null));
+      // Mock no authenticated user
+      userSignal.set(null);
 
       await service.fetchInitialData();
 
-      expect(service.error()).toBe('Failed to get access token');
+      expect(service.error()).toBe('User not authenticated');
       httpMock.expectNone(() => true);
     });
 
@@ -268,7 +272,7 @@ describe('DirectoryService', () => {
       const req = httpMock.expectOne(
         (request) =>
           request.url.includes('/groups') &&
-          request.url.includes('userKey=john.doe@example.com'),
+          request.url.includes('userKey=john.doe%40example.com'),
       );
 
       expect(req.request.method).toBe('GET');

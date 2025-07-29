@@ -89,6 +89,13 @@ describe('DlpConfigurationComponent', () => {
         configurable: true,
         writable: true
       });
+      
+      // Ensure secure context for clipboard API to work
+      Object.defineProperty(window, 'isSecureContext', {
+        value: true,
+        configurable: true,
+        writable: true
+      });
     });
 
     it('should copy sensitive data audit config to clipboard', async () => {
