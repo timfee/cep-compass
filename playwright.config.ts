@@ -25,11 +25,10 @@ export default defineConfig({
     },
   ],
 
-  // Start dev server before running tests
   webServer: {
     command: 'npm start',
     port: 4200,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120000,
   },
 });
