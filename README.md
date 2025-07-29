@@ -109,13 +109,109 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-## Running unit tests
+## Testing Setup
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Fresh Ubuntu Installation
+
+For setting up tests on a fresh Ubuntu instance:
+
+#### 1. Install System Dependencies
 
 ```bash
-ng test
+# Update package list
+sudo apt update
+
+# Install curl and essential build tools
+sudo apt install -y curl build-essential
+
+# Install Chrome/Chromium for headless testing
+sudo apt install -y chromium-browser
+
+# Alternative: Install Google Chrome (recommended for CI)
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+sudo apt update
+sudo apt install -y google-chrome-stable
 ```
+
+#### 2. Install Node.js
+
+```bash
+# Install Node.js 20.x (recommended)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Verify installation
+node --version
+npm --version
+```
+
+#### 3. Project Setup
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd cep-compass
+
+# Install dependencies
+npm install
+
+# Install Playwright browsers (for e2e tests)
+npx playwright install chromium
+```
+
+#### 4. CI Environment Setup
+
+For CI environments, ensure these environment variables are set:
+
+```bash
+export CHROME_BIN="/usr/bin/google-chrome"
+export DISPLAY=:99
+```
+
+### Running Tests
+
+#### Unit Tests
+
+To execute unit tests with the [Karma](https://karma-runner.github.io) test runner:
+
+```bash
+# Run tests once
+npm test
+
+# Run tests in watch mode
+ng test --watch
+
+# Run tests with coverage
+ng test --code-coverage
+
+# Run tests in headless mode (CI)
+ng test --browsers=ChromeHeadlessCI --watch=false
+```
+
+#### End-to-End Tests
+
+To run Playwright e2e tests:
+
+```bash
+# Run e2e tests
+npm run test:e2e
+
+# Run e2e tests with UI
+npm run test:e2e:ui
+
+# Run specific test file
+npx playwright test auth.spec.ts
+```
+
+### CI Configuration
+
+The project is configured for headless Chrome testing with these flags:
+- `--no-sandbox` - Required for containerized environments
+- `--disable-gpu` - Improves performance in headless mode
+- `--disable-dev-shm-usage` - Prevents shared memory issues in Docker
+
+For GitHub Actions or other CI environments, ensure Chrome is available and use the headless configuration.
 
 ## Deployment
 
