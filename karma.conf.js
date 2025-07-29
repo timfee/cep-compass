@@ -45,6 +45,10 @@ module.exports = function (config) {
     
     // Environment variables for testing
     client: {
+      jasmine: {
+        // Jasmine configuration
+      },
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
       env: {
         FIREBASE_AUTH_EMULATOR_HOST: process.env.FIREBASE_AUTH_EMULATOR_HOST || 'localhost:9099',
         USE_FIREBASE_EMULATORS: 'true'

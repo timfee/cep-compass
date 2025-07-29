@@ -10,11 +10,11 @@ export class GlobalErrorHandler implements ErrorHandler {
    * Handle uncaught errors
    * @param error - The error to handle
    */
-  handleError(error: Error): void {
+  handleError(error: any): void {
     console.error('Application error:', error);
 
-    // Show stack trace in development only
-    if (!environment.production && error.stack) {
+    // Show stack trace in development only for actual Error objects
+    if (!environment.production && error && error.stack) {
       console.error('Stack trace:', error.stack);
     }
   }

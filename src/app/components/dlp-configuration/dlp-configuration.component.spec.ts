@@ -76,13 +76,25 @@ describe('DlpConfigurationComponent', () => {
 
   describe('copyPolicyConfig', () => {
     beforeEach(() => {
-      // Mock clipboard API
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: jasmine
-            .createSpy('writeText')
-            .and.returnValue(Promise.resolve()),
-        },
+      // Mock clipboard API for headless browser environment
+      const mockClipboard = {
+        writeText: jasmine
+          .createSpy('writeText')
+          .and.returnValue(Promise.resolve()),
+      };
+      
+      // Use defineProperty to properly mock the clipboard in headless environment
+      Object.defineProperty(navigator, 'clipboard', {
+        value: mockClipboard,
+        configurable: true,
+        writable: true
+      });
+      
+      // Ensure secure context for clipboard API to work
+      Object.defineProperty(window, 'isSecureContext', {
+        value: true,
+        configurable: true,
+        writable: true
       });
     });
 
