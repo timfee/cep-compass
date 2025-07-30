@@ -1,7 +1,10 @@
 import { test, expect } from './support/fixtures';
 
 test.describe('App Smoke Tests', () => {
-  test('should redirect to login when not authenticated', async ({ page, loginPage }) => {
+  test('should redirect to login when not authenticated', async ({
+    page,
+    loginPage,
+  }) => {
     await page.goto('/');
     await expect(page).toHaveURL(/.*login/);
     await loginPage.waitForLoad();

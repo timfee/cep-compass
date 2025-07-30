@@ -14,7 +14,13 @@ export class GlobalErrorHandler implements ErrorHandler {
     console.error('Application error:', error);
 
     // Show stack trace in development only for actual Error objects
-    if (!environment.production && error && typeof error === 'object' && error !== null && 'stack' in error) {
+    if (
+      !environment.production &&
+      error &&
+      typeof error === 'object' &&
+      error !== null &&
+      'stack' in error
+    ) {
       console.error('Stack trace:', (error as Error).stack);
     }
   }

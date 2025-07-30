@@ -9,7 +9,11 @@ import {
 } from '@angular/fire/auth';
 
 import { Privilege } from '../shared/constants/google-api.constants';
-import { OAUTH_SCOPES, OAUTH_CONFIG, RETRY_CONFIG } from '../shared/constants/app.constants';
+import {
+  OAUTH_SCOPES,
+  OAUTH_CONFIG,
+  RETRY_CONFIG,
+} from '../shared/constants/app.constants';
 import { UserRole } from '../shared/constants/enums';
 
 export interface UserRoles {
@@ -58,23 +62,25 @@ export class AuthService {
     baseDelay = RETRY_CONFIG.BASE_DELAY,
   ): Promise<T> {
     let lastError: unknown;
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         return await fn();
       } catch (error) {
         lastError = error;
-        
+
         if (attempt === maxRetries) {
           throw error;
         }
-        
+
         // Exponential backoff with jitter
-        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * RETRY_CONFIG.MAX_JITTER;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        const delay =
+          baseDelay * Math.pow(2, attempt) +
+          Math.random() * RETRY_CONFIG.MAX_JITTER;
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
-    
+
     throw lastError;
   }
 
@@ -121,11 +127,13 @@ export class AuthService {
   /**
    * Configures OAuth provider with required scopes and parameters
    */
-  private configureOAuthProvider(prompt: 'consent' | 'none' = 'consent'): GoogleAuthProvider {
+  private configureOAuthProvider(
+    prompt: 'consent' | 'none' = 'consent',
+  ): GoogleAuthProvider {
     const provider = new GoogleAuthProvider();
-    
+
     // Add all required scopes
-    OAUTH_SCOPES.forEach(scope => provider.addScope(scope));
+    OAUTH_SCOPES.forEach((scope) => provider.addScope(scope));
 
     // Add custom parameters
     provider.setCustomParameters({
@@ -237,7 +245,9 @@ export class AuthService {
       // First attempt: try silent refresh with prompt: 'none'
       // This may fail due to popup blockers but worth trying
       try {
-        const silentProvider = this.configureOAuthProvider(OAUTH_CONFIG.PROMPT_NONE);
+        const silentProvider = this.configureOAuthProvider(
+          OAUTH_CONFIG.PROMPT_NONE,
+        );
         const result = await signInWithPopup(this.auth, silentProvider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
 
@@ -255,7 +265,9 @@ export class AuthService {
         );
 
         // Fallback: interactive refresh with user consent
-        const interactiveProvider = this.configureOAuthProvider(OAUTH_CONFIG.PROMPT_CONSENT);
+        const interactiveProvider = this.configureOAuthProvider(
+          OAUTH_CONFIG.PROMPT_CONSENT,
+        );
         const result = await signInWithPopup(this.auth, interactiveProvider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
 

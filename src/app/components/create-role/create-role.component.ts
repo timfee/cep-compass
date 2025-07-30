@@ -71,16 +71,18 @@ interface RoleCreationState {
 
       <mat-card-content>
         @switch (state()) {
-          @case ("checking") {
+          @case ('checking') {
             <div class="center-content">
               <mat-spinner diameter="40"></mat-spinner>
               <p class="status-text">Checking for existing CEP Admin role...</p>
             </div>
           }
 
-          @case ("exists") {
+          @case ('exists') {
             <div class="existing-role-content">
-              <mat-icon color="accent" class="large-icon">check_circle</mat-icon>
+              <mat-icon color="accent" class="large-icon"
+                >check_circle</mat-icon
+              >
               <h3>CEP Admin Role Already Exists</h3>
               <p class="role-info">
                 Role ID: <strong>{{ existingRole()?.roleId }}</strong>
@@ -98,7 +100,11 @@ interface RoleCreationState {
                   <mat-icon>open_in_new</mat-icon>
                 </button>
 
-                <button mat-button (click)="copyRoleId()" class="secondary-action">
+                <button
+                  mat-button
+                  (click)="copyRoleId()"
+                  class="secondary-action"
+                >
                   <mat-icon>content_copy</mat-icon>
                   Copy Role ID
                 </button>
@@ -106,20 +112,25 @@ interface RoleCreationState {
             </div>
           }
 
-          @case ("ready") {
+          @case ('ready') {
             <div class="ready-content">
               <p class="description">
-                Ready to create the CEP Admin delegated role with Chrome Enterprise
-                permissions.
+                Ready to create the CEP Admin delegated role with Chrome
+                Enterprise permissions.
               </p>
 
               <div class="privileges-section">
                 <h4>Included Permissions:</h4>
                 <mat-list class="privileges-list">
-                  @for (privilege of privileges; track privilege.privilegeName) {
+                  @for (
+                    privilege of privileges;
+                    track privilege.privilegeName
+                  ) {
                     <mat-list-item>
                       <mat-icon matListItemIcon>check</mat-icon>
-                      <span matListItemTitle>{{ formatPrivilege(privilege) }}</span>
+                      <span matListItemTitle>{{
+                        formatPrivilege(privilege)
+                      }}</span>
                     </mat-list-item>
                   }
                 </mat-list>
@@ -139,7 +150,7 @@ interface RoleCreationState {
             </div>
           }
 
-          @case ("creating") {
+          @case ('creating') {
             <div class="center-content">
               <mat-progress-bar mode="indeterminate"></mat-progress-bar>
               <p class="status-text">Creating CEP Admin role...</p>
@@ -147,7 +158,7 @@ interface RoleCreationState {
             </div>
           }
 
-          @case ("success") {
+          @case ('success') {
             <div class="success-content">
               <mat-icon color="primary" class="large-icon success-icon"
                 >check_circle</mat-icon
@@ -168,7 +179,11 @@ interface RoleCreationState {
                   <mat-icon>open_in_new</mat-icon>
                 </button>
 
-                <button mat-button (click)="copyRoleId()" class="secondary-action">
+                <button
+                  mat-button
+                  (click)="copyRoleId()"
+                  class="secondary-action"
+                >
                   <mat-icon>content_copy</mat-icon>
                   Copy Role ID
                 </button>
@@ -184,19 +199,23 @@ interface RoleCreationState {
 
                 <ol class="steps-list">
                   <li>Click "Assign Users to Role" above</li>
-                  <li>Add users who should have Chrome management permissions</li>
                   <li>
-                    Users will receive an email notification about their new role
+                    Add users who should have Chrome management permissions
                   </li>
                   <li>
-                    They can then use CEP Compass with their delegated permissions
+                    Users will receive an email notification about their new
+                    role
+                  </li>
+                  <li>
+                    They can then use CEP Compass with their delegated
+                    permissions
                   </li>
                 </ol>
               </mat-expansion-panel>
             </div>
           }
 
-          @case ("error") {
+          @case ('error') {
             <div class="error-content">
               <mat-icon color="warn" class="large-icon">error</mat-icon>
               <h3>Error Creating Role</h3>
@@ -219,221 +238,223 @@ interface RoleCreationState {
       </mat-card-content>
     </mat-card>
   `,
-  styles: [`
-    .create-role-card {
-      max-width: 800px;
-      margin: 2rem auto;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    }
-
-    .center-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .existing-role-content,
-    .ready-content,
-    .success-content,
-    .error-content {
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .large-icon {
-      font-size: 4rem;
-      width: 4rem;
-      height: 4rem;
-      margin-bottom: 1rem;
-    }
-
-    .success-icon {
-      color: #4caf50;
-    }
-
-    .status-text {
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      color: rgba(0, 0, 0, 0.87);
-    }
-
-    .status-detail {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: rgba(0, 0, 0, 0.6);
-    }
-
-    .role-info {
-      margin: 1rem 0;
-      font-size: 1rem;
-    }
-
-    .description {
-      margin: 1rem 0;
-      color: rgba(0, 0, 0, 0.7);
-      line-height: 1.5;
-    }
-
-    .privileges-section {
-      margin: 2rem 0;
-    }
-
-    .privileges-section h4 {
-      margin-bottom: 1rem;
-      color: rgba(0, 0, 0, 0.87);
-    }
-
-    .privileges-list {
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      border-radius: 4px;
-    }
-
-    .privileges-list mat-list-item {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .privileges-list mat-list-item:last-child {
-      border-bottom: none;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 2rem;
-    }
-
-    .primary-action,
-    .create-button,
-    .retry-button {
-      min-width: 200px;
-    }
-
-    .secondary-action {
-      min-width: 150px;
-    }
-
-    .next-steps {
-      margin-top: 2rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .steps-list {
-      padding-left: 1.5rem;
-      line-height: 1.8;
-    }
-
-    .steps-list li {
-      margin-bottom: 0.5rem;
-    }
-
-    .error-message {
-      color: #f44336;
-      font-weight: 500;
-      margin: 1rem 0;
-      padding: 1rem;
-      background-color: #ffebee;
-      border-radius: 4px;
-      border-left: 4px solid #f44336;
-    }
-
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
+  styles: [
+    `
       .create-role-card {
-        margin: 1rem;
-        max-width: none;
+        max-width: 800px;
+        margin: 2rem auto;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
       }
 
+      .center-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .existing-role-content,
+      .ready-content,
+      .success-content,
+      .error-content {
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .large-icon {
+        font-size: 4rem;
+        width: 4rem;
+        height: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .success-icon {
+        color: #4caf50;
+      }
+
+      .status-text {
+        margin-top: 1rem;
+        font-size: 1.1rem;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .status-detail {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .role-info {
+        margin: 1rem 0;
+        font-size: 1rem;
+      }
+
+      .description {
+        margin: 1rem 0;
+        color: rgba(0, 0, 0, 0.7);
+        line-height: 1.5;
+      }
+
+      .privileges-section {
+        margin: 2rem 0;
+      }
+
+      .privileges-section h4 {
+        margin-bottom: 1rem;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .privileges-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+      }
+
+      .privileges-list mat-list-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      .privileges-list mat-list-item:last-child {
+        border-bottom: none;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+
+      .primary-action,
+      .create-button,
+      .retry-button {
+        min-width: 200px;
+      }
+
+      .secondary-action {
+        min-width: 150px;
+      }
+
+      .next-steps {
+        margin-top: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .steps-list {
+        padding-left: 1.5rem;
+        line-height: 1.8;
+      }
+
+      .steps-list li {
+        margin-bottom: 0.5rem;
+      }
+
+      .error-message {
+        color: #f44336;
+        font-weight: 500;
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: #ffebee;
+        border-radius: 4px;
+        border-left: 4px solid #f44336;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        .create-role-card {
+          margin: 1rem;
+          max-width: none;
+        }
+
+        .center-content,
+        .existing-role-content,
+        .ready-content,
+        .success-content,
+        .error-content {
+          padding: 1rem 0.5rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .primary-action,
+        .secondary-action,
+        .create-button,
+        .retry-button {
+          min-width: auto;
+          width: 100%;
+          max-width: 300px;
+        }
+
+        .large-icon {
+          font-size: 3rem;
+          width: 3rem;
+          height: 3rem;
+        }
+
+        .privileges-list {
+          max-height: 200px;
+        }
+      }
+
+      /* Accessibility improvements */
+      .create-button:focus,
+      .primary-action:focus,
+      .retry-button:focus {
+        outline: 2px solid #3f51b5;
+        outline-offset: 2px;
+      }
+
+      .secondary-action:focus {
+        outline: 2px solid rgba(0, 0, 0, 0.54);
+        outline-offset: 2px;
+      }
+
+      /* Animation for state transitions */
       .center-content,
       .existing-role-content,
       .ready-content,
       .success-content,
       .error-content {
-        padding: 1rem 0.5rem;
+        animation: fadeIn 0.3s ease-in-out;
       }
 
-      .action-buttons {
-        flex-direction: column;
-        align-items: center;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
-      .primary-action,
-      .secondary-action,
-      .create-button,
-      .retry-button {
-        min-width: auto;
+      /* Progress bar styling */
+      mat-progress-bar {
+        margin-bottom: 1rem;
         width: 100%;
-        max-width: 300px;
+        max-width: 400px;
       }
 
-      .large-icon {
-        font-size: 3rem;
-        width: 3rem;
-        height: 3rem;
+      /* Expansion panel styling */
+      .next-steps mat-expansion-panel-header {
+        font-weight: 500;
       }
 
-      .privileges-list {
-        max-height: 200px;
+      /* List item icon styling */
+      mat-list-item mat-icon[matListItemIcon] {
+        color: #4caf50;
       }
-    }
-
-    /* Accessibility improvements */
-    .create-button:focus,
-    .primary-action:focus,
-    .retry-button:focus {
-      outline: 2px solid #3f51b5;
-      outline-offset: 2px;
-    }
-
-    .secondary-action:focus {
-      outline: 2px solid rgba(0, 0, 0, 0.54);
-      outline-offset: 2px;
-    }
-
-    /* Animation for state transitions */
-    .center-content,
-    .existing-role-content,
-    .ready-content,
-    .success-content,
-    .error-content {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Progress bar styling */
-    mat-progress-bar {
-      margin-bottom: 1rem;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    /* Expansion panel styling */
-    .next-steps mat-expansion-panel-header {
-      font-weight: 500;
-    }
-
-    /* List item icon styling */
-    mat-list-item mat-icon[matListItemIcon] {
-      color: #4caf50;
-    }
-  `],
+    `,
+  ],
 })
 export class CreateRoleComponent {
   private readonly adminRoleService = inject(AdminRoleService);

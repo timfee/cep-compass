@@ -70,30 +70,30 @@ export const routes: Routes = [
       {
         path: 'enrollment/browsers',
         loadComponent: () =>
-          import('./components/browser-enrollment/browser-enrollment.component').then(
-            (m) => m.BrowserEnrollmentComponent,
-          ),
+          import(
+            './components/browser-enrollment/browser-enrollment.component'
+          ).then((m) => m.BrowserEnrollmentComponent),
       },
       {
         path: 'enrollment/profiles',
         loadComponent: () =>
-          import('./components/profile-enrollment/profile-enrollment.component').then(
-            (m) => m.ProfileEnrollmentComponent,
-          ),
+          import(
+            './components/profile-enrollment/profile-enrollment.component'
+          ).then((m) => m.ProfileEnrollmentComponent),
       },
       {
         path: 'security/one-click',
         loadComponent: () =>
-          import('./components/one-click-activation/one-click-activation.component').then(
-            (m) => m.OneClickActivationComponent,
-          ),
+          import(
+            './components/one-click-activation/one-click-activation.component'
+          ).then((m) => m.OneClickActivationComponent),
       },
       {
         path: 'security/dlp',
         loadComponent: () =>
-          import('./components/dlp-configuration/dlp-configuration.component').then(
-            (m) => m.DlpConfigurationComponent,
-          ),
+          import(
+            './components/dlp-configuration/dlp-configuration.component'
+          ).then((m) => m.DlpConfigurationComponent),
       },
       {
         path: 'admin/create-role',

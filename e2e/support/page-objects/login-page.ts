@@ -23,7 +23,7 @@ export class LoginPage extends BasePage {
   }
 
   async getCardTitle(): Promise<string> {
-    return await this.cardTitle.textContent() ?? '';
+    return (await this.cardTitle.textContent()) ?? '';
   }
 
   async clickSignInButton(): Promise<void> {

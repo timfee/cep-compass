@@ -42,19 +42,21 @@ describe('CreateRoleComponent', () => {
   beforeEach(async () => {
     // Mock navigator clipboard for headless browser environment
     const mockClipboard = {
-      writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
+      writeText: jasmine
+        .createSpy('writeText')
+        .and.returnValue(Promise.resolve()),
     };
-    
+
     Object.defineProperty(navigator, 'clipboard', {
       value: mockClipboard,
       configurable: true,
-      writable: true
+      writable: true,
     });
-    
+
     Object.defineProperty(window, 'isSecureContext', {
       value: true,
       configurable: true,
-      writable: true
+      writable: true,
     });
 
     const adminRoleServiceSpy = jasmine.createSpyObj('AdminRoleService', [
@@ -66,7 +68,10 @@ describe('CreateRoleComponent', () => {
       availableRoles: () => ({ isSuperAdmin: true }),
     });
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error']);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', [
+      'success',
+      'error',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [CreateRoleComponent, NoopAnimationsModule],
@@ -82,7 +87,9 @@ describe('CreateRoleComponent', () => {
       AdminRoleService,
     ) as jasmine.SpyObj<AdminRoleService>;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationService = TestBed.inject(
+      NotificationService,
+    ) as jasmine.SpyObj<NotificationService>;
   });
 
   describe('when user is super admin and role does not exist', () => {
@@ -167,7 +174,9 @@ describe('CreateRoleComponent', () => {
     it('should copy role ID to clipboard', async () => {
       await component.copyRoleId();
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('test-role-id');
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        'test-role-id',
+      );
       expect(notificationService.success).toHaveBeenCalledWith(
         'Role ID copied to clipboard!',
       );

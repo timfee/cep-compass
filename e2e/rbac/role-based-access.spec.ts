@@ -1,5 +1,9 @@
 import { test, expect } from '../support/fixtures';
-import { createSuperAdminUser, createCepAdminUser, createParticipantUser } from '../support/fixtures/test-users';
+import {
+  createSuperAdminUser,
+  createCepAdminUser,
+  createParticipantUser,
+} from '../support/fixtures/test-users';
 
 test.describe('Role-Based Access Control', () => {
   test.describe('Super Admin Access', () => {
@@ -8,16 +12,18 @@ test.describe('Role-Based Access Control', () => {
       await authMock.setupAuthenticatedUser(superAdminUser, 'superAdmin');
     });
 
-    test('should have full access to all features', async ({ 
-      page, 
-      dashboardPage, 
-      adminPage 
+    test('should have full access to all features', async ({
+      page,
+      dashboardPage,
+      adminPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
 
       // Verify dashboard access
-      await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+      await expect(dashboardPage.pageTitle).toContainText(
+        'CEP Compass Dashboard',
+      );
 
       // Verify admin access
       await dashboardPage.navigateToAdmin();
@@ -28,9 +34,9 @@ test.describe('Role-Based Access Control', () => {
       await expect(adminPage.canCreateRoles()).resolves.toBe(true);
     });
 
-    test('should access org units management', async ({ 
-      page, 
-      dashboardPage 
+    test('should access org units management', async ({
+      page,
+      dashboardPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
@@ -39,10 +45,10 @@ test.describe('Role-Based Access Control', () => {
       await expect(page).toHaveURL(/.*org-units/);
     });
 
-    test('should access email templates', async ({ 
-      page, 
-      dashboardPage, 
-      emailTemplatesPage 
+    test('should access email templates', async ({
+      page,
+      dashboardPage,
+      emailTemplatesPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
@@ -58,8 +64,10 @@ test.describe('Role-Based Access Control', () => {
 
       const cards = await dashboardPage.getVisibleCards();
       expect(cards.length).toBeGreaterThan(0);
-      expect(cards.some(card => card.includes('Enroll Browsers'))).toBe(true);
-      expect(cards.some(card => card.includes('Activate One-Click Protection'))).toBe(true);
+      expect(cards.some((card) => card.includes('Enroll Browsers'))).toBe(true);
+      expect(
+        cards.some((card) => card.includes('Activate One-Click Protection')),
+      ).toBe(true);
     });
   });
 
@@ -69,15 +77,17 @@ test.describe('Role-Based Access Control', () => {
       await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
     });
 
-    test('should have limited access compared to Super Admin', async ({ 
-      page, 
-      dashboardPage 
+    test('should have limited access compared to Super Admin', async ({
+      page,
+      dashboardPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
 
       // Verify dashboard access
-      await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+      await expect(dashboardPage.pageTitle).toContainText(
+        'CEP Compass Dashboard',
+      );
 
       // Should not be able to access admin features
       await page.goto('/admin');
@@ -85,9 +95,9 @@ test.describe('Role-Based Access Control', () => {
       await expect(page).toHaveURL(/.*dashboard/);
     });
 
-    test('should access org units (read permissions)', async ({ 
-      page, 
-      dashboardPage 
+    test('should access org units (read permissions)', async ({
+      page,
+      dashboardPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
@@ -96,10 +106,10 @@ test.describe('Role-Based Access Control', () => {
       await expect(page).toHaveURL(/.*org-units/);
     });
 
-    test('should access email templates', async ({ 
-      page, 
-      dashboardPage, 
-      emailTemplatesPage 
+    test('should access email templates', async ({
+      page,
+      dashboardPage,
+      emailTemplatesPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
@@ -116,7 +126,7 @@ test.describe('Role-Based Access Control', () => {
       const cards = await dashboardPage.getVisibleCards();
       expect(cards.length).toBeGreaterThan(0);
       // CEP Admin should see main features but not admin-specific ones
-      expect(cards.some(card => card.includes('Enroll Browsers'))).toBe(true);
+      expect(cards.some((card) => card.includes('Enroll Browsers'))).toBe(true);
     });
   });
 
@@ -126,24 +136,26 @@ test.describe('Role-Based Access Control', () => {
       await authMock.setupAuthenticatedUser(participantUser, 'participant');
     });
 
-    test('should have minimal read-only access', async ({ 
-      page, 
-      dashboardPage 
+    test('should have minimal read-only access', async ({
+      page,
+      dashboardPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
 
       // Verify dashboard access
-      await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+      await expect(dashboardPage.pageTitle).toContainText(
+        'CEP Compass Dashboard',
+      );
 
       // Should not be able to access admin features
       await page.goto('/admin');
       await expect(page).toHaveURL(/.*dashboard/);
     });
 
-    test('should have restricted navigation options', async ({ 
-      page, 
-      dashboardPage 
+    test('should have restricted navigation options', async ({
+      page,
+      dashboardPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
@@ -155,7 +167,9 @@ test.describe('Role-Based Access Control', () => {
       // Participants should have fewer navigation options
     });
 
-    test('should see read-only dashboard content', async ({ dashboardPage }) => {
+    test('should see read-only dashboard content', async ({
+      dashboardPage,
+    }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
 
@@ -164,7 +178,9 @@ test.describe('Role-Based Access Control', () => {
       expect(cards.length).toBeGreaterThan(0);
     });
 
-    test('should be blocked from accessing restricted areas', async ({ page }) => {
+    test('should be blocked from accessing restricted areas', async ({
+      page,
+    }) => {
       const restrictedRoutes = ['/admin', '/admin/create-role'];
 
       for (const route of restrictedRoutes) {
@@ -176,12 +192,12 @@ test.describe('Role-Based Access Control', () => {
   });
 
   test.describe('Role Switching', () => {
-    test('should allow multi-role user to switch between roles', async ({ 
-      page, 
-      selectRolePage, 
-      dashboardPage, 
-      adminPage, 
-      authMock 
+    test('should allow multi-role user to switch between roles', async ({
+      page,
+      selectRolePage,
+      dashboardPage,
+      adminPage,
+      authMock,
     }) => {
       const multiRoleUser = createSuperAdminUser(); // Has both super admin and CEP admin roles
       await authMock.setupAuthenticatedUser(multiRoleUser);
@@ -211,27 +227,27 @@ test.describe('Role-Based Access Control', () => {
   });
 
   test.describe('Permission Denied Scenarios', () => {
-    test('should handle unauthorized access gracefully', async ({ 
-      page, 
-      authMock 
+    test('should handle unauthorized access gracefully', async ({
+      page,
+      authMock,
     }) => {
       const participantUser = createParticipantUser();
       await authMock.setupAuthenticatedUser(participantUser, 'participant');
 
       // Try to access admin area directly
       await page.goto('/admin');
-      
+
       // Should redirect to dashboard, not show error page
       await expect(page).toHaveURL(/.*dashboard/);
-      
+
       // Page should still be functional
       await expect(page.locator('h1')).toBeVisible();
     });
 
-    test('should show appropriate UI based on permissions', async ({ 
-      page, 
-      dashboardPage, 
-      authMock 
+    test('should show appropriate UI based on permissions', async ({
+      page,
+      dashboardPage,
+      authMock,
     }) => {
       const cepAdminUser = createCepAdminUser();
       await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
@@ -241,11 +257,11 @@ test.describe('Role-Based Access Control', () => {
 
       // Admin-specific features should not be visible
       await dashboardPage.openSideNav();
-      
+
       // Admin link should not be present or should be disabled
       const adminLink = page.locator('a[routerLink="/admin"]');
       const isAdminLinkVisible = await adminLink.isVisible();
-      
+
       if (isAdminLinkVisible) {
         // If visible, it should be disabled or non-functional
         await adminLink.click();

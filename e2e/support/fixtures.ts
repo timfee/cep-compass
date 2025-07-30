@@ -1,5 +1,11 @@
 import { test as base } from '@playwright/test';
-import { LoginPage, SelectRolePage, DashboardPage, AdminPage, EmailTemplatesPage } from './page-objects';
+import {
+  LoginPage,
+  SelectRolePage,
+  DashboardPage,
+  AdminPage,
+  EmailTemplatesPage,
+} from './page-objects';
 import { AuthMock } from './fixtures/auth-mock';
 
 type CEPCompassFixtures = {

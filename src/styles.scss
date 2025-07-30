@@ -12,8 +12,10 @@ $theme: mat.define-theme(
       tertiary: mat.$violet-palette,
     ),
     typography: (
-      brand-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-      plain-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      brand-family:
+        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      plain-family:
+        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       bold-weight: 700,
       medium-weight: 500,
       regular-weight: 400,
@@ -37,7 +39,9 @@ $theme: mat.define-theme(
 
 // System font variables for consistency
 :root {
-  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 
 html,
@@ -80,7 +84,12 @@ $spacing-unit: 8px;
 }
 
 // Typography utilities with Material Design tokens
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   @include typography-base;
   font-weight: 500;
   margin: 0;

@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,17 +37,23 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
 })
 export class LoginComponent {
   public authService = inject(AuthService);
   private router = inject(Router);
-  
+
   public isLoading = signal(false);
 
   async login(): Promise<void> {
     if (this.isLoading()) return;
-    
+
     this.isLoading.set(true);
     try {
       await this.authService.loginWithGoogle();

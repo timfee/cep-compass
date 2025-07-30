@@ -301,8 +301,8 @@ export class DirectoryService extends BaseApiService {
 
       // Fetch initial users and groups concurrently
       await Promise.all([
-        this.loadUsersPage(PaginationUtils.getPageSize('users')), 
-        this.loadGroupsPage(PaginationUtils.getPageSize('groups'))
+        this.loadUsersPage(PaginationUtils.getPageSize('users')),
+        this.loadGroupsPage(PaginationUtils.getPageSize('groups')),
       ]);
 
       this.updateFetchTime();
@@ -382,7 +382,11 @@ export class DirectoryService extends BaseApiService {
       throw new Error('User not authenticated');
     }
 
-    const url = this.buildUsersApiUrl(undefined, SEARCH_CONFIG.DEFAULT_LIMIT, query);
+    const url = this.buildUsersApiUrl(
+      undefined,
+      SEARCH_CONFIG.DEFAULT_LIMIT,
+      query,
+    );
 
     try {
       const response = await firstValueFrom(
@@ -416,7 +420,12 @@ export class DirectoryService extends BaseApiService {
       throw new Error('User not authenticated');
     }
 
-    const url = this.buildGroupsApiUrl(undefined, SEARCH_CONFIG.DEFAULT_LIMIT, undefined, query);
+    const url = this.buildGroupsApiUrl(
+      undefined,
+      SEARCH_CONFIG.DEFAULT_LIMIT,
+      undefined,
+      query,
+    );
 
     try {
       const response = await firstValueFrom(
@@ -444,7 +453,11 @@ export class DirectoryService extends BaseApiService {
       throw new Error('User not authenticated');
     }
 
-    const url = this.buildGroupsApiUrl(undefined, SEARCH_CONFIG.DEFAULT_LIMIT, userEmail);
+    const url = this.buildGroupsApiUrl(
+      undefined,
+      SEARCH_CONFIG.DEFAULT_LIMIT,
+      userEmail,
+    );
 
     try {
       const response = await firstValueFrom(
@@ -477,7 +490,11 @@ export class DirectoryService extends BaseApiService {
 
     try {
       do {
-        const url = this.buildGroupMembersApiUrl(groupEmail, pageToken, SEARCH_CONFIG.DEFAULT_LIMIT);
+        const url = this.buildGroupMembersApiUrl(
+          groupEmail,
+          pageToken,
+          SEARCH_CONFIG.DEFAULT_LIMIT,
+        );
 
         const response = await firstValueFrom(
           this.http.get<GroupMembersApiResponse>(url),
@@ -599,11 +616,14 @@ export class DirectoryService extends BaseApiService {
     query?: string,
   ): string {
     const baseUrl = `${this.API_BASE_URL}/users`;
-    
+
     return ApiUrlBuilder.buildPaginatedUrl(baseUrl, {
       pageToken,
-      maxResults: maxResults ? PaginationUtils.clampPageSize(maxResults, 'users') : undefined,
-      fields: 'users(id,primaryEmail,name,suspended,orgUnitPath,isAdmin,isDelegatedAdmin,lastLoginTime,creationTime,thumbnailPhotoUrl,emails),nextPageToken',
+      maxResults: maxResults
+        ? PaginationUtils.clampPageSize(maxResults, 'users')
+        : undefined,
+      fields:
+        'users(id,primaryEmail,name,suspended,orgUnitPath,isAdmin,isDelegatedAdmin,lastLoginTime,creationTime,thumbnailPhotoUrl,emails),nextPageToken',
       additionalParams: query ? { query } : {},
     });
   }
@@ -615,15 +635,18 @@ export class DirectoryService extends BaseApiService {
     query?: string,
   ): string {
     const baseUrl = `${this.API_BASE_URL}/groups`;
-    
+
     const additionalParams: Record<string, string> = {};
     if (userKey) additionalParams['userKey'] = userKey;
     if (query) additionalParams['query'] = query;
-    
+
     return ApiUrlBuilder.buildPaginatedUrl(baseUrl, {
       pageToken,
-      maxResults: maxResults ? PaginationUtils.clampPageSize(maxResults, 'groups') : undefined,
-      fields: 'groups(id,email,name,description,directMembersCount,adminCreated,aliases),nextPageToken',
+      maxResults: maxResults
+        ? PaginationUtils.clampPageSize(maxResults, 'groups')
+        : undefined,
+      fields:
+        'groups(id,email,name,description,directMembersCount,adminCreated,aliases),nextPageToken',
       additionalParams,
     });
   }

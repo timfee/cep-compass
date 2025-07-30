@@ -6,7 +6,7 @@ applyTo: "src/app/**/*.ts"
 
 Use Angular v20+ with standalone components, signals for state management, and OnPush change detection.
 Never use NgModules - all components are standalone by default.
-Use the new control flow syntax: @if, @for, @switch instead of *ngIf, *ngFor, *ngSwitch.
+Use the new control flow syntax: @if, @for, @switch instead of *ngIf, *ngFor, \*ngSwitch.
 Prefer inject() function over constructor injection.
 Use input() and output() functions instead of decorators.
 
@@ -18,11 +18,11 @@ Use input() and output() functions instead of decorators.
   templateUrl: "./feature-name.component.html",
   styleUrl: "./feature-name.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatCardModule]
+  imports: [CommonModule, MatCardModule],
 })
 export class FeatureNameComponent {
   private readonly service = inject(ServiceName);
-  
+
   loading = signal(false);
   error = signal<string | null>(null);
   data = signal<DataType | null>(null);

@@ -12,7 +12,9 @@ test.describe('Dashboard', () => {
     await dashboardPage.waitForLoad();
 
     // Check for dashboard title
-    await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+    await expect(dashboardPage.pageTitle).toContainText(
+      'CEP Compass Dashboard',
+    );
 
     // Check for main dashboard cards
     await expect(dashboardPage.dashboardCards.first()).toBeVisible();
@@ -20,7 +22,10 @@ test.describe('Dashboard', () => {
     await expect(dashboardPage.oneClickProtectionCard).toBeVisible();
   });
 
-  test('should navigate to sections from dashboard cards', async ({ page, dashboardPage }) => {
+  test('should navigate to sections from dashboard cards', async ({
+    page,
+    dashboardPage,
+  }) => {
     await dashboardPage.goto();
     await dashboardPage.waitForLoad();
 
@@ -28,7 +33,7 @@ test.describe('Dashboard', () => {
     const getStartedButtons = await dashboardPage.getStartedButtons.all();
     if (getStartedButtons.length > 0) {
       await getStartedButtons[0].click();
-      
+
       // Just check that navigation happened to a valid route
       await page.waitForURL(
         /.*\/(admin|enrollment|security|org-units|email-templates|directory-stats)/,

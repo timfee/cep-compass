@@ -32,12 +32,14 @@ HEADLESS_BROWSER=true
 Configure the following secrets in your GitHub repository settings (Settings → Secrets and variables → Actions):
 
 #### Firebase Test Configuration
+
 - `FIREBASE_TEST_PROJECT_ID`: Your Firebase test project ID
 - `FIREBASE_TEST_API_KEY`: Firebase API key for test project
 - `FIREBASE_TEST_AUTH_DOMAIN`: Firebase auth domain
 - `FIREBASE_TEST_APP_ID`: Firebase app ID
 
 #### Test Credentials
+
 - `TEST_USER_EMAIL`: Email for test user account
 - `TEST_USER_PASSWORD`: Password for test user
 - `TEST_ADMIN_EMAIL`: Email for test admin account
@@ -101,18 +103,22 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 ## Test Configuration Files
 
 ### `environment.test.ts`
+
 - Firebase configuration for test environment
 - Points to demo project and emulators
 
 ### `playwright.config.test.ts`
+
 - E2E test configuration for CI
 - Configures reporters and test artifacts
 
 ### `karma.conf.js`
+
 - Unit test configuration
 - Includes ChromeHeadlessCI launcher for CI
 
 ### `e2e/global-setup.ts`
+
 - Playwright global setup for authentication
 - Configures Firebase emulator connection
 
@@ -127,16 +133,19 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 ## Troubleshooting
 
 ### Tests fail with authentication errors
+
 - Ensure Firebase emulators are running
 - Check environment variables are set
 - Verify test accounts exist in emulator
 
 ### E2E tests timeout
+
 - Increase timeout in playwright.config.ts
 - Check if app is building correctly
 - Verify Firebase emulators started
 
 ### CI tests fail but local tests pass
+
 - Check GitHub secrets are configured
 - Verify CI uses correct Node version
 - Review workflow logs for specific errors
@@ -147,13 +156,14 @@ For Firebase Auth emulator:
 
 ```javascript
 // Create test users in emulator
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 const auth = getAuth();
-await createUserWithEmailAndPassword(auth, 'test@example.com', 'test-password-123');
+await createUserWithEmailAndPassword(auth, "test@example.com", "test-password-123");
 ```
 
 For production testing (not recommended):
+
 - Create limited permission test accounts
 - Use separate test organization/domain
 - Implement proper cleanup after tests

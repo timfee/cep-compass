@@ -23,7 +23,7 @@ function createMockResponse(options: MockResponseOptions = {}): MockResponse {
     status = 200,
     headers = { 'Content-Type': 'application/json' },
     ok = status >= 200 && status < 300,
-    statusText = ok ? 'OK' : 'Error'
+    statusText = ok ? 'OK' : 'Error',
   } = options;
 
   const mockResponse: MockResponse = {
@@ -35,14 +35,16 @@ function createMockResponse(options: MockResponseOptions = {}): MockResponse {
     url: '',
     redirected: false,
     type: 'basic' as ResponseType,
-    clone: function() { return this; },
+    clone: function () {
+      return this;
+    },
     body: null,
     bodyUsed: false,
     arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     blob: () => Promise.resolve(new Blob()),
     bytes: () => Promise.resolve(new Uint8Array()),
     formData: () => Promise.resolve(new FormData()),
-    text: () => Promise.resolve(JSON.stringify(data))
+    text: () => Promise.resolve(JSON.stringify(data)),
   };
 
   return mockResponse;
@@ -62,13 +64,12 @@ describe('AuthService', () => {
     });
 
     // Mock global fetch with default response
-    spyOn(window, 'fetch').and.returnValue(Promise.resolve(createMockResponse()));
+    spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve(createMockResponse()),
+    );
 
     TestBed.configureTestingModule({
-      providers: [
-        AuthService,
-        { provide: Auth, useValue: mockAuth },
-      ],
+      providers: [AuthService, { provide: Auth, useValue: mockAuth }],
     });
 
     service = TestBed.inject(AuthService);
@@ -101,13 +102,13 @@ describe('AuthService', () => {
     it('should return access token from memory when available and user exists', fakeAsync(async () => {
       const mockToken = 'ya29.memory-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
-      
+
       // Mock the user signal
       Object.defineProperty(service, 'user', {
         get: () => signal(mockUser),
-        configurable: true
+        configurable: true,
       });
-      
+
       service['accessToken'] = mockToken;
 
       const result = await service.getAccessToken();
@@ -119,13 +120,13 @@ describe('AuthService', () => {
     it('should retrieve token from sessionStorage when not in memory', fakeAsync(async () => {
       const mockToken = 'ya29.session-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
-      
+
       // Mock the user signal
       Object.defineProperty(service, 'user', {
         get: () => signal(mockUser),
-        configurable: true
+        configurable: true,
       });
-      
+
       sessionStorage.setItem(TOKEN_STORAGE_KEY, mockToken);
       service['accessToken'] = null;
 
@@ -142,7 +143,7 @@ describe('AuthService', () => {
       // Mock the user signal to return null
       Object.defineProperty(service, 'user', {
         get: () => signal(null),
-        configurable: true
+        configurable: true,
       });
 
       const result = await service.getAccessToken();
@@ -154,11 +155,11 @@ describe('AuthService', () => {
 
     it('should clear storage when user is null', fakeAsync(async () => {
       sessionStorage.setItem(TOKEN_STORAGE_KEY, 'old-token');
-      
+
       // Mock the user signal to return null
       Object.defineProperty(service, 'user', {
         get: () => signal(null),
-        configurable: true
+        configurable: true,
       });
 
       const result = await service.getAccessToken();
@@ -195,7 +196,9 @@ describe('AuthService', () => {
         missingPrivileges: [],
       });
 
-      expect(() => service.selectRole(UserRole.SUPER_ADMIN)).toThrowError('Cannot select Super Admin role: Not available.');
+      expect(() => service.selectRole(UserRole.SUPER_ADMIN)).toThrowError(
+        'Cannot select Super Admin role: Not available.',
+      );
     });
 
     it('should throw error when selecting unavailable CEP admin role', () => {
@@ -205,7 +208,9 @@ describe('AuthService', () => {
         missingPrivileges: [],
       });
 
-      expect(() => service.selectRole(UserRole.CEP_ADMIN)).toThrowError('Cannot select CEP Admin role: Not available.');
+      expect(() => service.selectRole(UserRole.CEP_ADMIN)).toThrowError(
+        'Cannot select CEP Admin role: Not available.',
+      );
     });
 
     it('should set changing role flag when role is null', () => {
@@ -216,17 +221,17 @@ describe('AuthService', () => {
     it('should update selectedRole signal when selectRole is called', () => {
       service.selectRole(UserRole.SUPER_ADMIN);
       expect(service.selectedRole()).toBe(UserRole.SUPER_ADMIN);
-      
+
       service.selectRole(null);
       expect(service.selectedRole()).toBe(null);
-      
+
       // Test CEP Admin role
       service.availableRoles.set({
         isSuperAdmin: false,
         isCepAdmin: true,
         missingPrivileges: [],
       });
-      
+
       service.selectRole(UserRole.CEP_ADMIN);
       expect(service.selectedRole()).toBe(UserRole.CEP_ADMIN);
     });
@@ -243,27 +248,29 @@ describe('AuthService', () => {
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
       expect(roles.missingPrivileges).toEqual([
-        { privilegeName: 'REAUTHENTICATION_REQUIRED', serviceId: 'auth' }
+        { privilegeName: 'REAUTHENTICATION_REQUIRED', serviceId: 'auth' },
       ]);
     }));
 
     it('should detect super admin role', fakeAsync(async () => {
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
-      
+
       // Mock the user signal
       Object.defineProperty(service, 'user', {
         get: () => signal(mockUser),
-        configurable: true
+        configurable: true,
       });
-      
+
       service['accessToken'] = mockToken;
 
       const mockUserResponse = createMockResponse({
-        data: { isAdmin: true }
+        data: { isAdmin: true },
       });
 
-      (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockUserResponse));
+      (window.fetch as jasmine.Spy).and.returnValue(
+        Promise.resolve(mockUserResponse),
+      );
 
       await service['updateAvailableRoles']();
       tick();
@@ -277,28 +284,32 @@ describe('AuthService', () => {
     it('should handle API errors gracefully', async () => {
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
-      
+
       // Mock the user signal
       Object.defineProperty(service, 'user', {
         get: () => signal(mockUser),
-        configurable: true
+        configurable: true,
       });
-      
+
       service['accessToken'] = mockToken;
 
       // Mock retryWithBackoff to avoid real retries and timeouts
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
-        return await fn();
-      });
+      spyOn(service as any, 'retryWithBackoff').and.callFake(
+        async (fn: any) => {
+          return await fn();
+        },
+      );
 
       const mockErrorResponse = createMockResponse({
         data: {},
         status: 403,
-        statusText: 'Forbidden'
+        statusText: 'Forbidden',
       });
 
-      (window.fetch as jasmine.Spy).and.returnValue(Promise.resolve(mockErrorResponse));
+      (window.fetch as jasmine.Spy).and.returnValue(
+        Promise.resolve(mockErrorResponse),
+      );
 
       await service['updateAvailableRoles']();
 
@@ -311,20 +322,22 @@ describe('AuthService', () => {
     it('should handle user without email', async () => {
       const mockToken = 'ya29.test-token';
       const mockUser = { uid: 'test-uid', email: null };
-      
+
       // Mock the user signal
       Object.defineProperty(service, 'user', {
         get: () => signal(mockUser),
-        configurable: true
+        configurable: true,
       });
-      
+
       service['accessToken'] = mockToken;
 
       // Mock retryWithBackoff to avoid real retries and timeouts
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      spyOn(service as any, 'retryWithBackoff').and.callFake(async (fn: any) => {
-        return await fn();
-      });
+      spyOn(service as any, 'retryWithBackoff').and.callFake(
+        async (fn: any) => {
+          return await fn();
+        },
+      );
 
       await service['updateAvailableRoles']();
 
@@ -348,10 +361,10 @@ describe('AuthService', () => {
 
       // Selecting a role should reset the flag (via effect)
       service.selectRole(UserRole.SUPER_ADMIN);
-      
+
       // Force effects to run
       TestBed.flushEffects();
-      
+
       // The effect should have reset the flag
       expect(service['isChangingRole']).toBe(false);
     }));
@@ -360,8 +373,12 @@ describe('AuthService', () => {
   describe('refreshAvailableRoles', () => {
     it('should call updateAvailableRoles', fakeAsync(async () => {
       // Use type assertion to access private method for testing
-      const serviceWithPrivates = service as unknown as { updateAvailableRoles(): Promise<void> };
-      spyOn(serviceWithPrivates, 'updateAvailableRoles').and.returnValue(Promise.resolve());
+      const serviceWithPrivates = service as unknown as {
+        updateAvailableRoles(): Promise<void>;
+      };
+      spyOn(serviceWithPrivates, 'updateAvailableRoles').and.returnValue(
+        Promise.resolve(),
+      );
 
       await service.refreshAvailableRoles();
       tick();
@@ -409,11 +426,11 @@ describe('AuthService', () => {
 
     it('should handle token expiration gracefully', fakeAsync(async () => {
       const mockUser = { uid: 'test-uid', email: 'test@example.com' };
-      
+
       // Mock the user signal
       Object.defineProperty(service, 'user', {
         get: () => signal(mockUser),
-        configurable: true
+        configurable: true,
       });
 
       // No token in memory or storage
@@ -432,7 +449,7 @@ describe('AuthService', () => {
         isSuperAdmin: false,
         isCepAdmin: false,
         missingPrivileges: [
-          { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' }
+          { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
         ],
       });
 

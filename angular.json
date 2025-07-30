@@ -26,9 +26,7 @@
               "node_modules/quill/dist/quill.snow.css",
               "src/styles.scss"
             ],
-            "allowedCommonJsDependencies": [
-              "quill-delta"
-            ]
+            "allowedCommonJsDependencies": ["quill-delta"]
           },
           "configurations": {
             "production": {

@@ -186,7 +186,9 @@ describe('DashboardComponent', () => {
 
   describe('getRoleDisplayName', () => {
     it('should return correct display names for roles', () => {
-      expect(component.getRoleDisplayName(UserRole.SUPER_ADMIN)).toBe('Super Admin');
+      expect(component.getRoleDisplayName(UserRole.SUPER_ADMIN)).toBe(
+        'Super Admin',
+      );
       expect(component.getRoleDisplayName(UserRole.CEP_ADMIN)).toBe(
         'CEP Delegated Admin',
       );

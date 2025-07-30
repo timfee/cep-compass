@@ -207,6 +207,7 @@ npx playwright test auth.spec.ts
 ### CI Configuration
 
 The project is configured for headless Chrome testing with these flags:
+
 - `--no-sandbox` - Required for containerized environments
 - `--disable-gpu` - Improves performance in headless mode
 - `--disable-dev-shm-usage` - Prevents shared memory issues in Docker

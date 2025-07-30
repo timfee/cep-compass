@@ -35,7 +35,7 @@ const MATERIAL_MODULES = [
   MatButtonModule,
   MatCardModule,
   MatIconModule,
-  
+
   // Form modules
   MatFormFieldModule,
   MatInputModule,
@@ -43,25 +43,25 @@ const MATERIAL_MODULES = [
   MatCheckboxModule,
   MatRadioModule,
   MatSlideToggleModule,
-  
+
   // Layout modules
   MatToolbarModule,
   MatDividerModule,
   MatListModule,
   MatExpansionModule,
   MatTabsModule,
-  
+
   // Data modules
   MatTableModule,
   MatPaginatorModule,
   MatSortModule,
-  
+
   // Feedback modules
   MatProgressSpinnerModule,
   MatSnackBarModule,
   MatTooltipModule,
   MatDialogModule,
-  
+
   // Navigation modules
   MatMenuModule,
   MatChipsModule,

@@ -77,7 +77,7 @@ describe('ErrorDisplayComponent', () => {
 
   it('should emit retry event when retry button is clicked', () => {
     spyOn(component.retry, 'emit');
-    
+
     fixture.componentRef.setInput('message', 'Test message');
     fixture.detectChanges();
 

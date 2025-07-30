@@ -113,7 +113,7 @@ describe('DirectoryService', () => {
 
   beforeEach(() => {
     userSignal = signal({ uid: 'test-user', email: 'test@example.com' });
-    
+
     const authSpy = jasmine.createSpyObj('AuthService', ['getAccessToken'], {
       user: userSignal,
     });

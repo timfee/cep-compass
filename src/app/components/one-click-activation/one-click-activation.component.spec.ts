@@ -72,7 +72,12 @@ describe('OneClickActivationComponent', () => {
       users: signal(mockUsers),
     };
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', [
+      'success',
+      'error',
+      'warning',
+      'info',
+    ]);
 
     // Clear localStorage before each test
     localStorage.clear();
@@ -94,7 +99,9 @@ describe('OneClickActivationComponent', () => {
       DirectoryService,
     ) as jasmine.SpyObj<DirectoryService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationService = TestBed.inject(
+      NotificationService,
+    ) as jasmine.SpyObj<NotificationService>;
 
     // Setup default spy behavior
     enrollmentService.listTokens.and.returnValue(Promise.resolve(mockTokens));

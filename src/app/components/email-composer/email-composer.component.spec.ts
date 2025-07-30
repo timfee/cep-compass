@@ -215,10 +215,12 @@ describe('EmailComposerComponent', () => {
   describe('Actions', () => {
     it('should copy to clipboard', async () => {
       // Mock the navigator clipboard API
-      const writeTextSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
+      const writeTextSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.resolve());
       Object.defineProperty(navigator, 'clipboard', {
         value: { writeText: writeTextSpy },
-        configurable: true
+        configurable: true,
       });
 
       await component.copyToClipboard();

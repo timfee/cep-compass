@@ -108,11 +108,15 @@ export const EnumValidators = {
   },
 
   isDashboardCategory(value: string): value is DashboardCategory {
-    return Object.values(DashboardCategory).includes(value as DashboardCategory);
+    return Object.values(DashboardCategory).includes(
+      value as DashboardCategory,
+    );
   },
 
   isEmailTemplateType(value: string): value is EmailTemplateType {
-    return Object.values(EmailTemplateType).includes(value as EmailTemplateType);
+    return Object.values(EmailTemplateType).includes(
+      value as EmailTemplateType,
+    );
   },
 
   isBadgeColor(value: string): value is BadgeColor {

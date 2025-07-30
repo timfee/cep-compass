@@ -9,34 +9,36 @@ describe('copyToClipboard', () => {
   afterEach(() => {
     // Clean up any remaining elements
     const textAreas = document.querySelectorAll('textarea');
-    textAreas.forEach(el => el.remove());
+    textAreas.forEach((el) => el.remove());
   });
 
   describe('when navigator.clipboard is available', () => {
     beforeEach(() => {
       // Mock navigator.clipboard API
       const mockClipboard = {
-        writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
+        writeText: jasmine
+          .createSpy('writeText')
+          .and.returnValue(Promise.resolve()),
       };
-      
+
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,
         configurable: true,
-        writable: true
+        writable: true,
       });
-      
+
       Object.defineProperty(window, 'isSecureContext', {
         value: true,
         configurable: true,
-        writable: true
+        writable: true,
       });
     });
 
     it('should use navigator.clipboard.writeText', async () => {
       const testText = 'Hello, World!';
-      
+
       await copyToClipboard(testText);
-      
+
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(testText);
       expect(document.execCommand).not.toHaveBeenCalled();
     });
@@ -44,7 +46,7 @@ describe('copyToClipboard', () => {
     it('should handle clipboard API errors gracefully', async () => {
       const testText = 'Error test';
       (navigator.clipboard.writeText as jasmine.Spy).and.returnValue(
-        Promise.reject(new Error('Clipboard API failed'))
+        Promise.reject(new Error('Clipboard API failed')),
       );
 
       await expectAsync(copyToClipboard(testText)).toBeRejected();
@@ -57,17 +59,17 @@ describe('copyToClipboard', () => {
       Object.defineProperty(navigator, 'clipboard', {
         value: undefined,
         configurable: true,
-        writable: true
+        writable: true,
       });
     });
 
     it('should use document.execCommand fallback', async () => {
       const testText = 'Fallback test';
-      
+
       await copyToClipboard(testText);
-      
+
       expect(document.execCommand).toHaveBeenCalledWith('copy');
-      
+
       // Check that a textarea was created temporarily
       const textArea = document.querySelector('textarea');
       expect(textArea).toBeNull(); // Should be removed after use
@@ -77,9 +79,9 @@ describe('copyToClipboard', () => {
       const testText = 'Textarea test';
       spyOn(document.body, 'appendChild').and.callThrough();
       spyOn(document.body, 'removeChild').and.callThrough();
-      
+
       await copyToClipboard(testText);
-      
+
       expect(document.body.appendChild).toHaveBeenCalled();
       expect(document.body.removeChild).toHaveBeenCalled();
     });
@@ -89,27 +91,29 @@ describe('copyToClipboard', () => {
     beforeEach(() => {
       // Mock navigator.clipboard as available but secure context as false
       const mockClipboard = {
-        writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
+        writeText: jasmine
+          .createSpy('writeText')
+          .and.returnValue(Promise.resolve()),
       };
-      
+
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,
         configurable: true,
-        writable: true
+        writable: true,
       });
-      
+
       Object.defineProperty(window, 'isSecureContext', {
         value: false,
         configurable: true,
-        writable: true
+        writable: true,
       });
     });
 
     it('should use fallback when not in secure context', async () => {
       const testText = 'Not secure test';
-      
+
       await copyToClipboard(testText);
-      
+
       expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
       expect(document.execCommand).toHaveBeenCalledWith('copy');
     });
@@ -121,7 +125,7 @@ describe('copyToClipboard', () => {
       Object.defineProperty(navigator, 'clipboard', {
         value: undefined,
         configurable: true,
-        writable: true
+        writable: true,
       });
     });
 

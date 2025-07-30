@@ -18,16 +18,14 @@ All Google API calls require OAuth token from AuthService.
 
 ```typescript
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ApiService extends BaseApiService {
   private readonly http = inject(HttpClient);
-  
+
   async fetchData(): Promise<ApiResponse> {
     try {
-      const response = await firstValueFrom(
-        this.http.get<ApiResponse>('/api/endpoint')
-      );
+      const response = await firstValueFrom(this.http.get<ApiResponse>("/api/endpoint"));
       return response;
     } catch (error) {
       throw this.handleApiError(error);

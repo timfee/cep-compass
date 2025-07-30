@@ -24,7 +24,11 @@ import { CommonModule } from '@angular/common';
       <span class="spacer"></span>
 
       @if (authService.user(); as user) {
-        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+        <button
+          mat-button
+          [matMenuTriggerFor]="userMenu"
+          class="user-menu-button"
+        >
           @if (user.photoURL) {
             <img [src]="user.photoURL" alt="User Photo" class="user-avatar" />
           } @else {

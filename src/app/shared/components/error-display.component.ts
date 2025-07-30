@@ -99,19 +99,19 @@ import { MatIconModule } from '@angular/material/icon';
 export class ErrorDisplayComponent {
   /** Error message to display */
   message = input.required<string>();
-  
+
   /** Error title - defaults to "Error" */
   title = input<string>('Error');
-  
+
   /** Material icon name - defaults to "error" */
   icon = input<string>('error');
-  
+
   /** Whether to show the retry button */
   showRetry = input<boolean>(true);
-  
+
   /** Whether the retry button should be disabled */
   retryDisabled = input<boolean>(false);
-  
+
   /** Text for the retry button */
   retryButtonText = input<string>('Try Again');
 

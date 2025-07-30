@@ -15,7 +15,9 @@ export class EmailTemplatesPage extends BasePage {
     super(page);
     this.pageTitle = page.locator('.templates-card mat-card-title');
     this.emailComposer = page.locator('app-email-composer');
-    this.templateSelect = page.locator('mat-select[formControlName="templateId"]');
+    this.templateSelect = page.locator(
+      'mat-select[formControlName="templateId"]',
+    );
     this.recipientInput = page.locator('input[placeholder*="recipient"]');
     this.previewButton = page.locator('button:has-text("Preview")');
     this.sendButton = page.locator('button:has-text("Send")');
@@ -52,7 +54,7 @@ export class EmailTemplatesPage extends BasePage {
       chips.map(async (chip) => {
         const text = await chip.textContent();
         return text ? text.trim() : null;
-      })
+      }),
     );
     return chipTexts.filter((text): text is string => text !== null);
   }

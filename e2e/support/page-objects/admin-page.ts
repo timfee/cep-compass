@@ -11,7 +11,9 @@ export class AdminPage extends BasePage {
     super(page);
     this.pageTitle = page.locator('h1');
     this.createRoleButton = page.locator('button:has-text("Create Role")');
-    this.roleManagementSection = page.locator('[data-testid="role-management"]');
+    this.roleManagementSection = page.locator(
+      '[data-testid="role-management"]',
+    );
     this.privilegesSection = page.locator('[data-testid="privileges"]');
   }
 

@@ -127,13 +127,18 @@ describe('OrgUnitsService', () => {
       const req = httpMock.expectOne(
         'https://www.googleapis.com/admin/directory/v1/customer/my_customer/orgunits',
       );
-      
-      req.flush({ error: 'Authentication required' }, { status: 401, statusText: 'Unauthorized' });
+
+      req.flush(
+        { error: 'Authentication required' },
+        { status: 401, statusText: 'Unauthorized' },
+      );
 
       await fetchPromise;
 
       expect(service.isLoading()).toBe(false);
-      expect(service.error()).toBe('Authentication required. Please log in again.');
+      expect(service.error()).toBe(
+        'Authentication required. Please log in again.',
+      );
       expect(service.orgUnits()).toEqual([]);
     });
 

@@ -1,5 +1,8 @@
 import { test, expect } from '../support/fixtures';
-import { createSuperAdminUser, createCepAdminUser } from '../support/fixtures/test-users';
+import {
+  createSuperAdminUser,
+  createCepAdminUser,
+} from '../support/fixtures/test-users';
 
 test.describe('Email Templates User Journey', () => {
   test.beforeEach(async ({ authMock }) => {
@@ -7,8 +10,8 @@ test.describe('Email Templates User Journey', () => {
     await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
-  test('should complete email composer workflow', async ({ 
-    emailTemplatesPage 
+  test('should complete email composer workflow', async ({
+    emailTemplatesPage,
   }) => {
     await emailTemplatesPage.goto();
     await emailTemplatesPage.waitForLoad();
@@ -36,9 +39,9 @@ test.describe('Email Templates User Journey', () => {
     await expect(emailTemplatesPage.previewContent).toBeVisible();
   });
 
-  test('should handle template selection correctly', async ({ 
+  test('should handle template selection correctly', async ({
     page,
-    emailTemplatesPage 
+    emailTemplatesPage,
   }) => {
     await emailTemplatesPage.goto();
     await emailTemplatesPage.waitForLoad();
@@ -57,9 +60,7 @@ test.describe('Email Templates User Journey', () => {
     await expect(emailTemplatesPage.templateSelect).toHaveValue(/.+/);
   });
 
-  test('should validate recipient input', async ({ 
-    emailTemplatesPage 
-  }) => {
+  test('should validate recipient input', async ({ emailTemplatesPage }) => {
     await emailTemplatesPage.goto();
     await emailTemplatesPage.waitForLoad();
 
@@ -74,9 +75,9 @@ test.describe('Email Templates User Journey', () => {
     expect(recipientsAfter).not.toContain('invalid-email');
   });
 
-  test('should work for CEP Admin users', async ({ 
+  test('should work for CEP Admin users', async ({
     emailTemplatesPage,
-    authMock 
+    authMock,
   }) => {
     // Test with CEP Admin user
     const cepAdminUser = createCepAdminUser();
@@ -97,15 +98,17 @@ test.describe('Dashboard Navigation Journey', () => {
     await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
-  test('should navigate through dashboard cards', async ({ 
+  test('should navigate through dashboard cards', async ({
     page,
-    dashboardPage 
+    dashboardPage,
   }) => {
     await dashboardPage.goto();
     await dashboardPage.waitForLoad();
 
     // Verify dashboard loads
-    await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+    await expect(dashboardPage.pageTitle).toContainText(
+      'CEP Compass Dashboard',
+    );
 
     // Get available cards
     const cards = await dashboardPage.getVisibleCards();
@@ -115,20 +118,21 @@ test.describe('Dashboard Navigation Journey', () => {
     const getStartedButtons = await dashboardPage.getStartedButtons.all();
     if (getStartedButtons.length > 0) {
       await getStartedButtons[0].click();
-      
+
       // Should navigate to a feature page
-      await page.waitForURL(/.*\/(admin|enrollment|security|org-units|email-templates|directory-stats)/);
-      
+      await page.waitForURL(
+        /.*\/(admin|enrollment|security|org-units|email-templates|directory-stats)/,
+      );
+
       // Verify we're on a valid feature page
       const currentUrl = page.url();
-      expect(currentUrl).toMatch(/\/(admin|enrollment|security|org-units|email-templates|directory-stats)/);
+      expect(currentUrl).toMatch(
+        /\/(admin|enrollment|security|org-units|email-templates|directory-stats)/,
+      );
     }
   });
 
-  test('should use side navigation menu', async ({ 
-    page,
-    dashboardPage 
-  }) => {
+  test('should use side navigation menu', async ({ page, dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.waitForLoad();
 
@@ -155,10 +159,10 @@ test.describe('Admin Role Management Journey', () => {
     await authMock.setupAuthenticatedUser(superAdminUser, 'superAdmin');
   });
 
-  test('should access admin role creation (Super Admin only)', async ({ 
+  test('should access admin role creation (Super Admin only)', async ({
     page,
     dashboardPage,
-    adminPage 
+    adminPage,
   }) => {
     await dashboardPage.goto();
     await dashboardPage.waitForLoad();
@@ -181,9 +185,9 @@ test.describe('Admin Role Management Journey', () => {
     // (Implementation dependent on actual component behavior)
   });
 
-  test('should be blocked for non-Super Admin users', async ({ 
+  test('should be blocked for non-Super Admin users', async ({
     page,
-    authMock 
+    authMock,
   }) => {
     // Test with CEP Admin
     const cepAdminUser = createCepAdminUser();
@@ -203,9 +207,9 @@ test.describe('Error Recovery Scenarios', () => {
     await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
   });
 
-  test('should handle network errors gracefully', async ({ 
+  test('should handle network errors gracefully', async ({
     page,
-    dashboardPage 
+    dashboardPage,
   }) => {
     // Block all API calls to simulate network issues
     await page.route('**/api/**', (route) => {
@@ -216,15 +220,15 @@ test.describe('Error Recovery Scenarios', () => {
 
     // Page should still load basic structure even with API failures
     await expect(dashboardPage.pageTitle).toBeVisible();
-    
+
     // User should see the page, possibly with error states or loading indicators
     const pageContent = await page.textContent('body');
     expect(pageContent).toBeTruthy();
   });
 
-  test('should recover from temporary API failures', async ({ 
+  test('should recover from temporary API failures', async ({
     page,
-    dashboardPage 
+    dashboardPage,
   }) => {
     let apiCallCount = 0;
 
@@ -246,12 +250,14 @@ test.describe('Error Recovery Scenarios', () => {
     await dashboardPage.waitForLoad();
 
     // Should eventually load successfully
-    await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+    await expect(dashboardPage.pageTitle).toContainText(
+      'CEP Compass Dashboard',
+    );
   });
 
-  test('should handle page refresh during session', async ({ 
+  test('should handle page refresh during session', async ({
     page,
-    dashboardPage 
+    dashboardPage,
   }) => {
     await dashboardPage.goto();
     await dashboardPage.waitForLoad();
@@ -261,13 +267,15 @@ test.describe('Error Recovery Scenarios', () => {
 
     // Should maintain authenticated state and reload dashboard
     await dashboardPage.waitForLoad();
-    await expect(dashboardPage.pageTitle).toContainText('CEP Compass Dashboard');
+    await expect(dashboardPage.pageTitle).toContainText(
+      'CEP Compass Dashboard',
+    );
   });
 
-  test('should handle browser back/forward navigation', async ({ 
+  test('should handle browser back/forward navigation', async ({
     page,
     dashboardPage,
-    emailTemplatesPage 
+    emailTemplatesPage,
   }) => {
     // Start at dashboard
     await dashboardPage.goto();

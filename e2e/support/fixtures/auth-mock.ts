@@ -24,7 +24,7 @@ export class AuthMock {
     // Mock API routes with specific endpoint handling
     await this.page.route('**/api/**', (route) => {
       const url = route.request().url();
-      
+
       // Handle specific API endpoints
       if (url.includes('/api/user')) {
         route.fulfill({
@@ -65,7 +65,10 @@ export class AuthMock {
   }
 
   /** Setup authentication state for a specific user using localStorage */
-  async setupAuthenticatedUser(user: TestUser, selectedRole?: string): Promise<void> {
+  async setupAuthenticatedUser(
+    user: TestUser,
+    selectedRole?: string,
+  ): Promise<void> {
     // First setup basic mocks
     await this.setupBasicMocks();
 
@@ -73,18 +76,21 @@ export class AuthMock {
     await this.page.goto('/');
 
     // Set up localStorage with auth state
-    await this.page.evaluate(({ userData, role }) => {
-      // Set role selection if provided
-      if (role) {
-        localStorage.setItem('cep_selected_role', role);
-      }
-      
-      // Mock auth token
-      sessionStorage.setItem('cep_oauth_token', 'mock-token');
-      
-      // Store user data for the app to access
-      localStorage.setItem('test-user-data', JSON.stringify(userData));
-    }, { userData: user, role: selectedRole });
+    await this.page.evaluate(
+      ({ userData, role }) => {
+        // Set role selection if provided
+        if (role) {
+          localStorage.setItem('cep_selected_role', role);
+        }
+
+        // Mock auth token
+        sessionStorage.setItem('cep_oauth_token', 'mock-token');
+
+        // Store user data for the app to access
+        localStorage.setItem('test-user-data', JSON.stringify(userData));
+      },
+      { userData: user, role: selectedRole },
+    );
 
     // Mock Firebase user state
     await this.page.addInitScript((userData) => {
@@ -99,7 +105,7 @@ export class AuthMock {
 
       // Mock Firebase auth state
       (window as any).authStateChanged = true;
-      
+
       // Mock Google API with signed in user
       (window as any).gapi = {
         load: () => {},
@@ -108,7 +114,7 @@ export class AuthMock {
             isSignedIn: { get: () => true },
             currentUser: {
               get: () => ({
-                getBasicProfile: () => ({ 
+                getBasicProfile: () => ({
                   getEmail: () => userData.email,
                   getName: () => userData.displayName,
                 }),
@@ -125,10 +131,10 @@ export class AuthMock {
     // Mock admin API responses based on user roles
     await this.page.route('**/admin.googleapis.com/**', (route) => {
       const url = route.request().url();
-      
+
       if (url.includes('/users/')) {
         // Mock user admin status based on roles
-        const isAdmin = user.roles.some(role => role.type === 'superAdmin');
+        const isAdmin = user.roles.some((role) => role.type === 'superAdmin');
         route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -156,11 +162,11 @@ export class AuthMock {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            rolePrivileges: user.roles.flatMap(role => 
-              role.permissions.map(permission => ({
+            rolePrivileges: user.roles.flatMap((role) =>
+              role.permissions.map((permission) => ({
                 privilegeName: permission,
                 serviceId: '00haapch16h1ysv',
-              }))
+              })),
             ),
           }),
         });
@@ -198,12 +204,12 @@ export class AuthMock {
             getIdToken: () => Promise.resolve('mock-id-token'),
             getIdTokenResult: () => Promise.resolve({ token: 'mock-id-token' }),
           };
-          
+
           sessionStorage.setItem('cep_oauth_token', 'mock-access-token');
-          
+
           // Trigger auth state change
           (window as any).authStateChanged = true;
-          
+
           return Promise.resolve();
         };
       }

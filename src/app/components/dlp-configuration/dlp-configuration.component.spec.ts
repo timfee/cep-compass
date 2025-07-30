@@ -10,17 +10,26 @@ describe('DlpConfigurationComponent', () => {
   let notificationService: jasmine.SpyObj<NotificationService>;
 
   beforeEach(async () => {
-    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
+    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', [
+      'success',
+      'error',
+      'warning',
+      'info',
+    ]);
 
     // Clear localStorage before each test
     localStorage.clear();
 
     await TestBed.configureTestingModule({
       imports: [DlpConfigurationComponent, NoopAnimationsModule],
-      providers: [{ provide: NotificationService, useValue: notificationServiceSpy }],
+      providers: [
+        { provide: NotificationService, useValue: notificationServiceSpy },
+      ],
     }).compileComponents();
 
-    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationService = TestBed.inject(
+      NotificationService,
+    ) as jasmine.SpyObj<NotificationService>;
     fixture = TestBed.createComponent(DlpConfigurationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -82,21 +91,23 @@ describe('DlpConfigurationComponent', () => {
     beforeEach(() => {
       // Mock clipboard API for headless browser environment
       mockClipboard = {
-        writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
+        writeText: jasmine
+          .createSpy('writeText')
+          .and.returnValue(Promise.resolve()),
       };
-      
+
       // Use defineProperty to properly mock the clipboard in headless environment
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,
         configurable: true,
-        writable: true
+        writable: true,
       });
-      
+
       // Ensure secure context for clipboard API to work
       Object.defineProperty(window, 'isSecureContext', {
         value: true,
         configurable: true,
-        writable: true
+        writable: true,
       });
     });
 

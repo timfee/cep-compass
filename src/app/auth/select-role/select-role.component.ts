@@ -21,10 +21,11 @@ import { UserRole } from '../../shared/constants/enums';
   template: `
     <div class="role-selection-container">
       @if (isLoading()) {
-        <app-loading 
+        <app-loading
           type="spinner"
-          message="Loading available roles..." 
-          [diameter]="50">
+          message="Loading available roles..."
+          [diameter]="50"
+        >
         </app-loading>
       } @else {
         <mat-card>
@@ -39,7 +40,10 @@ import { UserRole } from '../../shared/constants/enums';
               <button
                 mat-flat-button
                 color="primary"
-                [disabled]="!authService.availableRoles().isSuperAdmin || isSelectingRole()"
+                [disabled]="
+                  !authService.availableRoles().isSuperAdmin ||
+                  isSelectingRole()
+                "
                 (click)="selectRole(UserRole.SUPER_ADMIN)"
               >
                 @if (isSelectingRole()) {
@@ -50,7 +54,9 @@ import { UserRole } from '../../shared/constants/enums';
               <button
                 mat-flat-button
                 color="accent"
-                [disabled]="!authService.availableRoles().isCepAdmin || isSelectingRole()"
+                [disabled]="
+                  !authService.availableRoles().isCepAdmin || isSelectingRole()
+                "
                 (click)="selectRole(UserRole.CEP_ADMIN)"
               >
                 @if (isSelectingRole()) {
@@ -123,7 +129,7 @@ export class SelectRoleComponent implements OnInit {
   public authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
-  
+
   // Expose enum for template usage
   public readonly UserRole = UserRole;
 
@@ -144,7 +150,7 @@ export class SelectRoleComponent implements OnInit {
 
   async selectRole(role: SelectedRole): Promise<void> {
     if (!role || this.isSelectingRole()) return;
-    
+
     this.isSelectingRole.set(true);
     try {
       this.authService.selectRole(role);
@@ -152,7 +158,9 @@ export class SelectRoleComponent implements OnInit {
       await this.router.navigate(['/dashboard']);
     } catch (error) {
       console.error('Role selection failed:', error);
-      this.notificationService.error('Failed to select role. Please try again.');
+      this.notificationService.error(
+        'Failed to select role. Please try again.',
+      );
     } finally {
       this.isSelectingRole.set(false);
     }

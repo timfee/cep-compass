@@ -31,8 +31,11 @@
       </div>
     }
 
-    <form [formGroup]="emailForm" class="email-composer-form"
-          [class.disabled]="isLoading()">
+    <form
+      [formGroup]="emailForm"
+      class="email-composer-form"
+      [class.disabled]="isLoading()"
+    >
       <!-- Template Selection -->
       <div class="template-selection-section">
         <mat-form-field appearance="outline" class="full-width">
@@ -286,7 +289,9 @@
       mat-raised-button
       (click)="composeEmail()"
       color="primary"
-      [disabled]="!selectedTemplate() || recipientChips().length === 0 || isLoading()"
+      [disabled]="
+        !selectedTemplate() || recipientChips().length === 0 || isLoading()
+      "
     >
       @if (isLoading()) {
         <mat-spinner diameter="16"></mat-spinner>

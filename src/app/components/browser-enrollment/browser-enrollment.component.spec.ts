@@ -52,7 +52,12 @@ describe('BrowserEnrollmentComponent', () => {
       },
     );
 
-    mockNotificationService = jasmine.createSpyObj('NotificationService', ['success', 'error', 'warning', 'info']);
+    mockNotificationService = jasmine.createSpyObj('NotificationService', [
+      'success',
+      'error',
+      'warning',
+      'info',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [BrowserEnrollmentComponent, NoopAnimationsModule],
@@ -157,13 +162,13 @@ describe('BrowserEnrollmentComponent', () => {
     const writeTextSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: writeTextSpy },
-      configurable: true
+      configurable: true,
     });
-    
+
     Object.defineProperty(window, 'isSecureContext', {
       value: true,
       configurable: true,
-      writable: true
+      writable: true,
     });
 
     await component.copyToken();

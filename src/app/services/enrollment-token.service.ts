@@ -94,7 +94,8 @@ export class EnrollmentTokenService extends BaseApiService {
   private readonly _tokens = signal<EnrollmentToken[]>([]);
 
   // Default token expiration (30 days from creation)
-  private readonly DEFAULT_EXPIRATION_DAYS = TOKEN_CONFIG.DEFAULT_EXPIRATION_DAYS;
+  private readonly DEFAULT_EXPIRATION_DAYS =
+    TOKEN_CONFIG.DEFAULT_EXPIRATION_DAYS;
 
   /**
    * Signal containing all enrollment tokens
@@ -157,7 +158,8 @@ export class EnrollmentTokenService extends BaseApiService {
 
       return tokens;
     } catch (error) {
-      const errorMessage = GoogleApiErrorHandler.handleEnrollmentTokenError(error);
+      const errorMessage =
+        GoogleApiErrorHandler.handleEnrollmentTokenError(error);
       this.setError(errorMessage);
       console.error('Failed to fetch enrollment tokens:', error);
       throw error;
@@ -232,7 +234,8 @@ export class EnrollmentTokenService extends BaseApiService {
         enrollmentUrl,
       };
     } catch (error) {
-      const errorMessage = GoogleApiErrorHandler.handleEnrollmentTokenError(error);
+      const errorMessage =
+        GoogleApiErrorHandler.handleEnrollmentTokenError(error);
       this.setError(errorMessage);
       console.error('Failed to create enrollment token:', error);
       throw error;
@@ -274,7 +277,8 @@ export class EnrollmentTokenService extends BaseApiService {
       );
       this._tokens.set(updatedTokens);
     } catch (error) {
-      const errorMessage = GoogleApiErrorHandler.handleEnrollmentTokenError(error);
+      const errorMessage =
+        GoogleApiErrorHandler.handleEnrollmentTokenError(error);
       this.setError(errorMessage);
       console.error('Failed to revoke enrollment token:', error);
       throw error;
@@ -371,7 +375,9 @@ Linux:
     if (tokenValue.length <= TOKEN_CONFIG.MASK_VISIBLE_CHARS) {
       return tokenValue;
     }
-    const maskedPart = '*'.repeat(tokenValue.length - TOKEN_CONFIG.MASK_VISIBLE_CHARS);
+    const maskedPart = '*'.repeat(
+      tokenValue.length - TOKEN_CONFIG.MASK_VISIBLE_CHARS,
+    );
     const visiblePart = tokenValue.slice(-TOKEN_CONFIG.MASK_VISIBLE_CHARS);
     return `${maskedPart}${visiblePart}`;
   }
@@ -423,7 +429,7 @@ Linux:
    */
   private buildApiUrl(pageToken?: string, orgUnitPath?: string): string {
     const baseUrl = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens`;
-    
+
     return ApiUrlBuilder.buildPaginatedUrl(baseUrl, {
       pageToken,
       additionalParams: orgUnitPath ? { orgUnitPath } : {},

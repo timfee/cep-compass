@@ -8,40 +8,50 @@ describe('GlobalErrorHandler', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [GlobalErrorHandler]
+      providers: [GlobalErrorHandler],
     });
 
     errorHandler = TestBed.inject(GlobalErrorHandler);
     consoleErrorSpy = spyOn(console, 'error');
-    
+
     // Store original environment to restore later
-    originalEnvironment = (window as unknown as Record<string, unknown>)['environment'];
+    originalEnvironment = (window as unknown as Record<string, unknown>)[
+      'environment'
+    ];
   });
 
   afterEach(() => {
     // Restore original environment
-    (window as unknown as Record<string, unknown>)['environment'] = originalEnvironment;
+    (window as unknown as Record<string, unknown>)['environment'] =
+      originalEnvironment;
   });
 
   describe('handleError', () => {
     it('should log error to console', () => {
       const testError = new Error('Test error message');
-      
+
       errorHandler.handleError(testError);
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', testError);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        testError,
+      );
     });
 
     it('should log stack trace in development mode', () => {
       // We need to mock the environment module since it's imported
       // In real scenarios, this would be done through dependency injection
-      
+
       const testError = new Error('Test error with stack');
-      testError.stack = 'Error stack trace\n  at someFunction\n  at anotherFunction';
-      
+      testError.stack =
+        'Error stack trace\n  at someFunction\n  at anotherFunction';
+
       errorHandler.handleError(testError);
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', testError);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        testError,
+      );
       // In development, we would expect stack trace to be logged
       // but since we can't easily mock the environment import,
       // we'll just verify the main error is logged
@@ -50,10 +60,13 @@ describe('GlobalErrorHandler', () => {
     it('should handle error without stack trace', () => {
       const testError = new Error('Error without stack');
       delete testError.stack;
-      
+
       errorHandler.handleError(testError);
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', testError);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        testError,
+      );
     });
 
     it('should handle different types of errors', () => {
@@ -65,43 +78,57 @@ describe('GlobalErrorHandler', () => {
         new Error('Generic error'),
       ];
 
-      errors.forEach(error => {
+      errors.forEach((error) => {
         consoleErrorSpy.calls.reset();
-        
+
         errorHandler.handleError(error);
-        
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', error);
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Application error:',
+          error,
+        );
       });
     });
 
     it('should handle error with empty message', () => {
       const testError = new Error('');
-      
+
       errorHandler.handleError(testError);
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', testError);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        testError,
+      );
     });
 
     it('should handle error with special characters in message', () => {
-      const testError = new Error('Error with special chars: 特殊文字 & symbols: @#$%^&*()');
-      
+      const testError = new Error(
+        'Error with special chars: 特殊文字 & symbols: @#$%^&*()',
+      );
+
       errorHandler.handleError(testError);
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', testError);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        testError,
+      );
     });
 
     it('should handle very long error messages', () => {
       const longMessage = 'A'.repeat(10000);
       const testError = new Error(longMessage);
-      
+
       errorHandler.handleError(testError);
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', testError);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        testError,
+      );
     });
 
     it('should not throw when handling errors', () => {
       const testError = new Error('Test error');
-      
+
       expect(() => {
         errorHandler.handleError(testError);
       }).not.toThrow();
@@ -113,7 +140,7 @@ describe('GlobalErrorHandler', () => {
       expect(() => {
         errorHandler.handleError(null as unknown);
       }).not.toThrow();
-      
+
       expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', null);
     });
 
@@ -121,8 +148,11 @@ describe('GlobalErrorHandler', () => {
       expect(() => {
         errorHandler.handleError(undefined as unknown);
       }).not.toThrow();
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', undefined);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Application error:',
+        undefined,
+      );
     });
 
     it('should handle non-Error objects', () => {
@@ -135,13 +165,13 @@ describe('GlobalErrorHandler', () => {
         Symbol('error'),
       ];
 
-      nonErrorObjects.forEach(obj => {
+      nonErrorObjects.forEach((obj) => {
         consoleErrorSpy.calls.reset();
-        
+
         expect(() => {
           errorHandler.handleError(obj as unknown);
         }).not.toThrow();
-        
+
         expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', obj);
       });
     });

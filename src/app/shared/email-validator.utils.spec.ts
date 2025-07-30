@@ -25,8 +25,11 @@ describe('EmailValidator', () => {
         'email@example..com', // consecutive dots in domain are allowed
       ];
 
-      validEmails.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(true, `Expected ${email} to be valid`);
+      validEmails.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          true,
+          `Expected ${email} to be valid`,
+        );
       });
     });
 
@@ -58,8 +61,11 @@ describe('EmailValidator', () => {
         ' ', // just space
       ];
 
-      invalidEmails.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(false, `Expected ${email} to be invalid`);
+      invalidEmails.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          false,
+          `Expected ${email} to be invalid`,
+        );
       });
     });
 
@@ -77,8 +83,11 @@ describe('EmailValidator', () => {
         () => 'email@example.com',
       ];
 
-      nonStrings.forEach(value => {
-        expect(EmailValidator.isValid(value)).toBe(false, `Expected ${typeof value} to be invalid`);
+      nonStrings.forEach((value) => {
+        expect(EmailValidator.isValid(value)).toBe(
+          false,
+          `Expected ${typeof value} to be invalid`,
+        );
       });
     });
 
@@ -92,23 +101,22 @@ describe('EmailValidator', () => {
         '   test@example.com   ',
       ];
 
-      emailsWithWhitespace.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(true, `Expected trimmed ${email} to be valid`);
+      emailsWithWhitespace.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          true,
+          `Expected trimmed ${email} to be valid`,
+        );
       });
     });
 
     it('should return false for empty string after trimming', () => {
-      const emptyValues = [
-        '',
-        '   ',
-        '\t',
-        '\n',
-        '\r\n',
-        '\t\n\r  ',
-      ];
+      const emptyValues = ['', '   ', '\t', '\n', '\r\n', '\t\n\r  '];
 
-      emptyValues.forEach(value => {
-        expect(EmailValidator.isValid(value)).toBe(false, `Expected empty value "${value}" to be invalid`);
+      emptyValues.forEach((value) => {
+        expect(EmailValidator.isValid(value)).toBe(
+          false,
+          `Expected empty value "${value}" to be invalid`,
+        );
       });
     });
 
@@ -121,8 +129,11 @@ describe('EmailValidator', () => {
         'user@sub.domain.info',
       ];
 
-      internationalEmails.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(true, `Expected international email ${email} to be valid`);
+      internationalEmails.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          true,
+          `Expected international email ${email} to be valid`,
+        );
       });
     });
 
@@ -155,8 +166,11 @@ describe('EmailValidator', () => {
         'test|@example.com',
       ];
 
-      validSpecialChars.forEach(email => {
-        expect(EmailValidator.isValid(email)).toBe(true, `Expected email with special char ${email} to be valid`);
+      validSpecialChars.forEach((email) => {
+        expect(EmailValidator.isValid(email)).toBe(
+          true,
+          `Expected email with special char ${email} to be valid`,
+        );
       });
     });
   });

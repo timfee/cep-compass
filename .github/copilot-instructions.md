@@ -5,6 +5,7 @@ You are working on CEP Compass, an Angular v20+ enterprise application for manag
 ## Project Overview
 
 CEP Compass provides IT administrators with a guided workflow to:
+
 - Set up delegated admin roles for Chrome management
 - Enroll browsers and user profiles
 - Activate security features and configure DLP policies
@@ -16,7 +17,7 @@ The application integrates with Google Workspace APIs (Admin SDK Directory API, 
 
 Use Angular v20+ with standalone components, signals for state management, and OnPush change detection.
 Never use NgModules - all components are standalone by default.
-Use the new control flow syntax: @if, @for, @switch instead of *ngIf, *ngFor, *ngSwitch.
+Use the new control flow syntax: @if, @for, @switch instead of *ngIf, *ngFor, \*ngSwitch.
 Prefer inject() function over constructor injection.
 Use input() and output() functions instead of decorators.
 
@@ -50,7 +51,7 @@ Use external template and style files unless the component is trivial (less than
 Use Angular Material components for all UI elements.
 Use Material theme colors - never hardcode colors like #1976d2.
 Follow the 8px spacing grid.
-Never override .mat-mdc-* classes directly.
+Never override .mat-mdc-\* classes directly.
 
 ## TypeScript Patterns
 
@@ -66,6 +67,7 @@ Use Promises with firstValueFrom() for single HTTP calls.
 Use direct HTTP calls via Angular HttpClient - do NOT use googleapis SDK.
 All Google API calls require OAuth token from AuthService.
 Key API endpoints:
+
 - List organizational units: `GET /admin/directory/v1/customer/my_customer/orgunits`
 - Create enrollment token: `POST /admin/directory/v1.1beta1/customer/my_customer/chrome/enrollmentTokens`
 - List users: `GET /admin/directory/v1/users?customer=my_customer`
@@ -137,7 +139,7 @@ Implement proper role-based access control (Super Admin vs CEP Admin permissions
 ## Before Submitting Code
 
 - Run `npm run lint` - must pass
-- Run `npm run build` - must succeed  
+- Run `npm run build` - must succeed
 - Run `npm test` - must pass
 - Verify Google API endpoints are correct
 - Check for proper error handling

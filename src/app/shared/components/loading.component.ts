@@ -11,9 +11,7 @@ import { MatCardModule } from '@angular/material/card';
   template: `
     @if (type() === 'spinner') {
       <div class="loading-container" [class.inline]="inline()">
-        <mat-spinner 
-          [diameter]="diameter()" 
-          [strokeWidth]="strokeWidth()">
+        <mat-spinner [diameter]="diameter()" [strokeWidth]="strokeWidth()">
         </mat-spinner>
         @if (message()) {
           <p class="loading-message">{{ message() }}</p>

@@ -10,9 +10,7 @@ describe('App', () => {
 
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [
-        { provide: Auth, useValue: mockAuth },
-      ],
+      providers: [{ provide: Auth, useValue: mockAuth }],
     }).compileComponents();
   });
 
@@ -26,6 +24,8 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('mat-toolbar span')?.textContent).toContain('CEP Compass');
+    expect(compiled.querySelector('mat-toolbar span')?.textContent).toContain(
+      'CEP Compass',
+    );
   });
 });

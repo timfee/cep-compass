@@ -15,7 +15,10 @@ test.describe('Email Composer', () => {
     await expect(emailTemplatesPage.emailComposer).toBeVisible();
   });
 
-  test('should allow template selection', async ({ page, emailTemplatesPage }) => {
+  test('should allow template selection', async ({
+    page,
+    emailTemplatesPage,
+  }) => {
     await emailTemplatesPage.goto();
     await emailTemplatesPage.waitForLoad();
 

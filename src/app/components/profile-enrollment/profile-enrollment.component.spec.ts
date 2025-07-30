@@ -157,7 +157,7 @@ describe('ProfileEnrollmentComponent', () => {
     ) as HTMLButtonElement;
     refreshButton.click();
     fixture.detectChanges();
-    
+
     // Wait for async operation to complete
     await fixture.whenStable();
 

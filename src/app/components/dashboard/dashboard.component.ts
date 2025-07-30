@@ -14,7 +14,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService, SelectedRole } from '../../services/auth.service';
 import { DirectoryStatsComponent } from '../directory-stats/directory-stats.component';
-import { UserRole, DashboardCategory, BadgeColor } from '../../shared/constants/enums';
+import {
+  UserRole,
+  DashboardCategory,
+  BadgeColor,
+} from '../../shared/constants/enums';
 
 interface DashboardCard {
   id: string;
@@ -210,7 +214,10 @@ export class DashboardComponent {
     }
 
     if (card.requiredRole === UserRole.CEP_ADMIN) {
-      return currentRole === UserRole.CEP_ADMIN || currentRole === UserRole.SUPER_ADMIN;
+      return (
+        currentRole === UserRole.CEP_ADMIN ||
+        currentRole === UserRole.SUPER_ADMIN
+      );
     }
 
     return false;

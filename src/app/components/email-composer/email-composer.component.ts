@@ -166,7 +166,7 @@ export class EmailComposerComponent implements OnInit {
     try {
       this._isLoading.set(true);
       this._error.set(null);
-      
+
       this.emailService.selectTemplate(templateId);
       const template = this.selectedTemplate();
 
@@ -185,7 +185,8 @@ export class EmailComposerComponent implements OnInit {
         throw new Error('Template not found');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load template';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load template';
       this._error.set(errorMessage);
       this.notificationService.error(errorMessage);
       console.error('Template loading error:', error);
@@ -312,7 +313,7 @@ export class EmailComposerComponent implements OnInit {
     try {
       this._isLoading.set(true);
       this._error.set(null);
-      
+
       const preview = this.getPreview();
       await copyToClipboard(preview);
       this.notificationService.success('Email content copied to clipboard');
@@ -332,7 +333,7 @@ export class EmailComposerComponent implements OnInit {
   openInGmail(): void {
     try {
       this._error.set(null);
-      
+
       const recipients = this.recipientChips();
       const subject = this.previewSubject();
       const body = this.getPreview();
@@ -363,7 +364,7 @@ export class EmailComposerComponent implements OnInit {
     try {
       this._isLoading.set(true);
       this._error.set(null);
-      
+
       const validation = this.emailService.validateRequiredVariables();
       if (!validation.isValid) {
         this.notificationService.warning(
@@ -390,7 +391,8 @@ export class EmailComposerComponent implements OnInit {
         throw new Error('Failed to compose email');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to compose email';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to compose email';
       this._error.set(errorMessage);
       this.notificationService.error(errorMessage);
       console.error('Email composition error:', error);

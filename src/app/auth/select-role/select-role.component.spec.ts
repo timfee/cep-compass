@@ -13,9 +13,7 @@ describe('SelectRoleComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [SelectRoleComponent],
-      providers: [
-        { provide: Auth, useValue: mockAuth },
-      ],
+      providers: [{ provide: Auth, useValue: mockAuth }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SelectRoleComponent);

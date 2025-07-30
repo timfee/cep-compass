@@ -16,8 +16,12 @@ export class DashboardPage extends BasePage {
     super(page);
     this.pageTitle = page.locator('h1');
     this.dashboardCards = page.locator('mat-card');
-    this.enrollBrowsersCard = page.locator('mat-card:has-text("Enroll Browsers")');
-    this.oneClickProtectionCard = page.locator('mat-card:has-text("Activate One-Click Protection")');
+    this.enrollBrowsersCard = page.locator(
+      'mat-card:has-text("Enroll Browsers")',
+    );
+    this.oneClickProtectionCard = page.locator(
+      'mat-card:has-text("Activate One-Click Protection")',
+    );
     this.getStartedButtons = page.locator('button:has-text("Get Started")');
     this.userToolbar = page.locator('mat-toolbar');
     this.logoutButton = page.locator('button:has-text("Logout")');
@@ -35,7 +39,7 @@ export class DashboardPage extends BasePage {
   }
 
   async getDashboardTitle(): Promise<string> {
-    return await this.pageTitle.textContent() ?? '';
+    return (await this.pageTitle.textContent()) ?? '';
   }
 
   async clickFirstGetStartedButton(): Promise<void> {
@@ -48,7 +52,7 @@ export class DashboardPage extends BasePage {
       cards.map(async (card) => {
         const text = await card.textContent();
         return text ? text.trim() : null;
-      })
+      }),
     );
     return cardTexts.filter((text): text is string => text !== null);
   }

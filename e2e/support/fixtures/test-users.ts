@@ -1,13 +1,20 @@
 import { TestUser, UserRole } from '../types/test-types';
 
-export const createTestUser = (overrides: Partial<TestUser> = {}): TestUser => ({
+export const createTestUser = (
+  overrides: Partial<TestUser> = {},
+): TestUser => ({
   email: 'test@example.com',
   displayName: 'Test User',
   uid: 'test-user-uid',
   roles: [
     {
       type: 'superAdmin',
-      permissions: ['admin:read', 'admin:write', 'roles:create', 'users:manage'],
+      permissions: [
+        'admin:read',
+        'admin:write',
+        'roles:create',
+        'users:manage',
+      ],
     },
   ],
   ...overrides,
@@ -21,7 +28,12 @@ export const createSuperAdminUser = (): TestUser =>
     roles: [
       {
         type: 'superAdmin',
-        permissions: ['admin:read', 'admin:write', 'roles:create', 'users:manage'],
+        permissions: [
+          'admin:read',
+          'admin:write',
+          'roles:create',
+          'users:manage',
+        ],
       },
     ],
   });
@@ -60,7 +72,12 @@ export const createMultiRoleUser = (): TestUser =>
     roles: [
       {
         type: 'superAdmin',
-        permissions: ['admin:read', 'admin:write', 'roles:create', 'users:manage'],
+        permissions: [
+          'admin:read',
+          'admin:write',
+          'roles:create',
+          'users:manage',
+        ],
       },
       {
         type: 'cepAdmin',

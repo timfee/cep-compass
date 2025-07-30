@@ -11,27 +11,27 @@ Use TestBed for component testing.
 ## Service Testing
 
 ```typescript
-describe('ServiceName', () => {
+describe("ServiceName", () => {
   let service: ServiceName;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ServiceName]
+      providers: [ServiceName],
     });
     service = TestBed.inject(ServiceName);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should fetch data', async () => {
-    const mockData = { id: 1, name: 'test' };
-    
+  it("should fetch data", async () => {
+    const mockData = { id: 1, name: "test" };
+
     const promise = service.fetchData();
-    const req = httpMock.expectOne('/api/endpoint');
-    expect(req.request.method).toBe('GET');
+    const req = httpMock.expectOne("/api/endpoint");
+    expect(req.request.method).toBe("GET");
     req.flush(mockData);
-    
+
     const result = await promise;
     expect(result).toEqual(mockData);
   });

@@ -205,7 +205,7 @@ export class OrgUnitsService extends BaseApiService {
     if (missingFields.length > 0) {
       console.warn(
         `Missing required fields in API response: ${missingFields.join(', ')}`,
-        apiUnit
+        apiUnit,
       );
     }
 

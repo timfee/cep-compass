@@ -48,7 +48,11 @@ describe('NotificationService', () => {
 
       service.success(message);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith('', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        '',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle very long success message', () => {
@@ -56,7 +60,11 @@ describe('NotificationService', () => {
 
       service.success(message);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith(message, 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        message,
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle special characters in success message', () => {
@@ -64,7 +72,11 @@ describe('NotificationService', () => {
 
       service.success(message);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith(message, 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        message,
+        'Close',
+        jasmine.any(Object),
+      );
     });
   });
 
@@ -97,7 +109,11 @@ describe('NotificationService', () => {
 
       service.error(message);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith(message, 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        message,
+        'Close',
+        jasmine.any(Object),
+      );
     });
   });
 
@@ -161,8 +177,8 @@ describe('NotificationService', () => {
       service.warning(message);
 
       const calls = mockSnackBar.open.calls.all();
-      
-      calls.forEach(call => {
+
+      calls.forEach((call) => {
         const config = call.args[2] as MatSnackBarConfig;
         expect(config.horizontalPosition).toBe('center');
         expect(config.verticalPosition).toBe('bottom');
@@ -178,8 +194,8 @@ describe('NotificationService', () => {
       service.warning(message);
 
       const calls = mockSnackBar.open.calls.all();
-      
-      calls.forEach(call => {
+
+      calls.forEach((call) => {
         expect(call.args[1]).toBe('Close');
       });
     });
@@ -193,8 +209,8 @@ describe('NotificationService', () => {
       service.warning(message);
 
       const calls = mockSnackBar.open.calls.all();
-      const configs = calls.map(call => call.args[2] as MatSnackBarConfig);
-      
+      const configs = calls.map((call) => call.args[2] as MatSnackBarConfig);
+
       expect(configs[0].panelClass).toBe('success-snackbar');
       expect(configs[1].panelClass).toBe('error-snackbar');
       expect(configs[2].panelClass).toBe('info-snackbar');
@@ -212,11 +228,13 @@ describe('NotificationService', () => {
       service.warning(message);
 
       const calls = mockSnackBar.open.calls.all();
-      const durations = calls.map(call => (call.args[2] as MatSnackBarConfig).duration || 0);
-      
+      const durations = calls.map(
+        (call) => (call.args[2] as MatSnackBarConfig).duration || 0,
+      );
+
       const successDuration = durations[0]; // 3000
-      const errorDuration = durations[1];   // 5000
-      const infoDuration = durations[2];    // 3000
+      const errorDuration = durations[1]; // 5000
+      const infoDuration = durations[2]; // 3000
       const warningDuration = durations[3]; // 4000
 
       expect(errorDuration).toBeGreaterThan(warningDuration);
@@ -250,69 +268,121 @@ describe('NotificationService', () => {
   describe('edge cases and input validation', () => {
     it('should handle empty string messages', () => {
       service.success('');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        '',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle whitespace-only messages', () => {
       service.error('   ');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('   ', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        '   ',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle string representation of null', () => {
       service.info('null');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('null', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'null',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle string representation of undefined', () => {
       service.warning('undefined');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('undefined', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'undefined',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle numeric string "123"', () => {
       service.success('123');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('123', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        '123',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle numeric string "0"', () => {
       service.error('0');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('0', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        '0',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle numeric string "-1"', () => {
       service.info('-1');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('-1', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        '-1',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle boolean string "true"', () => {
       service.warning('true');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('true', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'true',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     it('should handle boolean string "false"', () => {
       service.success('false');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('false', 'Close', jasmine.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'false',
+        'Close',
+        jasmine.any(Object),
+      );
     });
 
     describe('additional edge cases', () => {
       it('should handle string NaN', () => {
         service.success('NaN');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('NaN', 'Close', jasmine.any(Object));
+        expect(mockSnackBar.open).toHaveBeenCalledWith(
+          'NaN',
+          'Close',
+          jasmine.any(Object),
+        );
       });
 
       it('should handle typical error message format', () => {
         service.success('Error: Something went wrong');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('Error: Something went wrong', 'Close', jasmine.any(Object));
+        expect(mockSnackBar.open).toHaveBeenCalledWith(
+          'Error: Something went wrong',
+          'Close',
+          jasmine.any(Object),
+        );
       });
 
       it('should handle typical success message format', () => {
         service.success('Operation completed successfully!');
-        expect(mockSnackBar.open).toHaveBeenCalledWith('Operation completed successfully!', 'Close', jasmine.any(Object));
+        expect(mockSnackBar.open).toHaveBeenCalledWith(
+          'Operation completed successfully!',
+          'Close',
+          jasmine.any(Object),
+        );
       });
 
       it('should handle JSON string input', () => {
         const jsonString = JSON.stringify({ error: 'test' });
         service.success(jsonString);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(jsonString, 'Close', jasmine.any(Object));
+        expect(mockSnackBar.open).toHaveBeenCalledWith(
+          jsonString,
+          'Close',
+          jasmine.any(Object),
+        );
       });
     });
   });
@@ -320,14 +390,17 @@ describe('NotificationService', () => {
   describe('accessibility and user experience', () => {
     it('should provide sufficient reading time for different message types', () => {
       const shortMessage = 'OK';
-      const longMessage = 'This is a very long message that requires more time to read and understand the full context.';
+      const longMessage =
+        'This is a very long message that requires more time to read and understand the full context.';
 
       service.success(shortMessage);
       service.error(longMessage);
 
       const calls = mockSnackBar.open.calls.all();
-      const shortMessageDuration = (calls[0].args[2] as MatSnackBarConfig).duration || 0;
-      const longMessageDuration = (calls[1].args[2] as MatSnackBarConfig).duration || 0;
+      const shortMessageDuration =
+        (calls[0].args[2] as MatSnackBarConfig).duration || 0;
+      const longMessageDuration =
+        (calls[1].args[2] as MatSnackBarConfig).duration || 0;
 
       // Error messages get longer duration regardless of length
       expect(longMessageDuration).toBeGreaterThan(shortMessageDuration);
@@ -340,13 +413,15 @@ describe('NotificationService', () => {
       service.warning('Test');
 
       const calls = mockSnackBar.open.calls.all();
-      const panelClasses = calls.map(call => (call.args[2] as MatSnackBarConfig).panelClass);
+      const panelClasses = calls.map(
+        (call) => (call.args[2] as MatSnackBarConfig).panelClass,
+      );
 
       expect(panelClasses).toEqual([
         'success-snackbar',
         'error-snackbar',
         'info-snackbar',
-        'warning-snackbar'
+        'warning-snackbar',
       ]);
     });
   });
@@ -355,7 +430,8 @@ describe('NotificationService', () => {
     it('should follow Material Design notification positioning', () => {
       service.success('Test message');
 
-      const config = mockSnackBar.open.calls.mostRecent().args[2] as MatSnackBarConfig;
+      const config = mockSnackBar.open.calls.mostRecent()
+        .args[2] as MatSnackBarConfig;
       expect(config.horizontalPosition).toBe('center');
       expect(config.verticalPosition).toBe('bottom');
     });

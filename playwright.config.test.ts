@@ -12,19 +12,19 @@ export default defineConfig({
   reporter: [
     ['html'],
     ['junit', { outputFile: 'test-results/e2e-junit.xml' }],
-    ['json', { outputFile: 'test-results/results.json' }]
+    ['json', { outputFile: 'test-results/results.json' }],
   ],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:4200',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    
+
     // Test credentials from environment
     storageState: {
       cookies: [],
-      origins: []
-    }
+      origins: [],
+    },
   },
 
   projects: [
@@ -42,7 +42,7 @@ export default defineConfig({
   },
 
   timeout: process.env.CI ? 60 * 1000 : 30 * 1000,
-  
+
   // Global setup for auth
   globalSetup: './e2e/global-setup.ts',
 });

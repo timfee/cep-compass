@@ -17,6 +17,6 @@ export const environment = {
   emulatorPorts: {
     auth: 9099,
     functions: 5001,
-    hosting: 5009
-  }
+    hosting: 5009,
+  },
 };

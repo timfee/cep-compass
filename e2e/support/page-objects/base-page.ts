@@ -31,7 +31,9 @@ export abstract class BasePage {
   /** Check if an element is visible */
   async isVisible(selector: string): Promise<boolean> {
     try {
-      await this.page.locator(selector).waitFor({ state: 'visible', timeout: 5000 });
+      await this.page
+        .locator(selector)
+        .waitFor({ state: 'visible', timeout: 5000 });
       return true;
     } catch {
       return false;
@@ -59,7 +61,11 @@ export abstract class BasePage {
   }
 
   /** Fill input with retry logic */
-  async fillWithRetry(selector: string, value: string, retries = 3): Promise<void> {
+  async fillWithRetry(
+    selector: string,
+    value: string,
+    retries = 3,
+  ): Promise<void> {
     for (let i = 0; i < retries; i++) {
       try {
         await this.page.locator(selector).fill(value);

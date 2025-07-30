@@ -183,9 +183,7 @@ export class ApiDataMapper {
     requiredFields: string[],
     objectType: string,
   ): void {
-    const missingFields = requiredFields.filter(
-      (field) => !apiData[field],
-    );
+    const missingFields = requiredFields.filter((field) => !apiData[field]);
 
     if (missingFields.length > 0) {
       console.warn(
