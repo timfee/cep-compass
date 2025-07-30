@@ -13,6 +13,7 @@ import {
   DirectoryUser,
 } from '../../services/directory.service';
 import { NotificationService } from '../../core/notification.service';
+import { TokenState } from '../../shared/constants/enums';
 
 describe('OneClickActivationComponent', () => {
   let component: OneClickActivationComponent;
@@ -30,7 +31,7 @@ describe('OneClickActivationComponent', () => {
       customerId: 'customer-1',
       orgUnitPath: '/',
       createdTime: new Date().toISOString(),
-      state: 'ACTIVE' as const,
+      state: TokenState.ACTIVE,
       expireTime: new Date(Date.now() + 86400000).toISOString(),
     },
   ];

@@ -14,6 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService, SelectedRole } from '../../services/auth.service';
 import { DirectoryStatsComponent } from '../directory-stats/directory-stats.component';
+import { UserRole, DashboardCategory, BadgeColor } from '../../shared/constants/enums';
 
 interface DashboardCard {
   id: string;
@@ -22,18 +23,18 @@ interface DashboardCard {
   icon: string; // Material icon name
   route?: string;
   action?: () => void;
-  requiredRole: 'superAdmin' | 'cepAdmin' | 'any';
-  category: 'setup' | 'enrollment' | 'management' | 'security';
+  requiredRole: UserRole | 'any';
+  category: DashboardCategory;
   order: number;
   enabled: boolean;
   badge?: {
     value: number | string;
-    color: 'primary' | 'accent' | 'warn';
+    color: BadgeColor;
   };
 }
 
 interface CardCategory {
-  name: 'setup' | 'enrollment' | 'management' | 'security';
+  name: DashboardCategory;
   displayName: string;
   description?: string;
 }
@@ -68,8 +69,8 @@ export class DashboardComponent {
         'Set up delegated admin role for Chrome Enterprise management',
       icon: 'admin_panel_settings',
       route: '/admin/create-role',
-      requiredRole: 'superAdmin',
-      category: 'setup',
+      requiredRole: UserRole.SUPER_ADMIN,
+      category: DashboardCategory.SETUP,
       order: 1,
       enabled: true,
     },
@@ -81,7 +82,7 @@ export class DashboardComponent {
       icon: 'laptop_chromebook',
       route: '/enrollment/browsers',
       requiredRole: 'any',
-      category: 'enrollment',
+      category: DashboardCategory.ENROLLMENT,
       order: 2,
       enabled: true,
     },
@@ -92,7 +93,7 @@ export class DashboardComponent {
       icon: 'account_circle',
       route: '/enrollment/profiles',
       requiredRole: 'any',
-      category: 'enrollment',
+      category: DashboardCategory.ENROLLMENT,
       order: 3,
       enabled: true,
     },
@@ -103,7 +104,7 @@ export class DashboardComponent {
       icon: 'security',
       route: '/security/one-click',
       requiredRole: 'any',
-      category: 'security',
+      category: DashboardCategory.SECURITY,
       order: 4,
       enabled: true,
     },
@@ -114,7 +115,7 @@ export class DashboardComponent {
       icon: 'policy',
       route: '/security/dlp',
       requiredRole: 'any',
-      category: 'security',
+      category: DashboardCategory.SECURITY,
       order: 5,
       enabled: true,
     },
@@ -126,7 +127,7 @@ export class DashboardComponent {
       icon: 'account_tree',
       route: '/org-units',
       requiredRole: 'any',
-      category: 'management',
+      category: DashboardCategory.MANAGEMENT,
       order: 6,
       enabled: true,
     },
@@ -137,7 +138,7 @@ export class DashboardComponent {
       icon: 'email',
       route: '/email-templates',
       requiredRole: 'any',
-      category: 'management',
+      category: DashboardCategory.MANAGEMENT,
       order: 7,
       enabled: true,
     },
@@ -148,7 +149,7 @@ export class DashboardComponent {
       icon: 'people',
       route: '/directory-stats',
       requiredRole: 'any',
-      category: 'management',
+      category: DashboardCategory.MANAGEMENT,
       order: 8,
       enabled: true,
     },
@@ -156,22 +157,22 @@ export class DashboardComponent {
 
   private readonly CARD_CATEGORIES: CardCategory[] = [
     {
-      name: 'setup',
+      name: DashboardCategory.SETUP,
       displayName: 'Setup & Configuration',
       description: 'Initial setup and administrative configuration tasks',
     },
     {
-      name: 'enrollment',
+      name: DashboardCategory.ENROLLMENT,
       displayName: 'Enrollment & Onboarding',
       description: 'Browser and user profile enrollment processes',
     },
     {
-      name: 'security',
+      name: DashboardCategory.SECURITY,
       displayName: 'Security & Compliance',
       description: 'Security policies and compliance monitoring',
     },
     {
-      name: 'management',
+      name: DashboardCategory.MANAGEMENT,
       displayName: 'Management & Monitoring',
       description: 'Ongoing management and monitoring tools',
     },
@@ -191,7 +192,7 @@ export class DashboardComponent {
   public readonly selectedRole = this.authService.selectedRole;
   public readonly availableRoles = this.authService.availableRoles;
 
-  getCardsByCategory(categoryName: string): DashboardCard[] {
+  getCardsByCategory(categoryName: DashboardCategory): DashboardCard[] {
     return this.DASHBOARD_CARDS.filter((card) => card.category === categoryName)
       .filter((card) => this.canShowCard(card))
       .sort((a, b) => a.order - b.order);
@@ -204,12 +205,12 @@ export class DashboardComponent {
       return true;
     }
 
-    if (card.requiredRole === 'superAdmin') {
-      return currentRole === 'superAdmin';
+    if (card.requiredRole === UserRole.SUPER_ADMIN) {
+      return currentRole === UserRole.SUPER_ADMIN;
     }
 
-    if (card.requiredRole === 'cepAdmin') {
-      return currentRole === 'cepAdmin' || currentRole === 'superAdmin';
+    if (card.requiredRole === UserRole.CEP_ADMIN) {
+      return currentRole === UserRole.CEP_ADMIN || currentRole === UserRole.SUPER_ADMIN;
     }
 
     return false;
@@ -229,9 +230,9 @@ export class DashboardComponent {
 
   getRoleDisplayName(role: SelectedRole): string {
     switch (role) {
-      case 'superAdmin':
+      case UserRole.SUPER_ADMIN:
         return 'Super Admin';
-      case 'cepAdmin':
+      case UserRole.CEP_ADMIN:
         return 'CEP Delegated Admin';
       default:
         return 'Unknown Role';

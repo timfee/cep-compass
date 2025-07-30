@@ -11,6 +11,7 @@ import {
 } from './enrollment-token.service';
 import { AuthService } from './auth.service';
 import { OrgUnitsService, OrgUnit } from './org-units.service';
+import { TokenState } from '../shared/constants/enums';
 
 describe('EnrollmentTokenService', () => {
   let service: EnrollmentTokenService;
@@ -35,7 +36,7 @@ describe('EnrollmentTokenService', () => {
     customerId: 'customer-123',
     orgUnitPath: '/Engineering',
     createdTime: '2024-01-15T10:00:00Z',
-    state: 'ACTIVE',
+    state: TokenState.ACTIVE,
     expireTime: '2024-02-15T10:00:00Z',
   };
 
@@ -124,7 +125,7 @@ describe('EnrollmentTokenService', () => {
 
       const activeToken: EnrollmentToken = {
         ...mockEnrollmentToken,
-        state: 'ACTIVE',
+        state: TokenState.ACTIVE,
         expireTime: futureDate.toISOString(),
       };
 
@@ -134,7 +135,7 @@ describe('EnrollmentTokenService', () => {
     it('should return false for revoked token', () => {
       const revokedToken: EnrollmentToken = {
         ...mockEnrollmentToken,
-        state: 'REVOKED',
+        state: TokenState.REVOKED,
       };
 
       expect(service.isTokenActive(revokedToken)).toBe(false);
@@ -146,7 +147,7 @@ describe('EnrollmentTokenService', () => {
 
       const expiredToken: EnrollmentToken = {
         ...mockEnrollmentToken,
-        state: 'ACTIVE',
+        state: TokenState.ACTIVE,
         expireTime: pastDate.toISOString(),
       };
 
@@ -156,7 +157,7 @@ describe('EnrollmentTokenService', () => {
     it('should return true for active token without expiration', () => {
       const noExpirationToken: EnrollmentToken = {
         ...mockEnrollmentToken,
-        state: 'ACTIVE',
+        state: TokenState.ACTIVE,
         expireTime: undefined,
       };
 
@@ -218,21 +219,21 @@ describe('EnrollmentTokenService', () => {
       const activeToken: EnrollmentToken = {
         ...mockEnrollmentToken,
         tokenId: 'active-1',
-        state: 'ACTIVE',
+        state: TokenState.ACTIVE,
         expireTime: futureDate.toISOString(),
       };
 
       const revokedToken: EnrollmentToken = {
         ...mockEnrollmentToken,
         tokenId: 'revoked-1',
-        state: 'REVOKED',
+        state: TokenState.REVOKED,
         orgUnitPath: '/Marketing',
       };
 
       const expiredToken: EnrollmentToken = {
         ...mockEnrollmentToken,
         tokenId: 'expired-1',
-        state: 'ACTIVE',
+        state: TokenState.ACTIVE,
         expireTime: '2020-01-01T00:00:00Z',
         orgUnitPath: '/Sales',
       };

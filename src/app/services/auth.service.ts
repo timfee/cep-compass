@@ -9,6 +9,8 @@ import {
 } from '@angular/fire/auth';
 
 import { Privilege } from '../shared/constants/google-api.constants';
+import { OAUTH_SCOPES, OAUTH_CONFIG, RETRY_CONFIG } from '../shared/constants/app.constants';
+import { UserRole } from '../shared/constants/enums';
 
 export interface UserRoles {
   isSuperAdmin: boolean;
@@ -16,7 +18,7 @@ export interface UserRoles {
   missingPrivileges?: Privilege[];
 }
 
-export type SelectedRole = 'superAdmin' | 'cepAdmin' | null;
+export type SelectedRole = UserRole | null;
 
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
@@ -52,8 +54,8 @@ export class AuthService {
    */
   private async retryWithBackoff<T>(
     fn: () => Promise<T>,
-    maxRetries = 3,
-    baseDelay = 1000,
+    maxRetries = RETRY_CONFIG.MAX_ATTEMPTS,
+    baseDelay = RETRY_CONFIG.BASE_DELAY,
   ): Promise<T> {
     let lastError: unknown;
     
@@ -68,7 +70,7 @@ export class AuthService {
         }
         
         // Exponential backoff with jitter
-        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * RETRY_CONFIG.MAX_JITTER;
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
@@ -117,31 +119,28 @@ export class AuthService {
   }
 
   /**
+   * Configures OAuth provider with required scopes and parameters
+   */
+  private configureOAuthProvider(prompt: 'consent' | 'none' = 'consent'): GoogleAuthProvider {
+    const provider = new GoogleAuthProvider();
+    
+    // Add all required scopes
+    OAUTH_SCOPES.forEach(scope => provider.addScope(scope));
+
+    // Add custom parameters
+    provider.setCustomParameters({
+      access_type: OAUTH_CONFIG.ACCESS_TYPE,
+      prompt,
+    });
+
+    return provider;
+  }
+
+  /**
    * Authenticates user with Google OAuth and required admin scopes
    */
   async loginWithGoogle(): Promise<void> {
-    const provider = new GoogleAuthProvider();
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.user.readonly',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.group.readonly',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.rolemanagement',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
-    );
-    provider.addScope(
-      'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
-    );
-
-    // Add custom parameters to ensure we get a refresh token
-    provider.setCustomParameters({
-      access_type: 'offline',
-      prompt: 'consent',
-    });
+    const provider = this.configureOAuthProvider(OAUTH_CONFIG.PROMPT_CONSENT);
 
     try {
       const result = await signInWithPopup(this.auth, provider);
@@ -181,10 +180,10 @@ export class AuthService {
       this.isChangingRole = true;
     }
 
-    if (role === 'superAdmin' && !this.availableRoles().isSuperAdmin) {
+    if (role === UserRole.SUPER_ADMIN && !this.availableRoles().isSuperAdmin) {
       throw new Error('Cannot select Super Admin role: Not available.');
     }
-    if (role === 'cepAdmin' && !this.availableRoles().isCepAdmin) {
+    if (role === UserRole.CEP_ADMIN && !this.availableRoles().isCepAdmin) {
       throw new Error('Cannot select CEP Admin role: Not available.');
     }
     this.selectedRole.set(role);
@@ -235,33 +234,11 @@ export class AuthService {
       // Force refresh the Firebase ID token first
       await currentUser.getIdTokenResult(true);
 
-      // Re-authenticate with Google to get a fresh OAuth access token
-      const provider = new GoogleAuthProvider();
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.user.readonly',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.group.readonly',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.rolemanagement',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
-      );
-      provider.addScope(
-        'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers',
-      );
-
       // First attempt: try silent refresh with prompt: 'none'
       // This may fail due to popup blockers but worth trying
-      provider.setCustomParameters({
-        access_type: 'offline',
-        prompt: 'none', // Silent refresh attempt
-      });
-
       try {
-        const result = await signInWithPopup(this.auth, provider);
+        const silentProvider = this.configureOAuthProvider(OAUTH_CONFIG.PROMPT_NONE);
+        const result = await signInWithPopup(this.auth, silentProvider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
 
         if (credential?.accessToken) {
@@ -278,13 +255,8 @@ export class AuthService {
         );
 
         // Fallback: interactive refresh with user consent
-        // Reset provider to remove prompt: 'none'
-        provider.setCustomParameters({
-          access_type: 'offline',
-          prompt: 'consent', // Force user interaction
-        });
-
-        const result = await signInWithPopup(this.auth, provider);
+        const interactiveProvider = this.configureOAuthProvider(OAUTH_CONFIG.PROMPT_CONSENT);
+        const result = await signInWithPopup(this.auth, interactiveProvider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
 
         if (credential?.accessToken) {

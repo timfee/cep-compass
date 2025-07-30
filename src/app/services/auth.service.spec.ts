@@ -2,6 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
+import { UserRole } from '../shared/constants/enums';
 
 /** Test utility functions for creating mock objects and responses */
 interface MockResponseOptions {
@@ -178,13 +179,13 @@ describe('AuthService', () => {
     });
 
     it('should allow selecting super admin role when available', () => {
-      service.selectRole('superAdmin');
-      expect(service.selectedRole()).toBe('superAdmin');
+      service.selectRole(UserRole.SUPER_ADMIN);
+      expect(service.selectedRole()).toBe(UserRole.SUPER_ADMIN);
     });
 
     it('should allow selecting CEP admin role when available', () => {
-      service.selectRole('cepAdmin');
-      expect(service.selectedRole()).toBe('cepAdmin');
+      service.selectRole(UserRole.CEP_ADMIN);
+      expect(service.selectedRole()).toBe(UserRole.CEP_ADMIN);
     });
 
     it('should throw error when selecting unavailable super admin role', () => {
@@ -194,7 +195,7 @@ describe('AuthService', () => {
         missingPrivileges: [],
       });
 
-      expect(() => service.selectRole('superAdmin')).toThrowError('Cannot select Super Admin role: Not available.');
+      expect(() => service.selectRole(UserRole.SUPER_ADMIN)).toThrowError('Cannot select Super Admin role: Not available.');
     });
 
     it('should throw error when selecting unavailable CEP admin role', () => {
@@ -204,7 +205,7 @@ describe('AuthService', () => {
         missingPrivileges: [],
       });
 
-      expect(() => service.selectRole('cepAdmin')).toThrowError('Cannot select CEP Admin role: Not available.');
+      expect(() => service.selectRole(UserRole.CEP_ADMIN)).toThrowError('Cannot select CEP Admin role: Not available.');
     });
 
     it('should set changing role flag when role is null', () => {
@@ -213,8 +214,8 @@ describe('AuthService', () => {
     });
 
     it('should update selectedRole signal when selectRole is called', () => {
-      service.selectRole('superAdmin');
-      expect(service.selectedRole()).toBe('superAdmin');
+      service.selectRole(UserRole.SUPER_ADMIN);
+      expect(service.selectedRole()).toBe(UserRole.SUPER_ADMIN);
       
       service.selectRole(null);
       expect(service.selectedRole()).toBe(null);
@@ -226,8 +227,8 @@ describe('AuthService', () => {
         missingPrivileges: [],
       });
       
-      service.selectRole('cepAdmin');
-      expect(service.selectedRole()).toBe('cepAdmin');
+      service.selectRole(UserRole.CEP_ADMIN);
+      expect(service.selectedRole()).toBe(UserRole.CEP_ADMIN);
     });
   });
 
@@ -346,7 +347,7 @@ describe('AuthService', () => {
       expect(service['isChangingRole']).toBe(true);
 
       // Selecting a role should reset the flag (via effect)
-      service.selectRole('superAdmin');
+      service.selectRole(UserRole.SUPER_ADMIN);
       
       // Force effects to run
       TestBed.flushEffects();
@@ -435,8 +436,8 @@ describe('AuthService', () => {
         ],
       });
 
-      expect(() => service.selectRole('superAdmin')).toThrowError();
-      expect(() => service.selectRole('cepAdmin')).toThrowError();
+      expect(() => service.selectRole(UserRole.SUPER_ADMIN)).toThrowError();
+      expect(() => service.selectRole(UserRole.CEP_ADMIN)).toThrowError();
     });
 
     it('should allow null role selection regardless of availability', () => {

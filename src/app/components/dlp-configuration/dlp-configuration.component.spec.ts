@@ -75,7 +75,9 @@ describe('DlpConfigurationComponent', () => {
   });
 
   describe('copyPolicyConfig', () => {
-    let mockClipboard: jasmine.SpyObj<any>;
+    let mockClipboard: jasmine.SpyObj<{
+      writeText: (text: string) => Promise<void>;
+    }>;
 
     beforeEach(() => {
       // Mock clipboard API for headless browser environment
