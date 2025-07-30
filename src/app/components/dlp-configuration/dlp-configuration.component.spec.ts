@@ -4,6 +4,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DlpConfigurationComponent } from './dlp-configuration.component';
 import { NotificationService } from '../../core/notification.service';
 
+interface ClipboardMock {
+  writeText: jasmine.Spy<(text: string) => Promise<void>>;
+}
+
 describe('DlpConfigurationComponent', () => {
   let component: DlpConfigurationComponent;
   let fixture: ComponentFixture<DlpConfigurationComponent>;
