@@ -1,4 +1,6 @@
-require('./karma-puppeteer-launcher');
+if (!process.env.CI) {
+  require('./karma-puppeteer-launcher');
+}
 
 module.exports = function (config) {
   config.set({
@@ -44,7 +46,14 @@ module.exports = function (config) {
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
+        flags: [
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-dev-shm-usage',
+          '--headless',
+          '--remote-debugging-port=9222'
+        ]
       }
     },
     browsers: ['ChromeHeadlessCI'],
