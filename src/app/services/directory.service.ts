@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/constants/google-api.constants';
 import { BaseApiService } from '../core/base-api.service';
-import { PAGINATION_CONFIG, SEARCH_CONFIG } from '../shared/constants/app.constants';
+import { SEARCH_CONFIG } from '../shared/constants/app.constants';
 import { ApiUrlBuilder, PaginationUtils } from '../shared/utils/api.utils';
 
 export interface DirectoryUser {
