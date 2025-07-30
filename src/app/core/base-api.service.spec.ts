@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { BaseApiService } from './base-api.service';
 
 // Create a concrete test implementation
@@ -80,7 +80,7 @@ describe('BaseApiService', () => {
       expect(service.error()).toBeNull();
     });
 
-    it('should validate cache correctly', () => {
+    it('should validate cache correctly', fakeAsync(() => {
       // No fetch time - invalid
       expect(service.testIsCacheValid()).toBe(false);
 
@@ -90,10 +90,9 @@ describe('BaseApiService', () => {
 
       // Old fetch time - invalid
       service.testSetCacheDuration(100); // 100ms cache
-      setTimeout(() => {
-        expect(service.testIsCacheValid()).toBe(false);
-      }, 150);
-    });
+      tick(150); // Fast-forward time by 150ms
+      expect(service.testIsCacheValid()).toBe(false);
+    }));
   });
 
   describe('clear state', () => {

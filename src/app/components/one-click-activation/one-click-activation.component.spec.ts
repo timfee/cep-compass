@@ -241,6 +241,20 @@ describe('OneClickActivationComponent', () => {
         Promise.reject(new Error('Service error')),
       );
 
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [OneClickActivationComponent, NoopAnimationsModule],
+        providers: [
+          { provide: EnrollmentTokenService, useValue: enrollmentService },
+          { provide: DirectoryService, useValue: directoryService },
+          { provide: Router, useValue: router },
+          { provide: NotificationService, useValue: notificationService },
+        ],
+      });
+
+      fixture = TestBed.createComponent(OneClickActivationComponent);
+      component = fixture.componentInstance;
+
       await component.checkPrerequisites();
 
       expect(component.error()).toBe(
