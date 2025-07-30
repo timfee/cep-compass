@@ -1,0 +1,4 @@
+{
+  "image": "ghcr.io/devcontainers/templates/typescript-node:4.0.2",
+  "features": {}
+}
