@@ -6,6 +6,9 @@ import { OrgUnitsService } from './org-units.service';
 import { GOOGLE_API_CONFIG } from '../shared/constants/google-api.constants';
 import { GoogleApiErrorHandler } from '../shared/constants/google-api.constants';
 import { BaseApiService } from '../core/base-api.service';
+import { TOKEN_CONFIG } from '../shared/constants/app.constants';
+import { TokenState } from '../shared/constants/enums';
+import { ApiUrlBuilder } from '../shared/utils/api.utils';
 
 /**
  * Represents a Chrome browser enrollment token from Chrome Enterprise API
@@ -18,7 +21,7 @@ export interface EnrollmentToken {
   orgUnitPath: string;
   createdTime: string;
   revocationTime?: string;
-  state: 'ACTIVE' | 'REVOKED' | 'EXPIRED';
+  state: TokenState;
   expireTime?: string;
 }
 
@@ -51,7 +54,7 @@ interface EnrollmentTokensApiResponse {
     orgUnitPath?: string;
     createdTime?: string;
     revocationTime?: string;
-    state?: 'ACTIVE' | 'REVOKED' | 'EXPIRED';
+    state?: TokenState;
     expireTime?: string;
   }[];
   nextPageToken?: string;
@@ -68,7 +71,7 @@ interface CreateTokenApiResponse {
   customerId?: string;
   orgUnitPath?: string;
   createdTime?: string;
-  state?: 'ACTIVE' | 'REVOKED' | 'EXPIRED';
+  state?: TokenState;
   expireTime?: string;
 }
 
@@ -91,7 +94,7 @@ export class EnrollmentTokenService extends BaseApiService {
   private readonly _tokens = signal<EnrollmentToken[]>([]);
 
   // Default token expiration (30 days from creation)
-  private readonly DEFAULT_EXPIRATION_DAYS = 30;
+  private readonly DEFAULT_EXPIRATION_DAYS = TOKEN_CONFIG.DEFAULT_EXPIRATION_DAYS;
 
   /**
    * Signal containing all enrollment tokens
@@ -264,7 +267,7 @@ export class EnrollmentTokenService extends BaseApiService {
         token.tokenId === tokenId
           ? {
               ...token,
-              state: 'REVOKED' as const,
+              state: TokenState.REVOKED,
               revocationTime: new Date().toISOString(),
             }
           : token,
@@ -337,7 +340,7 @@ Linux:
    * @returns True if the token is active
    */
   isTokenActive(token: EnrollmentToken): boolean {
-    if (token.state !== 'ACTIVE') {
+    if (token.state !== TokenState.ACTIVE) {
       return false;
     }
 
@@ -363,16 +366,13 @@ Linux:
 
   /**
    * Masks token value for display (shows last 4 characters)
-   *
-   * @param tokenValue - The full token value
-   * @returns Masked token string
    */
   maskToken(tokenValue: string): string {
-    if (tokenValue.length <= 4) {
+    if (tokenValue.length <= TOKEN_CONFIG.MASK_VISIBLE_CHARS) {
       return tokenValue;
     }
-    const maskedPart = '*'.repeat(tokenValue.length - 4);
-    const visiblePart = tokenValue.slice(-4);
+    const maskedPart = '*'.repeat(tokenValue.length - TOKEN_CONFIG.MASK_VISIBLE_CHARS);
+    const visiblePart = tokenValue.slice(-TOKEN_CONFIG.MASK_VISIBLE_CHARS);
     return `${maskedPart}${visiblePart}`;
   }
 
@@ -420,25 +420,14 @@ Linux:
 
   /**
    * Builds the API URL for fetching enrollment tokens
-   *
-   * @param pageToken - Optional page token for pagination
-   * @param orgUnitPath - Optional filter by org unit path
-   * @returns Complete API URL
    */
   private buildApiUrl(pageToken?: string, orgUnitPath?: string): string {
     const baseUrl = `${this.API_BASE_URL}/customer/${GOOGLE_API_CONFIG.CUSTOMER_ID}/chrome/enrollmentTokens`;
-    const params = new URLSearchParams();
-
-    if (pageToken) {
-      params.set('pageToken', pageToken);
-    }
-
-    if (orgUnitPath) {
-      params.set('orgUnitPath', orgUnitPath);
-    }
-
-    const queryString = params.toString();
-    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+    
+    return ApiUrlBuilder.buildPaginatedUrl(baseUrl, {
+      pageToken,
+      additionalParams: orgUnitPath ? { orgUnitPath } : {},
+    });
   }
 
   /**
@@ -455,7 +444,7 @@ Linux:
     orgUnitPath?: string;
     createdTime?: string;
     revocationTime?: string;
-    state?: 'ACTIVE' | 'REVOKED' | 'EXPIRED';
+    state?: TokenState;
     expireTime?: string;
   }): EnrollmentToken {
     // Validate required fields
@@ -474,7 +463,7 @@ Linux:
       orgUnitPath: apiToken.orgUnitPath,
       createdTime: apiToken.createdTime || new Date().toISOString(),
       revocationTime: apiToken.revocationTime,
-      state: apiToken.state || 'ACTIVE',
+      state: apiToken.state || TokenState.ACTIVE,
       expireTime: apiToken.expireTime,
     };
   }

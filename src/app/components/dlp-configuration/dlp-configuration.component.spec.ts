@@ -4,10 +4,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DlpConfigurationComponent } from './dlp-configuration.component';
 import { NotificationService } from '../../core/notification.service';
 
-interface ClipboardMock {
-  writeText: jasmine.Spy<(text: string) => Promise<void>>;
-}
-
 describe('DlpConfigurationComponent', () => {
   let component: DlpConfigurationComponent;
   let fixture: ComponentFixture<DlpConfigurationComponent>;
@@ -79,7 +75,9 @@ describe('DlpConfigurationComponent', () => {
   });
 
   describe('copyPolicyConfig', () => {
-    let mockClipboard: jasmine.SpyObj<ClipboardMock>;
+    let mockClipboard: jasmine.SpyObj<{
+      writeText: (text: string) => Promise<void>;
+    }>;
 
     beforeEach(() => {
       // Mock clipboard API for headless browser environment

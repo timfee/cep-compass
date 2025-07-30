@@ -7,6 +7,7 @@ import { EnrollmentTokenService } from '../../services/enrollment-token.service'
 import { OrgUnitsService } from '../../services/org-units.service';
 import { EmailTemplateService } from '../../services/email-template.service';
 import { NotificationService } from '../../core/notification.service';
+import { TokenState } from '../../shared/constants/enums';
 
 describe('BrowserEnrollmentComponent', () => {
   let component: BrowserEnrollmentComponent;
@@ -96,7 +97,7 @@ describe('BrowserEnrollmentComponent', () => {
       customerId: 'test-customer',
       orgUnitPath: '/test/unit',
       createdTime: '2023-01-01T00:00:00Z',
-      state: 'ACTIVE' as const,
+      state: TokenState.ACTIVE as const,
       expireTime: '2024-01-01T00:00:00Z',
     };
 
@@ -142,7 +143,7 @@ describe('BrowserEnrollmentComponent', () => {
       customerId: 'test-customer',
       orgUnitPath: '/test/unit',
       createdTime: '2023-01-01T00:00:00Z',
-      state: 'ACTIVE' as const,
+      state: TokenState.ACTIVE as const,
       expireTime: '2024-01-01T00:00:00Z',
     };
 
@@ -198,7 +199,7 @@ describe('BrowserEnrollmentComponent', () => {
       customerId: 'test-customer',
       orgUnitPath: '/test/unit',
       createdTime: '2023-01-01T00:00:00Z',
-      state: 'ACTIVE' as const,
+      state: TokenState.ACTIVE as const,
       expireTime: '2024-01-01T00:00:00Z',
     };
 

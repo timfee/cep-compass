@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService, SelectedRole } from '../../services/auth.service';
 import { NotificationService } from '../../core/notification.service';
 import { LoadingComponent } from '../../shared/components';
+import { UserRole } from '../../shared/constants/enums';
 
 @Component({
   selector: 'app-select-role',
@@ -39,7 +40,7 @@ import { LoadingComponent } from '../../shared/components';
                 mat-flat-button
                 color="primary"
                 [disabled]="!authService.availableRoles().isSuperAdmin || isSelectingRole()"
-                (click)="selectRole('superAdmin')"
+                (click)="selectRole(UserRole.SUPER_ADMIN)"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -50,7 +51,7 @@ import { LoadingComponent } from '../../shared/components';
                 mat-flat-button
                 color="accent"
                 [disabled]="!authService.availableRoles().isCepAdmin || isSelectingRole()"
-                (click)="selectRole('cepAdmin')"
+                (click)="selectRole(UserRole.CEP_ADMIN)"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -122,6 +123,9 @@ export class SelectRoleComponent implements OnInit {
   public authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
+  
+  // Expose enum for template usage
+  public readonly UserRole = UserRole;
 
   // A signal to track the loading state, derived from the user signal.
   public isLoading = computed(() => this.authService.user() === undefined);

@@ -1,4 +1,5 @@
 import { signal } from '@angular/core';
+import { CACHE_CONFIG } from '../shared/constants/app.constants';
 
 /**
  * Base class for services that fetch data from APIs
@@ -15,8 +16,8 @@ export abstract class BaseApiService {
   public readonly error = this._error.asReadonly();
   public readonly lastFetchTime = this._lastFetchTime.asReadonly();
 
-  // Cache duration in milliseconds (default: 5 minutes)
-  protected cacheDuration = 5 * 60 * 1000;
+  // Cache duration in milliseconds (configurable)
+  protected cacheDuration = CACHE_CONFIG.DEFAULT_DURATION;
 
   /**
    * Check if cached data is still valid

@@ -7,6 +7,7 @@ import { DashboardComponent } from './dashboard.component';
 import { AuthService } from '../../services/auth.service';
 import { DirectoryService } from '../../services/directory.service';
 import { signal } from '@angular/core';
+import { UserRole, DashboardCategory } from '../../shared/constants/enums';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -70,7 +71,7 @@ describe('DashboardComponent', () => {
         description: 'Test',
         icon: 'test',
         requiredRole: 'any' as const,
-        category: 'setup' as const,
+        category: DashboardCategory.SETUP as const,
         order: 1,
         enabled: true,
       };
@@ -84,18 +85,18 @@ describe('DashboardComponent', () => {
         title: 'Test',
         description: 'Test',
         icon: 'test',
-        requiredRole: 'superAdmin' as const,
-        category: 'setup' as const,
+        requiredRole: UserRole.SUPER_ADMIN as const,
+        category: DashboardCategory.SETUP as const,
         order: 1,
         enabled: true,
       };
 
       // Set selectedRole to superAdmin
-      mockAuthService.selectedRole.set('superAdmin');
+      mockAuthService.selectedRole.set(UserRole.SUPER_ADMIN);
       expect(component.canShowCard(card)).toBe(true);
 
       // Set selectedRole to cepAdmin
-      mockAuthService.selectedRole.set('cepAdmin');
+      mockAuthService.selectedRole.set(UserRole.CEP_ADMIN);
       expect(component.canShowCard(card)).toBe(false);
 
       // Set selectedRole to null
@@ -109,18 +110,18 @@ describe('DashboardComponent', () => {
         title: 'Test',
         description: 'Test',
         icon: 'test',
-        requiredRole: 'cepAdmin' as const,
-        category: 'setup' as const,
+        requiredRole: UserRole.CEP_ADMIN as const,
+        category: DashboardCategory.SETUP as const,
         order: 1,
         enabled: true,
       };
 
       // Set selectedRole to superAdmin
-      mockAuthService.selectedRole.set('superAdmin');
+      mockAuthService.selectedRole.set(UserRole.SUPER_ADMIN);
       expect(component.canShowCard(card)).toBe(true);
 
       // Set selectedRole to cepAdmin
-      mockAuthService.selectedRole.set('cepAdmin');
+      mockAuthService.selectedRole.set(UserRole.CEP_ADMIN);
       expect(component.canShowCard(card)).toBe(true);
 
       // Set selectedRole to null
@@ -138,7 +139,7 @@ describe('DashboardComponent', () => {
         icon: 'test',
         route: '/test-route',
         requiredRole: 'any' as const,
-        category: 'setup' as const,
+        category: DashboardCategory.SETUP as const,
         order: 1,
         enabled: true,
       };
@@ -155,7 +156,7 @@ describe('DashboardComponent', () => {
         icon: 'test',
         route: '/test-route',
         requiredRole: 'any' as const,
-        category: 'setup' as const,
+        category: DashboardCategory.SETUP as const,
         order: 1,
         enabled: false,
       };
@@ -173,7 +174,7 @@ describe('DashboardComponent', () => {
         icon: 'test',
         action: actionSpy,
         requiredRole: 'any' as const,
-        category: 'setup' as const,
+        category: DashboardCategory.SETUP as const,
         order: 1,
         enabled: true,
       };
@@ -185,8 +186,8 @@ describe('DashboardComponent', () => {
 
   describe('getRoleDisplayName', () => {
     it('should return correct display names for roles', () => {
-      expect(component.getRoleDisplayName('superAdmin')).toBe('Super Admin');
-      expect(component.getRoleDisplayName('cepAdmin')).toBe(
+      expect(component.getRoleDisplayName(UserRole.SUPER_ADMIN)).toBe('Super Admin');
+      expect(component.getRoleDisplayName(UserRole.CEP_ADMIN)).toBe(
         'CEP Delegated Admin',
       );
       expect(component.getRoleDisplayName(null)).toBe('Unknown Role');
@@ -195,13 +196,13 @@ describe('DashboardComponent', () => {
 
   describe('getCardsByCategory', () => {
     it('should filter and sort cards by category', () => {
-      const cards = component.getCardsByCategory('setup');
+      const cards = component.getCardsByCategory(DashboardCategory.SETUP);
       expect(cards).toBeDefined();
       expect(Array.isArray(cards)).toBe(true);
 
       // All cards should be from setup category
       cards.forEach((card) => {
-        expect(card.category).toBe('setup');
+        expect(card.category).toBe(DashboardCategory.SETUP);
       });
 
       // Cards should be sorted by order
