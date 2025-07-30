@@ -5,7 +5,7 @@ import { DlpConfigurationComponent } from './dlp-configuration.component';
 import { NotificationService } from '../../core/notification.service';
 
 interface ClipboardMock {
-  writeText: jasmine.Spy;
+  writeText: jasmine.Spy<(text: string) => Promise<void>>;
 }
 
 describe('DlpConfigurationComponent', () => {
