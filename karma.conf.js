@@ -8,7 +8,8 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
-      require('karma-coverage')
+      require('karma-coverage'),
+      require('karma-junit-reporter')
     ],
     client: {
       clearContext: false,
@@ -32,7 +33,12 @@ module.exports = function (config) {
         { type: 'lcov' }
       ]
     },
-    reporters: ['progress', 'kjhtml'],
+    junitReporter: {
+      outputDir: 'test-results',
+      outputFile: 'junit.xml',
+      useBrowserName: false
+    },
+    reporters: ['progress', 'kjhtml', 'junit'],
     // This is the required fix
     customLaunchers: {
       ChromeHeadlessCI: {

@@ -56,7 +56,7 @@ jobs:
           path: coverage
           destination: coverage-reports
       - store_test_results:
-          path: coverage
+          path: test-results
 
   e2e-tests:
     executor: node-executor
@@ -64,6 +64,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
+      - browser-tools/install-chrome
       - run:
           name: Install Firebase Tools
           command: npm install -g firebase-tools
@@ -92,7 +93,7 @@ jobs:
           background: true
       - run:
           name: Run E2E Tests
-          command: npm run test:e2e
+          command: npx playwright test --config=playwright.config.test.ts
           environment:
             FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
             FIREBASE_FUNCTIONS_EMULATOR_HOST: localhost:5001
@@ -102,7 +103,7 @@ jobs:
           path: playwright-report
           destination: playwright-reports
       - store_test_results:
-          path: playwright-report
+          path: test-results
 
   build-check:
     executor: node-executor
