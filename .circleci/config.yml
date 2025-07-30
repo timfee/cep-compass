@@ -80,7 +80,15 @@ jobs:
           name: Start Firebase Emulators
           command: |
             firebase emulators:start --only hosting --project demo-test-project &
-            sleep 10
+            for i in {1..30}; do
+              curl -s http://localhost:5001/ && break
+              echo "Waiting for Firebase emulators to be ready..."
+              sleep 1
+            done
+            if ! curl -s http://localhost:5001/; then
+              echo "Firebase emulators failed to start within the timeout period."
+              exit 1
+            fi
           background: true
       - run:
           name: Run E2E Tests
