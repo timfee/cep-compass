@@ -42,11 +42,6 @@ jobs:
           at: ~/project
       - browser-tools/install-chrome
       - run:
-          name: Install Puppeteer Chrome
-          command: |
-            npm install puppeteer
-            node -e "console.log('Chrome path:', require('puppeteer').executablePath())"
-      - run:
           name: Run Unit Tests with Coverage
           command: npm run test:unit
           environment:
