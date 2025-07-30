@@ -75,12 +75,12 @@ describe('DlpConfigurationComponent', () => {
   });
 
   describe('copyPolicyConfig', () => {
+    let mockClipboard: jasmine.SpyObj<any>;
+
     beforeEach(() => {
       // Mock clipboard API for headless browser environment
-      const mockClipboard = {
-        writeText: jasmine
-          .createSpy('writeText')
-          .and.returnValue(Promise.resolve()),
+      mockClipboard = {
+        writeText: jasmine.createSpy('writeText').and.returnValue(Promise.resolve()),
       };
       
       // Use defineProperty to properly mock the clipboard in headless environment
@@ -103,7 +103,7 @@ describe('DlpConfigurationComponent', () => {
 
       await component.copyPolicyConfig();
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      expect(mockClipboard.writeText).toHaveBeenCalledWith(
         jasmine.stringContaining('Audit Sensitive Data Uploads'),
       );
       expect(notificationService.success).toHaveBeenCalledWith(
@@ -116,7 +116,7 @@ describe('DlpConfigurationComponent', () => {
 
       await component.copyPolicyConfig();
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      expect(mockClipboard.writeText).toHaveBeenCalledWith(
         jasmine.stringContaining('Audit External File Sharing'),
       );
     });
@@ -126,13 +126,13 @@ describe('DlpConfigurationComponent', () => {
 
       await component.copyPolicyConfig();
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      expect(mockClipboard.writeText).toHaveBeenCalledWith(
         jasmine.stringContaining('Audit Corporate Downloads'),
       );
     });
 
     it('should handle clipboard error', async () => {
-      (navigator.clipboard.writeText as jasmine.Spy).and.returnValue(
+      mockClipboard.writeText.and.returnValue(
         Promise.reject(new Error('Clipboard error')),
       );
       component.selectTemplate('sensitive-data-audit');
@@ -147,7 +147,7 @@ describe('DlpConfigurationComponent', () => {
     it('should do nothing when no template is selected', async () => {
       await component.copyPolicyConfig();
 
-      expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
+      expect(mockClipboard.writeText).not.toHaveBeenCalled();
     });
   });
 

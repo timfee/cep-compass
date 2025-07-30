@@ -25,6 +25,9 @@
             "styles": [
               "node_modules/quill/dist/quill.snow.css",
               "src/styles.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "quill-delta"
             ]
           },
           "configurations": {
@@ -76,10 +79,10 @@
           "builder": "@angular/build:karma",
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
-                        "browsers": "ChromeHeadlessCI",
+            "browsers": "ChromeHeadlessCI",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-
+            "codeCoverage": true,
             "assets": [
               {
                 "glob": "**/*",
