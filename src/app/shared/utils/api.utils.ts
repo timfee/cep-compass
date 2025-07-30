@@ -84,7 +84,15 @@ export class ApiUrlBuilder {
  */
 export class ApiResponseValidator {
   /**
-   * Validates that required fields exist in an API response object
+   * Validates that required fields exist in an API response object.
+   *
+   * @template T - The expected shape of the API response object. Must extend `Record<string, unknown>`.
+   * @param {unknown} data - The API response object to validate.
+   * @param {Array<keyof T>} requiredFields - A list of fields that must exist in the object.
+   * @param {string} [objectName='API response'] - A name for the object being validated, used in warning messages.
+   * @returns {data is T} - Returns `true` if all required fields exist in the object and `data` matches the type `T`.
+   *                        Otherwise, returns `false` and logs a warning.
+   * @throws {void} - Does not throw exceptions but logs warnings for missing fields or invalid objects.
    */
   static validateRequiredFields<T extends Record<string, unknown>>(
     data: unknown,
