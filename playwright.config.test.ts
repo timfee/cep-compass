@@ -11,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['html'],
-    ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['junit', { outputFile: 'test-results/e2e-junit.xml' }],
     ['json', { outputFile: 'test-results/results.json' }]
   ],
   use: {
@@ -35,7 +35,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run serve -- --configuration=test',
+    command: 'npm start',
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

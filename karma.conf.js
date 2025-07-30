@@ -1,4 +1,6 @@
-require('./karma-puppeteer-launcher');
+if (!process.env.CI) {
+  require('./karma-puppeteer-launcher');
+}
 
 module.exports = function (config) {
   config.set({
@@ -36,14 +38,22 @@ module.exports = function (config) {
     junitReporter: {
       outputDir: 'test-results',
       outputFile: 'junit.xml',
-      useBrowserName: false
+      useBrowserName: false,
+      suite: 'unit-tests'
     },
     reporters: ['progress', 'kjhtml', 'junit'],
     // This is the required fix
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
+        flags: [
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-dev-shm-usage',
+          '--headless',
+          '--remote-debugging-port=9222'
+        ]
       }
     },
     browsers: ['ChromeHeadlessCI'],
