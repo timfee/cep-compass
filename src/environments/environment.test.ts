@@ -12,11 +12,4 @@ export const environment = {
     authDomain: 'demo-test-project.firebaseapp.com',
     messagingSenderId: '123456789',
   },
-  // Use Firebase Auth emulator for tests
-  useEmulators: true,
-  emulatorPorts: {
-    auth: 9099,
-    functions: 5001,
-    hosting: 5009,
-  },
 };

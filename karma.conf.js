@@ -18,11 +18,6 @@ module.exports = function (config) {
       jasmine: {
         // Jasmine configuration
       },
-      env: {
-        FIREBASE_AUTH_EMULATOR_HOST:
-          process.env.FIREBASE_AUTH_EMULATOR_HOST || "localhost:9099",
-        USE_FIREBASE_EMULATORS: "true",
-      },
     },
     jasmineHtmlReporter: {
       suppressAll: true,

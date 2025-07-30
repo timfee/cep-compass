@@ -13,8 +13,6 @@ Create a `.env.test` file in the project root with the following variables:
 ```bash
 # Firebase Test Configuration
 FIREBASE_PROJECT_ID=demo-test-project
-FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
-FIREBASE_FUNCTIONS_EMULATOR_HOST=localhost:5001
 
 # Test User Credentials
 TEST_USER_EMAIL=test@example.com
@@ -76,22 +74,12 @@ npm run test:e2e:ui
 npx playwright test e2e/dashboard.spec.ts
 ```
 
-### Firebase Emulators
-
-```bash
-# Start Firebase emulators for testing
-firebase emulators:start --only auth,hosting,functions --project demo-test-project
-
-# Or use npm script if available
-npm run emulators:start
-```
-
 ## CI/CD Pipeline
 
 The GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 
 1. **Unit Tests**: Karma tests with ChromeHeadless
-2. **E2E Tests**: Playwright tests against Firebase emulators
+2. **E2E Tests**: Playwright tests against the application
 3. **Build Check**: Verifies production build succeeds
 4. **Linting**: Checks code quality
 
@@ -105,7 +93,7 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 ### `environment.test.ts`
 
 - Firebase configuration for test environment
-- Points to demo project and emulators
+- Points to demo project for testing
 
 ### `playwright.config.test.ts`
 
@@ -120,29 +108,25 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 ### `e2e/global-setup.ts`
 
 - Playwright global setup for authentication
-- Configures Firebase emulator connection
 
 ## Best Practices
 
 1. **Never commit real credentials** - Use environment variables
-2. **Use Firebase emulators** for consistent test environments
-3. **Create dedicated test accounts** with limited permissions
-4. **Run tests in CI** on every PR
-5. **Monitor test coverage** to maintain quality
+2. **Create dedicated test accounts** with limited permissions
+3. **Run tests in CI** on every PR
+4. **Monitor test coverage** to maintain quality
 
 ## Troubleshooting
 
 ### Tests fail with authentication errors
 
-- Ensure Firebase emulators are running
 - Check environment variables are set
-- Verify test accounts exist in emulator
+- Verify test accounts are configured
 
 ### E2E tests timeout
 
 - Increase timeout in playwright.config.ts
 - Check if app is building correctly
-- Verify Firebase emulators started
 
 ### CI tests fail but local tests pass
 
@@ -151,16 +135,6 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 - Review workflow logs for specific errors
 
 ## Creating Test Accounts
-
-For Firebase Auth emulator:
-
-```javascript
-// Create test users in emulator
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
-const auth = getAuth();
-await createUserWithEmailAndPassword(auth, "test@example.com", "test-password-123");
-```
 
 For production testing (not recommended):
 

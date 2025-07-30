@@ -10,7 +10,6 @@
     "test:unit": "ng test --watch=false --browsers=ChromeHeadlessCI",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "emulators:start": "npx firebase emulators:start",
     "lint": "ng lint",
     "format": "prettier --write ."
   },

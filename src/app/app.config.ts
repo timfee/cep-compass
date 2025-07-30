@@ -1,26 +1,21 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   ErrorHandler,
-  isDevMode,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import {
-  connectFunctionsEmulator,
-  getFunctions,
-  provideFunctions,
-} from '@angular/fire/functions';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { provideQuillConfig } from 'ngx-quill';
-import { routes } from './app.routes';
 import { environment } from '../environments/environment';
-import { GlobalErrorHandler } from './core/global-error-handler';
+import { routes } from './app.routes';
 import { authInterceptor } from './core/auth.interceptor';
+import { GlobalErrorHandler } from './core/global-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -53,12 +48,6 @@ export const appConfig: ApplicationConfig = {
     }),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideFunctions(() => {
-      const functions = getFunctions();
-      if (isDevMode()) {
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-      }
-      return functions;
-    }),
+    provideFunctions(() => getFunctions()),
   ],
 };

@@ -17,14 +17,6 @@ async function globalSetup(config: FullConfig) {
     // Navigate to login page
     await page.goto(config.projects[0].use.baseURL!);
 
-    // If using Firebase Auth emulator, configure it
-    if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-      await page.evaluate((emulatorHost) => {
-        // Configure Firebase to use emulator
-        window.localStorage.setItem('firebase:host:default', emulatorHost);
-      }, process.env.FIREBASE_AUTH_EMULATOR_HOST);
-    }
-
     // Store any necessary auth state
     await page.context().storageState({ path: 'test-auth-state.json' });
   } catch (error) {

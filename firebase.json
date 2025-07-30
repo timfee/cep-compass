@@ -5,14 +5,5 @@
     "frameworksBackend": {
       "region": "us-west1"
     }
-  },
-  "emulators": {
-    "hosting": {
-      "port": 5009,
-      "public": "public"
-    },
-    "ui": {
-      "enabled": true
-    }
   }
 }
