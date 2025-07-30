@@ -78,7 +78,7 @@ jobs:
       run: npx playwright install --with-deps chromium
 
     - name: Build application
-      run: npm run build -- --configuration=test
+      run: npm run build
     
     - name: Start Firebase emulators
       run: |
@@ -87,7 +87,7 @@ jobs:
         sleep 10
     
     - name: Run E2E tests
-      run: npm run test
+      run: npm run test:e2e
       env:
         # Firebase emulator configuration
         FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
