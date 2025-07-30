@@ -3,7 +3,7 @@
 // Include Material core styles
 @include mat.core();
 
-// Define Material 3 theme with proper typography
+// Define Material 3 theme with Google Fonts typography
 $theme: mat.define-theme(
   (
     color: (
@@ -12,10 +12,8 @@ $theme: mat.define-theme(
       tertiary: mat.$violet-palette,
     ),
     typography: (
-      brand-family:
-        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-      plain-family:
-        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      brand-family: "Google Sans Flex, sans-serif",
+      plain-family: "Google Sans Text, sans-serif",
       bold-weight: 700,
       medium-weight: 500,
       regular-weight: 400,
@@ -30,6 +28,24 @@ $theme: mat.define-theme(
 :root {
   @include mat.all-component-themes($theme);
   @include mat.color-variants-backwards-compatibility($theme);
+
+  // Override Material 3 design tokens to use Google Fonts
+  --mat-sys-typescale-headline-large-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-headline-medium-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-headline-small-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-display-large-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-display-medium-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-display-small-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-title-large-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-title-medium-font: "Google Sans Flex", sans-serif;
+  --mat-sys-typescale-title-small-font: "Google Sans Flex", sans-serif;
+
+  --mat-sys-typescale-body-large-font: "Google Sans Text", sans-serif;
+  --mat-sys-typescale-body-medium-font: "Google Sans Text", sans-serif;
+  --mat-sys-typescale-body-small-font: "Google Sans Text", sans-serif;
+  --mat-sys-typescale-label-large-font: "Google Sans Text", sans-serif;
+  --mat-sys-typescale-label-medium-font: "Google Sans Text", sans-serif;
+  --mat-sys-typescale-label-small-font: "Google Sans Text", sans-serif;
 }
 
 // Global box-sizing for consistent layout behavior
@@ -37,11 +53,11 @@ $theme: mat.define-theme(
   box-sizing: border-box;
 }
 
-// System font variables for consistency
+// Google Fonts variables for consistency
 :root {
-  --font-family-sans:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  --font-family-headings: "Google Sans Flex", sans-serif;
+  --font-family-text: "Google Sans Text", sans-serif;
+  --font-family-code: "Google Sans Code", monospace;
 }
 
 html,
@@ -51,6 +67,7 @@ body {
 
 body {
   margin: 0;
+  font-family: var(--font-family-text);
   background-color: mat.get-theme-color($theme, surface-container-lowest);
   color: mat.get-theme-color($theme, on-surface);
   -webkit-font-smoothing: antialiased;
@@ -78,22 +95,49 @@ $spacing-unit: 8px;
   }
 }
 
-// Base typography mixin to reduce duplication
-@mixin typography-base {
-  font-family: var(--font-family-sans);
+// Base typography mixins for Google Fonts
+@mixin typography-headings {
+  font-family: var(--font-family-headings);
 }
 
-// Typography utilities with Material Design tokens
+@mixin typography-text {
+  font-family: var(--font-family-text);
+}
+
+@mixin typography-code {
+  font-family: var(--font-family-code);
+}
+
+// Typography utilities with Material Design tokens and Google Fonts
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  @include typography-base;
+  @include typography-headings;
   font-weight: 500;
   margin: 0;
   padding: 0;
+}
+
+// Body text and paragraphs
+p,
+span,
+div,
+body,
+.mat-typography {
+  @include typography-text;
+}
+
+// Code and monospace elements
+code,
+pre,
+.code,
+tt,
+kbd,
+samp {
+  @include typography-code;
 }
 
 // Global component styling with Material tokens
@@ -106,13 +150,43 @@ mat-card {
   }
 }
 
-// Ensure Material components use system fonts with proper specificity
+// Ensure Material components use Google Fonts with proper specificity
 .mat-mdc-button,
 .mat-mdc-unelevated-button,
 .mat-mdc-raised-button,
 .mat-mdc-outlined-button {
-  @include typography-base;
+  @include typography-text;
   font-weight: 500;
+}
+
+// Material form fields and inputs
+.mat-mdc-form-field,
+.mat-mdc-input-element,
+.mat-mdc-select,
+.mat-mdc-option {
+  @include typography-text;
+}
+
+// Material toolbar and nav elements
+.mat-toolbar,
+.mat-toolbar h1,
+.mat-toolbar h2,
+.mat-toolbar h3,
+.mat-toolbar h4,
+.mat-toolbar h5,
+.mat-toolbar h6 {
+  @include typography-headings;
+}
+
+// Material card titles use heading font
+.mat-mdc-card-title {
+  @include typography-headings;
+  font-weight: 500;
+}
+
+// Material card content uses text font
+.mat-mdc-card-content {
+  @include typography-text;
 }
 
 // Material 3 compliant snackbar theming

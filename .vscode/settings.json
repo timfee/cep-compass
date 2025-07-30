@@ -1,5 +1,4 @@
 {
-  "IDX.agenticWorkspace": true,
-  "geminicodeassist.updateChannel": "Insiders",
+  "geminicodeassist.updateChannel": "Dogfood",
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
