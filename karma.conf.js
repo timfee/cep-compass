@@ -36,7 +36,8 @@ module.exports = function (config) {
     junitReporter: {
       outputDir: 'test-results',
       outputFile: 'junit.xml',
-      useBrowserName: false
+      useBrowserName: false,
+      suite: 'unit-tests'
     },
     reporters: ['progress', 'kjhtml', 'junit'],
     // This is the required fix
