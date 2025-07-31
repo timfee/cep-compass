@@ -1,10 +1,15 @@
 import { test, expect } from './support/fixtures';
-import { createSuperAdminUser } from './support/fixtures/test-users';
+import { RealAuth } from './support/helpers/real-auth';
 
 test.describe('Email Composer', () => {
-  test.beforeEach(async ({ authMock }) => {
-    const testUser = createSuperAdminUser();
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+  test.beforeEach(async ({ realAuth }) => {
+    const adminCreds = RealAuth.getAdminCredentials();
+    test.skip(!adminCreds, 'Admin credentials not available');
+    
+    if (adminCreds) {
+      await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
+      await realAuth.selectRole('superAdmin');
+    }
   });
 
   test('should load email composer', async ({ emailTemplatesPage }) => {
