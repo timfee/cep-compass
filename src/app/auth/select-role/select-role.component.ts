@@ -45,6 +45,10 @@ import { UserRole } from '../../shared/constants/enums';
                   isSelectingRole()
                 "
                 (click)="selectRole(UserRole.SUPER_ADMIN)"
+                [attr.aria-label]="'Select Super Admin role. ' + 
+                  (!authService.availableRoles().isSuperAdmin 
+                    ? 'Not available - Super Admin privileges required.'
+                    : 'Available and ready to select.')"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -58,6 +62,10 @@ import { UserRole } from '../../shared/constants/enums';
                   !authService.availableRoles().isCepAdmin || isSelectingRole()
                 "
                 (click)="selectRole(UserRole.CEP_ADMIN)"
+                [attr.aria-label]="'Select CEP Delegated Admin role. ' + 
+                  (!authService.availableRoles().isCepAdmin 
+                    ? 'Not available - Required privileges missing.'
+                    : 'Available and ready to select.')"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -140,11 +148,15 @@ export class SelectRoleComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     // Refresh available roles when the component loads
     try {
+      this.isSelectingRole.set(true);
       await this.authService.refreshAvailableRoles();
-    } catch {
+    } catch (error) {
+      console.error('Failed to refresh available roles:', error);
       this.notificationService.error(
-        'Failed to refresh available roles. Please try again later.',
+        'Failed to load role information. Please try refreshing the page.',
       );
+    } finally {
+      this.isSelectingRole.set(false);
     }
   }
 

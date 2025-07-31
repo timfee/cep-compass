@@ -317,7 +317,10 @@ describe('AuthService', () => {
       const roles = service.availableRoles();
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
-      expect(roles.missingPrivileges).toEqual([]);
+      // The improved error handling now provides specific error messages for 403 errors
+      expect(roles.missingPrivileges).toEqual([
+        { privilegeName: 'Admin Console Access Required', serviceId: 'directory' }
+      ]);
     });
 
     it('should handle user without email', async () => {

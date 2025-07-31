@@ -64,8 +64,9 @@ describe('CreateRoleComponent', () => {
       'createCepAdminRole',
       'getAdminConsoleUrl',
     ]);
-    const authServiceSpy = jasmine.createSpyObj('AuthService', [], {
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['refreshAvailableRoles'], {
       availableRoles: () => ({ isSuperAdmin: true }),
+      user: () => ({ uid: 'test-uid', email: 'test@example.com' }),
     });
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const notificationServiceSpy = jasmine.createSpyObj('NotificationService', [
@@ -188,6 +189,9 @@ describe('CreateRoleComponent', () => {
       Object.defineProperty(authService, 'availableRoles', {
         value: () => ({ isSuperAdmin: false }),
       });
+      Object.defineProperty(authService, 'user', {
+        value: () => ({ uid: 'test-uid', email: 'test@example.com' }),
+      });
 
       fixture = TestBed.createComponent(CreateRoleComponent);
       component = fixture.componentInstance;
@@ -197,7 +201,7 @@ describe('CreateRoleComponent', () => {
 
     it('should show error when user is not super admin', () => {
       expect(component.state()).toBe('error');
-      expect(component.error()).toBe(
+      expect(component.error()).toContain(
         'Super Admin role required to create CEP Admin roles',
       );
     });

@@ -8,7 +8,10 @@ import {
   signOut,
 } from '@angular/fire/auth';
 
-import { Privilege } from '../shared/constants/google-api.constants';
+import { 
+  Privilege, 
+  CEP_ADMIN_PRIVILEGES 
+} from '../shared/constants/google-api.constants';
 import {
   OAUTH_SCOPES,
   OAUTH_CONFIG,
@@ -91,10 +94,18 @@ export class AuthService {
       if (currentUser) {
         // Only update available roles if we're not in the middle of changing roles
         if (!this.isChangingRole) {
-          // Add delay to ensure token is available (fix race condition)
-          setTimeout(async () => {
+          // Wait for the access token to be available before updating roles
+          try {
             await this.updateAvailableRoles();
-          }, 100);
+          } catch (error) {
+            console.error('Failed to update available roles:', error);
+            // Set default state on error to prevent undefined behavior
+            this.availableRoles.set({
+              isSuperAdmin: false,
+              isCepAdmin: false,
+              missingPrivileges: [],
+            });
+          }
         }
       } else {
         // If logged out, reset everything and clear storage.
@@ -292,18 +303,27 @@ export class AuthService {
       await this.retryWithBackoff(async () => {
         const token = await this.getAccessToken();
         if (!token) {
-          console.warn(
-            'No access token available for role enumeration. User may need to re-authenticate.',
-          );
-          // Set minimal permissions instead of throwing error
-          this.availableRoles.set({
-            isSuperAdmin: false,
-            isCepAdmin: false,
-            missingPrivileges: [
-              { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
-            ],
-          });
-          return;
+          // Try to refresh the token if it's not available
+          const refreshedToken = await this.refreshAccessToken();
+          if (!refreshedToken) {
+            console.warn(
+              'No access token available for role enumeration. User may need to re-authenticate.',
+            );
+            // Set minimal permissions instead of throwing error
+            this.availableRoles.set({
+              isSuperAdmin: false,
+              isCepAdmin: false,
+              missingPrivileges: [
+                { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
+              ],
+            });
+            return;
+          }
+        }
+
+        const currentToken = token || await this.getAccessToken();
+        if (!currentToken) {
+          throw new Error('Unable to obtain access token after refresh attempt');
         }
 
         const userEmail = this.user()?.email;
@@ -316,13 +336,24 @@ export class AuthService {
           `https://admin.googleapis.com/admin/directory/v1/users/${encodeURIComponent(userEmail)}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${currentToken}`,
               'Content-Type': 'application/json',
             },
           },
         );
 
         if (!userResponse.ok) {
+          if (userResponse.status === 403) {
+            // User doesn't have admin access at all
+            this.availableRoles.set({
+              isSuperAdmin: false,
+              isCepAdmin: false,
+              missingPrivileges: [
+                { privilegeName: 'Admin Console Access Required', serviceId: 'directory' },
+              ],
+            });
+            return;
+          }
           throw new Error(`Admin API error: ${userResponse.statusText}`);
         }
 
@@ -338,18 +369,29 @@ export class AuthService {
           return;
         }
 
-        // Check role assignments
+        // Check role assignments for delegated admin privileges
         const rolesResponse = await fetch(
           `https://admin.googleapis.com/admin/directory/v1/roleAssignments?userKey=${encodeURIComponent(userEmail)}&customer=my_customer`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${currentToken}`,
               'Content-Type': 'application/json',
             },
           },
         );
 
         if (!rolesResponse.ok) {
+          if (rolesResponse.status === 403) {
+            // User has some admin access but can't view role assignments
+            this.availableRoles.set({
+              isSuperAdmin: false,
+              isCepAdmin: false,
+              missingPrivileges: [
+                { privilegeName: 'Role Assignment Access Required', serviceId: 'directory' },
+              ],
+            });
+            return;
+          }
           throw new Error(
             `Role assignments API error: ${rolesResponse.statusText}`,
           );
@@ -358,71 +400,38 @@ export class AuthService {
         const rolesData = await rolesResponse.json();
         const roleAssignments = rolesData.items || [];
 
-        // Check CEP admin privileges
+        // Check CEP admin privileges using centralized constants
         let hasAllPrivileges = true;
         const missingPrivileges: Privilege[] = [];
-
-        // Define required CEP admin privileges
-        const REQUIRED_CEP_ADMIN_PRIVILEGES = [
-          {
-            privilegeName: 'ORGANIZATION_UNITS_RETRIEVE',
-            serviceId: '00haapch16h1ysv',
-          },
-          { privilegeName: 'ACTIVITY_RULES', serviceId: '01egqt2p2p8gvae' },
-          { privilegeName: 'APP_ADMIN', serviceId: '01egqt2p2p8gvae' },
-          { privilegeName: 'MANAGE_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
-          { privilegeName: 'VIEW_GSC_RULE', serviceId: '01egqt2p2p8gvae' },
-          {
-            privilegeName: 'ACCESS_LEVEL_MANAGEMENT',
-            serviceId: '01rvwp1q4axizdr',
-          },
-          {
-            privilegeName: 'MANAGE_DEVICE_SETTINGS',
-            serviceId: '03hv69ve4bjwe54',
-          },
-          {
-            privilegeName: 'MANAGE_CHROME_INSIGHT_SETTINGS',
-            serviceId: '01x0gk371sq486y',
-          },
-          {
-            privilegeName: 'VIEW_AND_MANAGE_CHROME_OCR_SETTING',
-            serviceId: '01x0gk371sq486y',
-          },
-          {
-            privilegeName: 'VIEW_CHROME_INSIGHT_SETTINGS',
-            serviceId: '01x0gk371sq486y',
-          },
-          { privilegeName: 'MANAGE_DEVICES', serviceId: '03hv69ve4bjwe54' },
-          { privilegeName: 'APP_ADMIN', serviceId: '03hv69ve4bjwe54' },
-          {
-            privilegeName: 'APPS_INCIDENTS_FULL_ACCESS',
-            serviceId: '02pta16n3efhw69',
-          },
-          { privilegeName: 'REPORTS_ACCESS', serviceId: '01fob9te2rj6rw9' },
-        ];
 
         // Get all privileges from assigned roles
         const allPrivileges: Privilege[] = [];
         for (const assignment of roleAssignments) {
-          const roleResponse = await fetch(
-            `https://admin.googleapis.com/admin/directory/v1/roles/${assignment.roleId}?customer=my_customer`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+          try {
+            const roleResponse = await fetch(
+              `https://admin.googleapis.com/admin/directory/v1/roles/${assignment.roleId}?customer=my_customer`,
+              {
+                headers: {
+                  Authorization: `Bearer ${currentToken}`,
+                  'Content-Type': 'application/json',
+                },
               },
-            },
-          );
+            );
 
-          if (roleResponse.ok) {
-            const roleData = await roleResponse.json();
-            const privileges = roleData.rolePrivileges || [];
-            allPrivileges.push(...privileges);
+            if (roleResponse.ok) {
+              const roleData = await roleResponse.json();
+              const privileges = roleData.rolePrivileges || [];
+              allPrivileges.push(...privileges);
+            } else {
+              console.warn(`Failed to fetch role details for ${assignment.roleId}: ${roleResponse.statusText}`);
+            }
+          } catch (error) {
+            console.warn(`Error fetching role ${assignment.roleId}:`, error);
           }
         }
 
-        // Check for missing privileges
-        for (const required of REQUIRED_CEP_ADMIN_PRIVILEGES) {
+        // Check for missing privileges using the centralized CEP_ADMIN_PRIVILEGES
+        for (const required of CEP_ADMIN_PRIVILEGES) {
           const hasPrivilege = allPrivileges.some(
             (p) =>
               p.privilegeName === required.privilegeName &&
@@ -445,7 +454,9 @@ export class AuthService {
       this.availableRoles.set({
         isSuperAdmin: false,
         isCepAdmin: false,
-        missingPrivileges: [],
+        missingPrivileges: [
+          { privilegeName: 'API Access Error', serviceId: 'error' },
+        ],
       });
     }
   }
