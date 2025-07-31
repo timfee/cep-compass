@@ -31,6 +31,11 @@ export class SelectRolePage extends BasePage {
     await this.cepAdminCard.locator('button:has-text("Select")').click();
   }
 
+  async selectRole(roleName: string): Promise<void> {
+    const roleCard = this.page.locator(`mat-card:has-text("${roleName}")`);
+    await roleCard.locator('button:has-text("Select")').click();
+  }
+
   async getAvailableRoles(): Promise<string[]> {
     const roles: string[] = [];
     if (await this.superAdminCard.isVisible()) {

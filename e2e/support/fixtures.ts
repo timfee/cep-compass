@@ -6,7 +6,7 @@ import {
   AdminPage,
   EmailTemplatesPage,
 } from './page-objects';
-import { AuthMock } from './fixtures/auth-mock';
+import { RealAuth } from './helpers/real-auth';
 
 type CEPCompassFixtures = {
   loginPage: LoginPage;
@@ -14,7 +14,7 @@ type CEPCompassFixtures = {
   dashboardPage: DashboardPage;
   adminPage: AdminPage;
   emailTemplatesPage: EmailTemplatesPage;
-  authMock: AuthMock;
+  realAuth: RealAuth;
 };
 
 export const test = base.extend<CEPCompassFixtures>({
@@ -38,8 +38,8 @@ export const test = base.extend<CEPCompassFixtures>({
     await use(new EmailTemplatesPage(page));
   },
 
-  authMock: async ({ page }, use) => {
-    await use(new AuthMock(page));
+  realAuth: async ({ page }, use) => {
+    await use(new RealAuth(page));
   },
 });
 

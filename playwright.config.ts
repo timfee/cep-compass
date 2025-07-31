@@ -11,6 +11,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html'], ['list']],
+  globalSetup: './e2e/global-setup.ts',
   use: {
     baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
@@ -22,6 +23,22 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'chromium-admin',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'admin-auth-state.json',
+      },
+      dependencies: ['chromium'],
+    },
+    {
+      name: 'chromium-user',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'user-auth-state.json',
+      },
+      dependencies: ['chromium'],
     },
   ],
 

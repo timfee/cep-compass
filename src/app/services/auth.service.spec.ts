@@ -296,6 +296,7 @@ describe('AuthService', () => {
       // Mock retryWithBackoff to avoid real retries and timeouts
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(service as any, 'retryWithBackoff').and.callFake(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (fn: any) => {
           return await fn();
         },
@@ -334,6 +335,7 @@ describe('AuthService', () => {
       // Mock retryWithBackoff to avoid real retries and timeouts
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(service as any, 'retryWithBackoff').and.callFake(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (fn: any) => {
           return await fn();
         },

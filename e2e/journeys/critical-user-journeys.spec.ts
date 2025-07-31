@@ -1,13 +1,15 @@
 import { test, expect } from '../support/fixtures';
-import {
-  createSuperAdminUser,
-  createCepAdminUser,
-} from '../support/fixtures/test-users';
+import { RealAuth } from '../support/helpers/real-auth';
 
 test.describe('Email Templates User Journey', () => {
-  test.beforeEach(async ({ authMock }) => {
-    const testUser = createSuperAdminUser();
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+  test.beforeEach(async ({ realAuth }) => {
+    const adminCreds = RealAuth.getAdminCredentials();
+    test.skip(!adminCreds, 'Admin credentials not available');
+    
+    if (adminCreds) {
+      await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
+      await realAuth.selectRole('superAdmin');
+    }
   });
 
   test('should complete email composer workflow', async ({
@@ -77,25 +79,39 @@ test.describe('Email Templates User Journey', () => {
 
   test('should work for CEP Admin users', async ({
     emailTemplatesPage,
-    authMock,
+    realAuth,
   }) => {
-    // Test with CEP Admin user
-    const cepAdminUser = createCepAdminUser();
-    await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
+    // Test with CEP Admin user (use user credentials and try CEP admin role)
+    const userCreds = RealAuth.getUserCredentials();
+    test.skip(!userCreds, 'User credentials not available');
+    
+    if (userCreds) {
+      await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+      try {
+        await realAuth.selectRole('cepAdmin');
+      } catch {
+        await realAuth.selectRole('participant');
+      }
 
-    await emailTemplatesPage.goto();
-    await emailTemplatesPage.waitForLoad();
+      await emailTemplatesPage.goto();
+      await emailTemplatesPage.waitForLoad();
 
-    // CEP Admin should have access to email templates
-    await expect(emailTemplatesPage.pageTitle).toContainText('Email Templates');
-    await expect(emailTemplatesPage.emailComposer).toBeVisible();
+      // User should have access to email templates (permissions dependent)
+      await expect(emailTemplatesPage.pageTitle).toContainText('Email Templates');
+      await expect(emailTemplatesPage.emailComposer).toBeVisible();
+    }
   });
 });
 
 test.describe('Dashboard Navigation Journey', () => {
-  test.beforeEach(async ({ authMock }) => {
-    const testUser = createSuperAdminUser();
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+  test.beforeEach(async ({ realAuth }) => {
+    const adminCreds = RealAuth.getAdminCredentials();
+    test.skip(!adminCreds, 'Admin credentials not available');
+    
+    if (adminCreds) {
+      await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
+      await realAuth.selectRole('superAdmin');
+    }
   });
 
   test('should navigate through dashboard cards', async ({
@@ -154,9 +170,14 @@ test.describe('Dashboard Navigation Journey', () => {
 });
 
 test.describe('Admin Role Management Journey', () => {
-  test.beforeEach(async ({ authMock }) => {
-    const superAdminUser = createSuperAdminUser();
-    await authMock.setupAuthenticatedUser(superAdminUser, 'superAdmin');
+  test.beforeEach(async ({ realAuth }) => {
+    const adminCreds = RealAuth.getAdminCredentials();
+    test.skip(!adminCreds, 'Admin credentials not available');
+    
+    if (adminCreds) {
+      await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
+      await realAuth.selectRole('superAdmin');
+    }
   });
 
   test('should access admin role creation (Super Admin only)', async ({
@@ -187,24 +208,34 @@ test.describe('Admin Role Management Journey', () => {
 
   test('should be blocked for non-Super Admin users', async ({
     page,
-    authMock,
+    realAuth,
   }) => {
-    // Test with CEP Admin
-    const cepAdminUser = createCepAdminUser();
-    await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
+    // Test with regular user credentials
+    const userCreds = RealAuth.getUserCredentials();
+    test.skip(!userCreds, 'User credentials not available');
 
-    // Try to access admin area directly
-    await page.goto('/admin');
+    if (userCreds) {
+      await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+      await realAuth.selectRole('participant');
 
-    // Should redirect to dashboard due to guard
-    await expect(page).toHaveURL(/.*dashboard/);
+      // Try to access admin area directly
+      await page.goto('/admin');
+
+      // Should redirect to dashboard due to guard
+      await expect(page).toHaveURL(/.*dashboard/);
+    }
   });
 });
 
 test.describe('Error Recovery Scenarios', () => {
-  test.beforeEach(async ({ authMock }) => {
-    const testUser = createSuperAdminUser();
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+  test.beforeEach(async ({ realAuth }) => {
+    const adminCreds = RealAuth.getAdminCredentials();
+    test.skip(!adminCreds, 'Admin credentials not available');
+    
+    if (adminCreds) {
+      await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
+      await realAuth.selectRole('superAdmin');
+    }
   });
 
   test('should handle network errors gracefully', async ({

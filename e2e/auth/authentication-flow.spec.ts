@@ -1,14 +1,14 @@
 import { test, expect } from '../support/fixtures';
-import {
-  createSuperAdminUser,
-  createMultiRoleUser,
-} from '../support/fixtures/test-users';
+import { RealAuth } from '../support/helpers/real-auth';
 
 test.describe('Authentication Flow', () => {
-  test.beforeEach(async ({ page, authMock }) => {
-    // Navigate to a page first to ensure localStorage is available, then clear
+  test.beforeEach(async ({ page, realAuth }) => {
+    // Clear any existing authentication state
     await page.goto('/');
-    await authMock.clearAuth();
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
   });
 
   test('should redirect unauthenticated users to login', async ({
@@ -33,61 +33,87 @@ test.describe('Authentication Flow', () => {
     await expect(await loginPage.getTitle()).toContain('CEP Compass');
   });
 
-  test('should handle authenticated user with selected role', async ({
+  test('should handle authenticated admin user', async ({
     page,
     dashboardPage,
-    authMock,
+    realAuth,
   }) => {
-    const testUser = createSuperAdminUser();
+    // Skip test if no admin credentials available
+    const adminCreds = RealAuth.getAdminCredentials();
+    test.skip(!adminCreds, 'Admin credentials not available');
 
-    // Setup authenticated user with selected role
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+    if (adminCreds) {
+      // Perform real login
+      await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
 
-    // Navigate to app - should go directly to dashboard
-    await page.goto('/');
+      // Should be redirected to dashboard or role selection
+      const currentUrl = page.url();
+      expect(currentUrl).toMatch(/dashboard|select-role/);
 
-    // Should be redirected to dashboard
-    await expect(page).toHaveURL(/.*dashboard/);
+      // If on role selection, select admin role
+      if (currentUrl.includes('select-role')) {
+        await realAuth.selectRole('superAdmin');
+      }
+
+      // Verify we're on dashboard
+      await expect(page).toHaveURL(/.*dashboard/);
+    }
+  });
+
+  test('should handle authenticated regular user', async ({
+    page,
+    dashboardPage,
+    realAuth,
+  }) => {
+    // Skip test if no user credentials available
+    const userCreds = RealAuth.getUserCredentials();
+    test.skip(!userCreds, 'User credentials not available');
+
+    if (userCreds) {
+      // Perform real login
+      await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+
+      // Should be redirected to dashboard or role selection
+      const currentUrl = page.url();
+      expect(currentUrl).toMatch(/dashboard|select-role/);
+
+      // If on role selection, select available role
+      if (currentUrl.includes('select-role')) {
+        await realAuth.selectRole('participant');
+      }
+
+      // Verify we're on dashboard
+      await expect(page).toHaveURL(/.*dashboard/);
+    }
   });
 
   test('should show dashboard for authenticated user', async ({
     page,
     dashboardPage,
-    authMock,
+    realAuth,
   }) => {
-    const testUser = createSuperAdminUser();
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+    // Skip test if no credentials available
+    const userCreds = RealAuth.getUserCredentials();
+    test.skip(!userCreds, 'User credentials not available');
 
-    await dashboardPage.goto();
-    await expect(page).toHaveURL(/.*dashboard/);
-    await expect(dashboardPage.dashboardCards.first()).toBeVisible();
-  });
-
-  test('should handle role selection page access', async ({
-    page,
-    selectRolePage,
-    authMock,
-  }) => {
-    const testUser = createMultiRoleUser();
-
-    // Setup authenticated user without selected role
-    await authMock.setupAuthenticatedUser(testUser);
-
-    // Navigate to role selection
-    await selectRolePage.goto();
-    await selectRolePage.waitForLoad();
-    await expect(page).toHaveURL(/.*select-role/);
-
-    // Should show available roles
-    const availableRoles = await selectRolePage.getAvailableRoles();
-    expect(availableRoles.length).toBeGreaterThan(0);
+    if (userCreds) {
+      await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+      
+      // Navigate to dashboard
+      await dashboardPage.goto();
+      await expect(page).toHaveURL(/.*dashboard/);
+      await expect(dashboardPage.dashboardCards.first()).toBeVisible();
+    }
   });
 
   test('should block access to protected routes when not authenticated', async ({
     page,
-    authMock,
   }) => {
-    await authMock.clearAuth();
+    // Clear any auth state
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
 
     const protectedRoutes = [
       '/dashboard',
@@ -106,22 +132,25 @@ test.describe('Authentication Flow', () => {
     page,
     loginPage,
     dashboardPage,
-    authMock,
+    realAuth,
   }) => {
-    const testUser = createSuperAdminUser();
+    // Skip test if no credentials available
+    const userCreds = RealAuth.getUserCredentials();
+    test.skip(!userCreds, 'User credentials not available');
 
-    // Setup authenticated state
-    await authMock.setupAuthenticatedUser(testUser, 'superAdmin');
+    if (userCreds) {
+      // Login first
+      await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
 
-    // Navigate to dashboard
-    await dashboardPage.goto();
-    await expect(page).toHaveURL(/.*dashboard/);
+      // Navigate to dashboard
+      await dashboardPage.goto();
+      await expect(page).toHaveURL(/.*dashboard/);
 
-    // Clear auth (simulating logout)
-    await authMock.clearAuth();
+      // Perform logout
+      await realAuth.logout();
 
-    // Try to access protected page - should redirect to login
-    await page.goto('/dashboard');
-    await expect(page).toHaveURL(/.*login/);
+      // Should be redirected to login
+      await expect(page).toHaveURL(/.*login/);
+    }
   });
 });

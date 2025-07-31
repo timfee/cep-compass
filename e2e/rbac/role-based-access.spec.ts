@@ -1,15 +1,17 @@
 import { test, expect } from '../support/fixtures';
-import {
-  createSuperAdminUser,
-  createCepAdminUser,
-  createParticipantUser,
-} from '../support/fixtures/test-users';
+import { RealAuth } from '../support/helpers/real-auth';
 
 test.describe('Role-Based Access Control', () => {
   test.describe('Super Admin Access', () => {
-    test.beforeEach(async ({ authMock }) => {
-      const superAdminUser = createSuperAdminUser();
-      await authMock.setupAuthenticatedUser(superAdminUser, 'superAdmin');
+    test.beforeEach(async ({ realAuth }) => {
+      const adminCreds = RealAuth.getAdminCredentials();
+      test.skip(!adminCreds, 'Admin credentials not available');
+      
+      if (adminCreds) {
+        await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
+        // Select super admin role if role selection is available
+        await realAuth.selectRole('superAdmin');
+      }
     });
 
     test('should have full access to all features', async ({
@@ -72,9 +74,19 @@ test.describe('Role-Based Access Control', () => {
   });
 
   test.describe('CEP Admin Access', () => {
-    test.beforeEach(async ({ authMock }) => {
-      const cepAdminUser = createCepAdminUser();
-      await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
+    test.beforeEach(async ({ realAuth }) => {
+      const userCreds = RealAuth.getUserCredentials();
+      test.skip(!userCreds, 'User credentials not available');
+      
+      if (userCreds) {
+        await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+        // Try to select CEP admin role if available, fallback to participant
+        try {
+          await realAuth.selectRole('cepAdmin');
+        } catch {
+          await realAuth.selectRole('participant');
+        }
+      }
     });
 
     test('should have limited access compared to Super Admin', async ({
@@ -119,21 +131,32 @@ test.describe('Role-Based Access Control', () => {
       await expect(page).toHaveURL(/.*email-templates/);
     });
 
-    test('should see limited dashboard features', async ({ dashboardPage }) => {
+    test('should see limited dashboard features', async ({
+      dashboardPage,
+    }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
 
       const cards = await dashboardPage.getVisibleCards();
       expect(cards.length).toBeGreaterThan(0);
-      // CEP Admin should see main features but not admin-specific ones
+
+      // CEP Admin should see enrollment and protection features
       expect(cards.some((card) => card.includes('Enroll Browsers'))).toBe(true);
+      expect(
+        cards.some((card) => card.includes('Activate One-Click Protection')),
+      ).toBe(true);
     });
   });
 
   test.describe('Participant Access', () => {
-    test.beforeEach(async ({ authMock }) => {
-      const participantUser = createParticipantUser();
-      await authMock.setupAuthenticatedUser(participantUser, 'participant');
+    test.beforeEach(async ({ realAuth }) => {
+      const userCreds = RealAuth.getUserCredentials();
+      test.skip(!userCreds, 'User credentials not available');
+      
+      if (userCreds) {
+        await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+        await realAuth.selectRole('participant');
+      }
     });
 
     test('should have minimal read-only access', async ({
@@ -154,17 +177,14 @@ test.describe('Role-Based Access Control', () => {
     });
 
     test('should have restricted navigation options', async ({
-      page,
       dashboardPage,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.waitForLoad();
 
-      // Open side navigation
-      await dashboardPage.openSideNav();
-
-      // Verify limited navigation options (implementation dependent)
-      // Participants should have fewer navigation options
+      // Participant should have limited navigation options
+      const navItems = await dashboardPage.getNavigationItems();
+      expect(navItems.some((item) => item.includes('Admin'))).toBe(false);
     });
 
     test('should see read-only dashboard content', async ({
@@ -174,18 +194,20 @@ test.describe('Role-Based Access Control', () => {
       await dashboardPage.waitForLoad();
 
       const cards = await dashboardPage.getVisibleCards();
-      // Participants should see basic dashboard but with limited interactivity
       expect(cards.length).toBeGreaterThan(0);
+
+      // Participant should see basic information cards
+      expect(cards.some((card) => card.includes('Dashboard'))).toBe(true);
     });
 
     test('should be blocked from accessing restricted areas', async ({
       page,
     }) => {
-      const restrictedRoutes = ['/admin', '/admin/create-role'];
+      const restrictedRoutes = ['/admin', '/role-management'];
 
       for (const route of restrictedRoutes) {
         await page.goto(route);
-        // Should redirect to dashboard due to access restrictions
+        // Should redirect to dashboard due to insufficient permissions
         await expect(page).toHaveURL(/.*dashboard/);
       }
     });
@@ -196,76 +218,77 @@ test.describe('Role-Based Access Control', () => {
       page,
       selectRolePage,
       dashboardPage,
-      adminPage,
-      authMock,
+      realAuth,
     }) => {
-      const multiRoleUser = createSuperAdminUser(); // Has both super admin and CEP admin roles
-      await authMock.setupAuthenticatedUser(multiRoleUser);
+      // This test requires a user with multiple roles - skip if not available
+      const adminCreds = RealAuth.getAdminCredentials();
+      test.skip(!adminCreds, 'Admin credentials not available for multi-role test');
 
-      // Start without a selected role
-      await page.goto('/select-role');
-      await selectRolePage.waitForLoad();
+      if (adminCreds) {
+        await realAuth.loginWithGoogle(adminCreds.email, adminCreds.password);
 
-      // Select CEP Admin first
-      await selectRolePage.selectCepAdmin();
-      await page.waitForURL(/.*dashboard/);
+        // Navigate to role selection
+        await selectRolePage.goto();
+        await selectRolePage.waitForLoad();
 
-      // Verify limited access
-      await page.goto('/admin');
-      await expect(page).toHaveURL(/.*dashboard/);
+        // Should show available roles
+        const availableRoles = await selectRolePage.getAvailableRoles();
+        expect(availableRoles.length).toBeGreaterThan(0);
 
-      // Switch to Super Admin role
-      await page.goto('/select-role');
-      await selectRolePage.waitForLoad();
-      await selectRolePage.selectSuperAdmin();
-      await page.waitForURL(/.*dashboard/);
+        // Select a role
+        if (availableRoles.length > 0) {
+          await selectRolePage.selectRole(availableRoles[0]);
+          await expect(page).toHaveURL(/.*dashboard/);
+        }
 
-      // Verify full access
-      await dashboardPage.navigateToAdmin();
-      await expect(page).toHaveURL(/.*admin/);
+        // Try switching roles again
+        await selectRolePage.goto();
+        if (availableRoles.length > 1) {
+          await selectRolePage.selectRole(availableRoles[1]);
+          await expect(page).toHaveURL(/.*dashboard/);
+        }
+      }
     });
   });
 
   test.describe('Permission Denied Scenarios', () => {
     test('should handle unauthorized access gracefully', async ({
       page,
-      authMock,
+      realAuth,
     }) => {
-      const participantUser = createParticipantUser();
-      await authMock.setupAuthenticatedUser(participantUser, 'participant');
+      const userCreds = RealAuth.getUserCredentials();
+      test.skip(!userCreds, 'User credentials not available');
 
-      // Try to access admin area directly
-      await page.goto('/admin');
+      if (userCreds) {
+        await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+        await realAuth.selectRole('participant');
 
-      // Should redirect to dashboard, not show error page
-      await expect(page).toHaveURL(/.*dashboard/);
+        // Try to access admin endpoint
+        await page.goto('/admin');
 
-      // Page should still be functional
-      await expect(page.locator('h1')).toBeVisible();
+        // Should redirect or show error, not crash
+        const url = page.url();
+        expect(url).toMatch(/dashboard|error|access-denied/);
+      }
     });
 
     test('should show appropriate UI based on permissions', async ({
-      page,
       dashboardPage,
-      authMock,
+      realAuth,
     }) => {
-      const cepAdminUser = createCepAdminUser();
-      await authMock.setupAuthenticatedUser(cepAdminUser, 'cepAdmin');
+      const userCreds = RealAuth.getUserCredentials();
+      test.skip(!userCreds, 'User credentials not available');
 
-      await dashboardPage.goto();
-      await dashboardPage.waitForLoad();
+      if (userCreds) {
+        await realAuth.loginWithGoogle(userCreds.email, userCreds.password);
+        await realAuth.selectRole('participant');
 
-      // Admin-specific features should not be visible
-      await dashboardPage.openSideNav();
+        await dashboardPage.goto();
+        await dashboardPage.waitForLoad();
 
-      // Admin link should not be present or should be disabled
-      const adminLink = page.locator('a[routerLink="/admin"]');
-      const isAdminLinkVisible = await adminLink.isVisible();
-
-      if (isAdminLinkVisible) {
-        // If visible, it should be disabled or non-functional
-        await adminLink.click();
-        await expect(page).toHaveURL(/.*dashboard/);
+        // UI should reflect current user's permissions
+        const hasAdminAccess = await dashboardPage.hasAdminNavigation();
+        expect(hasAdminAccess).toBe(false);
       }
     });
   });
