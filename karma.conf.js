@@ -1,7 +1,3 @@
-if (!process.env.CI) {
-  require("./karma-puppeteer-launcher");
-}
-
 module.exports = function (config) {
   config.set({
     basePath: "",
