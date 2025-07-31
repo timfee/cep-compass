@@ -1,4 +1,13 @@
 import { Page } from '@playwright/test';
+import { 
+  DEFAULT_TIMEOUT, 
+  AUTH_TIMEOUT, 
+  ROLE_SELECTION_TIMEOUT, 
+  SHORT_TIMEOUT,
+  LOCAL_STORAGE_USER_KEY,
+  SELECTORS,
+  URL_PATTERNS 
+} from '../constants';
 
 export interface AuthUser {
   email: string;
@@ -22,7 +31,7 @@ export class RealAuth {
     await this.page.waitForLoadState('networkidle');
 
     // Click the Google Sign In button
-    const signInButton = this.page.locator('button:has-text("Sign in with Google")');
+    const signInButton = this.page.locator(SELECTORS.GOOGLE_SIGN_IN);
     await signInButton.waitFor({ state: 'visible' });
     await signInButton.click();
 
@@ -30,7 +39,7 @@ export class RealAuth {
     await this.handleGoogleOAuth(email, password);
 
     // Wait for successful authentication and redirect
-    await this.page.waitForURL(/dashboard|select-role/, { timeout: 30000 });
+    await this.page.waitForURL(URL_PATTERNS.DASHBOARD_OR_ROLE, { timeout: DEFAULT_TIMEOUT });
   }
 
   /**
@@ -40,8 +49,8 @@ export class RealAuth {
     try {
       // Wait for either Google login form or potential redirect back to app
       await Promise.race([
-        this.page.waitForSelector('#identifierId', { timeout: 15000 }),
-        this.page.waitForURL(/dashboard|select-role/, { timeout: 15000 })
+        this.page.waitForSelector(SELECTORS.GOOGLE_EMAIL_INPUT, { timeout: AUTH_TIMEOUT }),
+        this.page.waitForURL(URL_PATTERNS.DASHBOARD_OR_ROLE, { timeout: AUTH_TIMEOUT })
       ]);
       
       // If we're already back at the app, authentication succeeded
@@ -51,21 +60,21 @@ export class RealAuth {
       }
       
       // Continue with manual OAuth if still on Google login
-      if (await this.page.locator('#identifierId').isVisible()) {
+      if (await this.page.locator(SELECTORS.GOOGLE_EMAIL_INPUT).isVisible()) {
         // Enter email
-        await this.page.fill('#identifierId', email);
-        await this.page.click('#identifierNext');
+        await this.page.fill(SELECTORS.GOOGLE_EMAIL_INPUT, email);
+        await this.page.click(SELECTORS.GOOGLE_EMAIL_NEXT);
         
         // Wait for password field and enter password
-        await this.page.waitForSelector('input[name="password"]', { timeout: 10000 });
-        await this.page.fill('input[name="password"]', password);
-        await this.page.click('#passwordNext');
+        await this.page.waitForSelector(SELECTORS.GOOGLE_PASSWORD_INPUT, { timeout: ROLE_SELECTION_TIMEOUT });
+        await this.page.fill(SELECTORS.GOOGLE_PASSWORD_INPUT, password);
+        await this.page.click(SELECTORS.GOOGLE_PASSWORD_NEXT);
         
         // Handle any additional consent screens
         await this.page.waitForLoadState('networkidle');
         
         // Look for and click consent/allow button if present
-        const allowButton = this.page.locator('button:has-text("Allow"), button:has-text("Continue"), button:has-text("Authorize")');
+        const allowButton = this.page.locator(SELECTORS.CONSENT_BUTTONS);
         if (await allowButton.first().isVisible()) {
           await allowButton.first().click();
         }
@@ -89,7 +98,7 @@ export class RealAuth {
     // Check if we're on the role selection page
     if (this.page.url().includes('select-role')) {
       // Wait for role selection page to load
-      await this.page.waitForSelector('mat-card', { timeout: 10000 });
+      await this.page.waitForSelector('mat-card', { timeout: ROLE_SELECTION_TIMEOUT });
       
       // Map role types to selectors based on the actual page object
       let roleSelector: string;
@@ -109,16 +118,16 @@ export class RealAuth {
       }
       
       try {
-        await this.page.waitForSelector(roleSelector, { timeout: 5000 });
+        await this.page.waitForSelector(roleSelector, { timeout: SHORT_TIMEOUT });
         await this.page.click(roleSelector);
-        await this.page.waitForURL(/dashboard/, { timeout: 10000 });
+        await this.page.waitForURL(URL_PATTERNS.DASHBOARD, { timeout: ROLE_SELECTION_TIMEOUT });
       } catch (error) {
         console.warn(`Could not select role ${roleType}, trying fallback`);
         // Try selecting any available role as fallback
         const fallbackSelector = 'button:has-text("Select")';
         if (await this.page.locator(fallbackSelector).first().isVisible()) {
           await this.page.locator(fallbackSelector).first().click();
-          await this.page.waitForURL(/dashboard/, { timeout: 10000 });
+          await this.page.waitForURL(URL_PATTERNS.DASHBOARD, { timeout: ROLE_SELECTION_TIMEOUT });
         }
       }
     }
@@ -129,7 +138,7 @@ export class RealAuth {
    */
   async logout(): Promise<void> {
     // Look for logout button in the UI (typically in user menu or header)
-    const logoutButton = this.page.locator('[data-testid="logout"], button:has-text("Logout"), button:has-text("Sign out")');
+    const logoutButton = this.page.locator(SELECTORS.LOGOUT_BUTTONS);
     
     if (await logoutButton.isVisible()) {
       await logoutButton.click();
@@ -143,7 +152,7 @@ export class RealAuth {
     }
     
     // Wait for redirect to login page
-    await this.page.waitForURL(/login/, { timeout: 10000 });
+    await this.page.waitForURL(URL_PATTERNS.LOGIN, { timeout: ROLE_SELECTION_TIMEOUT });
   }
 
   /**
@@ -162,7 +171,7 @@ export class RealAuth {
       // Try to get from localStorage first
       const userEmail = await this.page.evaluate(() => {
         // Check various possible storage locations
-        const user = localStorage.getItem('cep_user');
+        const user = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
         if (user) {
           const userData = JSON.parse(user);
           return userData.email;
@@ -175,7 +184,7 @@ export class RealAuth {
       }
 
       // Try to get from UI elements
-      const emailElement = this.page.locator('[data-testid="user-email"], .user-email');
+      const emailElement = this.page.locator(SELECTORS.USER_EMAIL);
       if (await emailElement.isVisible()) {
         return await emailElement.textContent();
       }

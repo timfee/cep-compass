@@ -1,4 +1,5 @@
 import { Page, Locator } from '@playwright/test';
+import { SHORT_TIMEOUT } from '../constants';
 
 export abstract class BasePage {
   protected readonly page: Page;
@@ -33,7 +34,7 @@ export abstract class BasePage {
     try {
       await this.page
         .locator(selector)
-        .waitFor({ state: 'visible', timeout: 5000 });
+        .waitFor({ state: 'visible', timeout: SHORT_TIMEOUT });
       return true;
     } catch {
       return false;
@@ -41,7 +42,7 @@ export abstract class BasePage {
   }
 
   /** Wait for an element to be visible */
-  async waitForSelector(selector: string, timeout = 5000): Promise<Locator> {
+  async waitForSelector(selector: string, timeout = SHORT_TIMEOUT): Promise<Locator> {
     const locator = this.page.locator(selector);
     await locator.waitFor({ state: 'visible', timeout });
     return locator;
