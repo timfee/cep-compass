@@ -78,30 +78,47 @@ async function setupRealAuth(page: any, baseURL: string, email: string, password
  */
 async function handleGoogleOAuth(page: any, email: string, password: string) {
   try {
-    // Wait for Google login form
-    await page.waitForSelector('#identifierId', { timeout: 15000 });
+    // Wait for either Google login form or potential redirect back to app
+    await Promise.race([
+      page.waitForSelector('#identifierId', { timeout: 15000 }),
+      page.waitForURL(/dashboard|select-role/, { timeout: 15000 })
+    ]);
     
-    // Enter email
-    await page.fill('#identifierId', email);
-    await page.click('#identifierNext');
+    // If we're already back at the app, authentication succeeded
+    if (page.url().includes('dashboard') || page.url().includes('select-role')) {
+      console.log('Authentication completed without manual OAuth flow');
+      return;
+    }
     
-    // Wait for password field and enter password
-    await page.waitForSelector('input[name="password"]', { timeout: 10000 });
-    await page.fill('input[name="password"]', password);
-    await page.click('#passwordNext');
-    
-    // Handle any additional consent screens
-    await page.waitForLoadState('networkidle');
-    
-    // Look for and click consent/allow button if present
-    const allowButton = page.locator('button:has-text("Allow"), button:has-text("Continue"), button:has-text("Authorize")');
-    if (await allowButton.first().isVisible()) {
-      await allowButton.first().click();
+    // Continue with manual OAuth if still on Google login
+    if (await page.locator('#identifierId').isVisible()) {
+      // Enter email
+      await page.fill('#identifierId', email);
+      await page.click('#identifierNext');
+      
+      // Wait for password field and enter password
+      await page.waitForSelector('input[name="password"]', { timeout: 10000 });
+      await page.fill('input[name="password"]', password);
+      await page.click('#passwordNext');
+      
+      // Handle any additional consent screens
+      await page.waitForLoadState('networkidle');
+      
+      // Look for and click consent/allow button if present
+      const allowButton = page.locator('button:has-text("Allow"), button:has-text("Continue"), button:has-text("Authorize")');
+      if (await allowButton.first().isVisible()) {
+        await allowButton.first().click();
+      }
     }
     
   } catch (error) {
     console.warn('OAuth flow encountered an issue:', error);
-    // Don't throw - let the calling function handle the final state
+    // Check if we ended up authenticated anyway
+    if (page.url().includes('dashboard') || page.url().includes('select-role')) {
+      console.log('Authentication succeeded despite OAuth flow issues');
+      return;
+    }
+    throw error;
   }
 }
 

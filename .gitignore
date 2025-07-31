@@ -54,3 +54,8 @@ playwright-*
 /playwright-report/
 /test-results/
 .envrc
+
+# E2E test authentication state files
+admin-auth-state.json
+user-auth-state.json
+test-auth-state.json
