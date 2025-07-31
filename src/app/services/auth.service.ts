@@ -16,6 +16,7 @@ import {
   OAUTH_SCOPES,
   OAUTH_CONFIG,
   RETRY_CONFIG,
+  AUTH_CONSTANTS,
 } from '../shared/constants/app.constants';
 import { UserRole } from '../shared/constants/enums';
 
@@ -29,7 +30,6 @@ export type SelectedRole = UserRole | null;
 
 export const TOKEN_STORAGE_KEY = 'cep_oauth_token';
 const ROLE_STORAGE_KEY = 'cep_selected_role';
-const REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED';
 
 /**
  * Service for handling authentication and user role management
@@ -301,11 +301,11 @@ export class AuthService {
   private async updateAvailableRoles(): Promise<void> {
     try {
       await this.retryWithBackoff(async () => {
-        const token = await this.getAccessToken();
-        if (!token) {
+        let currentToken = await this.getAccessToken();
+        if (!currentToken) {
           // Try to refresh the token if it's not available
-          const refreshedToken = await this.refreshAccessToken();
-          if (!refreshedToken) {
+          currentToken = await this.refreshAccessToken();
+          if (!currentToken) {
             console.warn(
               'No access token available for role enumeration. User may need to re-authenticate.',
             );
@@ -314,14 +314,13 @@ export class AuthService {
               isSuperAdmin: false,
               isCepAdmin: false,
               missingPrivileges: [
-                { privilegeName: REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
+                { privilegeName: AUTH_CONSTANTS.REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
               ],
             });
             return;
           }
         }
 
-        const currentToken = token || await this.getAccessToken();
         if (!currentToken) {
           throw new Error('Unable to obtain access token after refresh attempt');
         }

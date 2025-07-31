@@ -45,10 +45,7 @@ import { UserRole } from '../../shared/constants/enums';
                   isSelectingRole()
                 "
                 (click)="selectRole(UserRole.SUPER_ADMIN)"
-                [attr.aria-label]="'Select Super Admin role. ' + 
-                  (!authService.availableRoles().isSuperAdmin 
-                    ? 'Not available - Super Admin privileges required.'
-                    : 'Available and ready to select.')"
+                [attr.aria-label]="superAdminAriaLabel()"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -62,10 +59,7 @@ import { UserRole } from '../../shared/constants/enums';
                   !authService.availableRoles().isCepAdmin || isSelectingRole()
                 "
                 (click)="selectRole(UserRole.CEP_ADMIN)"
-                [attr.aria-label]="'Select CEP Delegated Admin role. ' + 
-                  (!authService.availableRoles().isCepAdmin 
-                    ? 'Not available - Required privileges missing.'
-                    : 'Available and ready to select.')"
+                [attr.aria-label]="cepAdminAriaLabel()"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -144,6 +138,21 @@ export class SelectRoleComponent implements OnInit {
   // A signal to track the loading state, derived from the user signal.
   public isLoading = computed(() => this.authService.user() === undefined);
   public isSelectingRole = signal(false);
+
+  // Computed signals for aria-labels to improve screen reader experience
+  public superAdminAriaLabel = computed(() => {
+    const isSuperAdmin = this.authService.availableRoles().isSuperAdmin;
+    return isSuperAdmin
+      ? 'Select Super Admin role. Available and ready to select.'
+      : 'Select Super Admin role. Not available - Super Admin privileges required.';
+  });
+
+  public cepAdminAriaLabel = computed(() => {
+    const isCepAdmin = this.authService.availableRoles().isCepAdmin;
+    return isCepAdmin
+      ? 'Select CEP Admin role. Available and ready to select.'
+      : 'Select CEP Admin role. Not available - CEP Admin privileges required.';
+  });
 
   async ngOnInit(): Promise<void> {
     // Refresh available roles when the component loads

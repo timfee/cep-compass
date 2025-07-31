@@ -25,8 +25,7 @@ import {
 import { copyToClipboard } from '../../shared/clipboard.utils';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../core/notification.service';
-
-const REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED';
+import { AUTH_CONSTANTS } from '../../shared/constants/app.constants';
 
 type ComponentState =
   | 'checking'
@@ -515,7 +514,7 @@ export class CreateRoleComponent {
           errorMessage += ` You currently have: ${availableRolesList.join(', ')}.`;
         } else if (userRoles.missingPrivileges?.length) {
           const isAuthError = userRoles.missingPrivileges.some(p => 
-            p.privilegeName === REAUTHENTICATION_REQUIRED || 
+            p.privilegeName === AUTH_CONSTANTS.REAUTHENTICATION_REQUIRED || 
             p.privilegeName === 'API Access Error'
           );
           if (isAuthError) {

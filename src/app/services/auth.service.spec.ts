@@ -3,6 +3,7 @@ import { AuthService, TOKEN_STORAGE_KEY } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { signal } from '@angular/core';
 import { UserRole } from '../shared/constants/enums';
+import { AUTH_CONSTANTS } from '../shared/constants/app.constants';
 
 /** Test utility functions for creating mock objects and responses */
 interface MockResponseOptions {
@@ -248,7 +249,7 @@ describe('AuthService', () => {
       expect(roles.isSuperAdmin).toBe(false);
       expect(roles.isCepAdmin).toBe(false);
       expect(roles.missingPrivileges).toEqual([
-        { privilegeName: 'REAUTHENTICATION_REQUIRED', serviceId: 'auth' },
+        { privilegeName: AUTH_CONSTANTS.REAUTHENTICATION_REQUIRED, serviceId: 'auth' },
       ]);
     }));
 
