@@ -25,6 +25,7 @@ import {
 import { copyToClipboard } from '../../shared/clipboard.utils';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../core/notification.service';
+import { AUTH_CONSTANTS } from '../../shared/constants/app.constants';
 
 type ComponentState =
   | 'checking'
@@ -490,14 +491,44 @@ export class CreateRoleComponent {
 
   private async checkForExistingRole(): Promise<void> {
     try {
-      // Check if user has Super Admin role
+      this.updateState({ checking: true, state: 'checking' });
+
+      // Check if user has Super Admin role with more detailed error handling
       const userRoles = this.authService.availableRoles();
-      if (!userRoles.isSuperAdmin) {
-        this.setError('Super Admin role required to create CEP Admin roles');
+      const currentUser = this.authService.user();
+      
+      if (!currentUser) {
+        this.setError('You must be logged in to create CEP Admin roles');
         return;
       }
 
-      this.updateState({ checking: true, state: 'checking' });
+      if (!userRoles.isSuperAdmin) {
+        // Provide specific feedback based on what roles they do have
+        const availableRolesList = [];
+        if (userRoles.isCepAdmin) {
+          availableRolesList.push('CEP Admin');
+        }
+        
+        let errorMessage = 'Super Admin role required to create CEP Admin roles.';
+        if (availableRolesList.length > 0) {
+          errorMessage += ` You currently have: ${availableRolesList.join(', ')}.`;
+        } else if (userRoles.missingPrivileges?.length) {
+          const isAuthError = userRoles.missingPrivileges.some(p => 
+            p.privilegeName === AUTH_CONSTANTS.REAUTHENTICATION_REQUIRED || 
+            p.privilegeName === 'API Access Error'
+          );
+          if (isAuthError) {
+            errorMessage = 'Unable to verify admin privileges. Please try logging out and logging back in.';
+          } else {
+            errorMessage += ' You appear to have limited admin access.';
+          }
+        } else {
+          errorMessage += ' Please contact your Google Workspace administrator.';
+        }
+        
+        this.setError(errorMessage);
+        return;
+      }
 
       const result = await this.adminRoleService.checkCepAdminRoleExists();
 
@@ -518,16 +549,34 @@ export class CreateRoleComponent {
       }
     } catch (error) {
       console.error('Error checking for existing role:', error);
-      this.setError(
-        error instanceof Error
-          ? error.message
-          : 'Failed to check for existing role',
-      );
+      let errorMessage = 'Failed to check for existing role';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error && 'status' in error) {
+        const httpError = error as { status: number; statusText?: string };
+        if (httpError.status === 403) {
+          errorMessage = 'Insufficient permissions to check for existing roles. Super Admin access required.';
+        } else if (httpError.status === 401) {
+          errorMessage = 'Authentication failed. Please log out and log back in.';
+        } else {
+          errorMessage = `API error (${httpError.status}): ${httpError.statusText || 'Unknown error'}`;
+        }
+      }
+      
+      this.setError(errorMessage);
     }
   }
 
   async createRole(): Promise<void> {
     try {
+      // Double-check permissions before creating
+      const userRoles = this.authService.availableRoles();
+      if (!userRoles.isSuperAdmin) {
+        this.setError('Super Admin role required to create CEP Admin roles');
+        return;
+      }
+
       this.updateState({ creating: true, state: 'creating' });
 
       const createdRole = await this.adminRoleService.createCepAdminRole();
@@ -540,13 +589,33 @@ export class CreateRoleComponent {
       });
 
       this.notificationService.success('CEP Admin role created successfully!');
+      
+      // Refresh the auth service's available roles to reflect any changes
+      try {
+        await this.authService.refreshAvailableRoles();
+      } catch (refreshError) {
+        console.warn('Failed to refresh available roles after role creation:', refreshError);
+      }
     } catch (error) {
       console.error('Error creating role:', error);
-      this.setError(
-        error instanceof Error
-          ? error.message
-          : 'Failed to create CEP Admin role',
-      );
+      let errorMessage = 'Failed to create CEP Admin role';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error && 'status' in error) {
+        const httpError = error as { status: number; statusText?: string };
+        if (httpError.status === 409) {
+          errorMessage = 'CEP Admin role already exists. Please refresh the page.';
+        } else if (httpError.status === 403) {
+          errorMessage = 'Insufficient permissions to create roles. Super Admin access required.';
+        } else if (httpError.status === 401) {
+          errorMessage = 'Authentication failed. Please log out and log back in.';
+        } else {
+          errorMessage = `API error (${httpError.status}): ${httpError.statusText || 'Unknown error'}`;
+        }
+      }
+      
+      this.setError(errorMessage);
     }
   }
 

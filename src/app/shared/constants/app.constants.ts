@@ -81,3 +81,11 @@ export const OAUTH_CONFIG = {
   PROMPT_CONSENT: 'consent',
   PROMPT_NONE: 'none',
 } as const;
+
+/**
+ * Authentication error constants
+ */
+export const AUTH_CONSTANTS = {
+  /** Constant used to indicate user needs to reauthenticate */
+  REAUTHENTICATION_REQUIRED: 'REAUTHENTICATION_REQUIRED',
+} as const;

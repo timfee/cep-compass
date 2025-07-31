@@ -45,6 +45,7 @@ import { UserRole } from '../../shared/constants/enums';
                   isSelectingRole()
                 "
                 (click)="selectRole(UserRole.SUPER_ADMIN)"
+                [attr.aria-label]="superAdminAriaLabel()"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -58,6 +59,7 @@ import { UserRole } from '../../shared/constants/enums';
                   !authService.availableRoles().isCepAdmin || isSelectingRole()
                 "
                 (click)="selectRole(UserRole.CEP_ADMIN)"
+                [attr.aria-label]="cepAdminAriaLabel()"
               >
                 @if (isSelectingRole()) {
                   <mat-spinner diameter="20"></mat-spinner>
@@ -137,14 +139,33 @@ export class SelectRoleComponent implements OnInit {
   public isLoading = computed(() => this.authService.user() === undefined);
   public isSelectingRole = signal(false);
 
+  // Computed signals for aria-labels to improve screen reader experience
+  public superAdminAriaLabel = computed(() => {
+    const isSuperAdmin = this.authService.availableRoles().isSuperAdmin;
+    return isSuperAdmin
+      ? 'Select Super Admin role. Available and ready to select.'
+      : 'Select Super Admin role. Not available - Super Admin privileges required.';
+  });
+
+  public cepAdminAriaLabel = computed(() => {
+    const isCepAdmin = this.authService.availableRoles().isCepAdmin;
+    return isCepAdmin
+      ? 'Select CEP Admin role. Available and ready to select.'
+      : 'Select CEP Admin role. Not available - CEP Admin privileges required.';
+  });
+
   async ngOnInit(): Promise<void> {
     // Refresh available roles when the component loads
     try {
+      this.isSelectingRole.set(true);
       await this.authService.refreshAvailableRoles();
-    } catch {
+    } catch (error) {
+      console.error('Failed to refresh available roles:', error);
       this.notificationService.error(
-        'Failed to refresh available roles. Please try again later.',
+        'Failed to load role information. Please try refreshing the page.',
       );
+    } finally {
+      this.isSelectingRole.set(false);
     }
   }
 
