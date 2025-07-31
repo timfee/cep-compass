@@ -206,13 +206,13 @@ npx playwright test auth.spec.ts
 
 ### CI Configuration
 
-The project is configured for headless Chrome testing with these flags:
+The project uses GitHub Actions for continuous integration. Tests are configured for headless Chrome with these flags:
 
 - `--no-sandbox` - Required for containerized environments
 - `--disable-gpu` - Improves performance in headless mode
 - `--disable-dev-shm-usage` - Prevents shared memory issues in Docker
 
-For GitHub Actions or other CI environments, ensure Chrome is available and use the headless configuration.
+GitHub Actions automatically runs linting, unit tests, e2e tests, and build verification on every commit and pull request.
 
 ## Deployment
 
